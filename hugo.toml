@@ -1,6 +1,8 @@
 baseURL = 'https://example.org/'
 languageCode = 'en-US'
-title = 'My New Hugo Site'
+title = 'Microsite'
+
+ignoreLogs = ['warning-goldmark-raw-html']
 
 [[menus.main]]
 name = 'Home'
@@ -21,3 +23,8 @@ weight = 30
   [module.hugoVersion]
     extended = false
     min = "0.116.0"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
