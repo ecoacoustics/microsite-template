@@ -21,3 +21,10 @@ a {
   color: #00e;
   text-decoration: none;
 }
+
+/* Grid container that uses CSS Grid to layout its children */
+.ms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
+    gap: 20px; /* Space between grid items */
+}

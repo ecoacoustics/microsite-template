@@ -1,0 +1,7 @@
+<div class="ms-grid">
+  {{ range split .Inner "<--->" }}
+    <div class="ms-grid-item">
+        {{ . | $.Page.RenderString }}
+    </div>
+  {{ end }}
+</div>
