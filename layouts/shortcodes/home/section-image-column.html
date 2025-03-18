@@ -1,0 +1,9 @@
+<section class="ms-image-columns flex">
+  <div class="ms-image-columns__image-column">
+    <img src="{{ with .Get "image" }}{{ $image := resources.Get . }}{{ $image.RelPermalink }}{{ end }}"
+         {{ with .Get "alt" }}alt="{{ . }}"{{ end }}>
+  </div>
+  <div class="ms-image-columns__content-column">
+        {{.Inner  | $.Page.RenderString }}
+  </div>
+</section>
