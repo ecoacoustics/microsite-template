@@ -1,30 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import "common";
+@import "home";
 
-body {
-  color: #222;
-  font-family: sans-serif;
-  line-height: 1.5;
-  margin: 1rem;
-  max-width: 768px;
+/* Added a second definition to separate templated values from not so syntax
+  highlighting will work */
+:root {
+    --theme-color-raw: {{ .Site.Params.style.ThemeColor }};
 }
 
-header {
-  border-bottom: 1px solid #222;
-  margin-bottom: 1rem;
-}
+:root {
+    /* Colors */
+    --ms-theme-color: var(--theme-color-raw);
 
-footer {
-  border-top: 1px solid #222;
-  margin-top: 1rem;
-}
+    /* Fonts */
+    --ms-heading-font: 'Inter', sans-serif;
+    --ms-body-font: 'Inter', sans-serif;
+    --ms-font-color: #000;
+    --ms-font-color-bright: #fff;
+    --ms-font-color-toned: #bbb;
+    --ms-inverse-color: #000;
+    --ms-background-color: #fff;
+    --ms-background-color-darker: #fbfbfb;
+    --ms-pane-background: #fcfcfc;
+    --color-link: #0055bb;
+    --color-visited-link: #8440f1;
+    --ms-inline-code-bg-color: #dfefff;
 
-a {
-  color: #00e;
-  text-decoration: none;
-}
+    /* Font Sizes */
+    --ms-font-size-xsmall: 0.8rem;
+    --ms-font-size-small: 1rem;
+    --ms-font-size-medium: 1.5rem;
+    --ms-font-size-large: 2.25rem;
+    --ms-font-size-xlarge: 4.5rem;
 
-/* Grid container that uses CSS Grid to layout its children */
-.ms-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
-    gap: 20px; /* Space between grid items */
+    /* Paddings */
+    --ms-padding-small: 0.5rem;
+    --ms-padding-medium: 1rem;
+    --ms-padding-large: 1.5rem;
+    --ms-padding-xlarge: 2rem;
+
+    /* Other */
+    --ms-navbar-height: 4rem;
+    --ms-panel-opacity: 0.8;
+    --ms-transition-duration: 0.3s;
+    --ms-transition-timing: ease-in-out;
+    --ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --ms-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --ms-border-radius: 0.25rem;
 }
