@@ -1,0 +1,68 @@
+/* Home page hero */
+.ms-home {
+  &__hero {
+    width: 100lvw;
+    height: auto;
+    position: relative;
+    top: 0;
+    left: 50%;
+    right: 50%;
+    margin-left: -50lvw;
+    margin-right: -50lvw;
+    background-size: cover;
+    background-repeat: no-repeat;
+    aspect-ratio: 24 / 9;
+    background-size: cover;
+
+      &-title {
+        color: var(--ms-font-color-bright);
+        text-shadow: 2px 2px 2px rgba(0, 0, 0, .5);
+        font-size: var(--ms-font-size-xlarge);
+        max-width: 30%;
+        align-self: center;
+      }
+
+      .container {
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        align-self: center;
+        height: 100%;
+      }
+  }
+
+  &__cta {
+    font-size: var(--ms-font-size-medium);
+    padding: var(--ms-padding-large) 0;
+  }
+
+  section {
+    padding: var(--ms-padding-large) 0;
+  }
+}
+
+/* Smaller screen styles */
+@media (max-width: 1024px) {
+  .ms-home__hero-title {
+    font-size: var(--ms-font-size-large);
+    max-width: 50%;
+    padding: var(--ms-padding-small);
+  }
+}
+
+@media (max-width: 768px) {
+  .ms-home__hero-title {
+    max-width: 95%;
+  }
+  .ms-home__cta {
+      font-size: var(--ms-font-size-medium);
+  }
+}
+
+@media (max-width: 425px) {
+  .ms-home__hero .container {
+      height: auto;
+  }
+}
