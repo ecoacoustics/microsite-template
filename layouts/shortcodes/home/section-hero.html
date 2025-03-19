@@ -1,10 +1,10 @@
-<section class="ms-home__hero" {{ with .Get "image"  -}}
+<section class="oe-home__hero" {{ with .Get "image"  -}}
 {{- $image := resources.Get . -}}
 style="background-image: url('{{ $image.RelPermalink }}');"
 {{- end -}}
 {{- with .Get "class" -}}class="{{ . }}"{{- end -}}
 >
   <div class="container">
-        <h1 class="ms-home__hero-title">{{.Inner  | $.Page.RenderString }}</h1>
+        <h1 class="oe-home__hero-title">{{.Inner  | $.Page.RenderString }}</h1>
   </div>
 </section>

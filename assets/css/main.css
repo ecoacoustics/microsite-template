@@ -10,41 +10,41 @@
 
 :root {
     /* Colors */
-    --ms-theme-color: var(--theme-color-raw);
+    --oe-theme-color: var(--theme-color-raw);
 
     /* Fonts */
-    --ms-heading-font: 'Inter', sans-serif;
-    --ms-body-font: 'Inter', sans-serif;
-    --ms-font-color: #000;
-    --ms-font-color-bright: #fff;
-    --ms-font-color-toned: #bbb;
-    --ms-inverse-color: #000;
-    --ms-background-color: #fff;
-    --ms-background-color-darker: #fbfbfb;
-    --ms-pane-background: #fcfcfc;
+    --oe-heading-font: 'Inter', sans-serif;
+    --oe-body-font: 'Inter', sans-serif;
+    --oe-font-color: #000;
+    --oe-font-color-bright: #fff;
+    --oe-font-color-toned: #bbb;
+    --oe-inverse-color: #000;
+    --oe-background-color: #fff;
+    --oe-background-color-darker: #fbfbfb;
+    --oe-pane-background: #fcfcfc;
     --color-link: #0055bb;
     --color-visited-link: #8440f1;
-    --ms-inline-code-bg-color: #dfefff;
+    --oe-inline-code-bg-color: #dfefff;
 
     /* Font Sizes */
-    --ms-font-size-xsmall: 0.8rem;
-    --ms-font-size-small: 1rem;
-    --ms-font-size-medium: 1.5rem;
-    --ms-font-size-large: 2.25rem;
-    --ms-font-size-xlarge: 4.5rem;
+    --oe-font-size-xsmall: 0.8rem;
+    --oe-font-size-small: 1rem;
+    --oe-font-size-medium: 1.5rem;
+    --oe-font-size-large: 2.25rem;
+    --oe-font-size-xlarge: 4.5rem;
 
     /* Paddings */
-    --ms-padding-small: 0.5rem;
-    --ms-padding-medium: 1rem;
-    --ms-padding-large: 1.5rem;
-    --ms-padding-xlarge: 2rem;
+    --oe-padding-small: 0.5rem;
+    --oe-padding-medium: 1rem;
+    --oe-padding-large: 1.5rem;
+    --oe-padding-xlarge: 2rem;
 
     /* Other */
-    --ms-navbar-height: 4rem;
-    --ms-panel-opacity: 0.8;
-    --ms-transition-duration: 0.3s;
-    --ms-transition-timing: ease-in-out;
-    --ms-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --ms-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --ms-border-radius: 0.25rem;
+    --oe-navbar-height: 4rem;
+    --oe-panel-opacity: 0.8;
+    --oe-transition-duration: 0.3s;
+    --oe-transition-timing: ease-in-out;
+    --oe-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --oe-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --oe-border-radius: 0.25rem;
 }
