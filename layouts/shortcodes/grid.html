@@ -1,6 +1,6 @@
-<div class="ms-grid">
+<div class="oe-grid">
   {{ range split .Inner "<--->" }}
-    <div class="ms-grid__item">
+    <div class="oe-grid__item">
         {{ . | $.Page.RenderString }}
     </div>
   {{ end }}
