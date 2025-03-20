@@ -1,0 +1,127 @@
+/*----- Sections -----*/
+.oe-section {
+    padding-top: var(--oe-padding-large);
+    padding-bottom: var(--oe-padding-large);
+}
+
+/*----- Hero -----*/
+.oe-hero {
+    width: 100lvw;
+    height: auto;
+    position: relative;
+    top: 0;
+    left: 50%;
+    right: 50%;
+    transform: translateX(-50%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    aspect-ratio: 24 / 9;
+  
+
+    .container {
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        align-self: center;
+        height: 100%;
+    }
+}
+
+.oe-hero-title {
+    color: var(--oe-font-color-bright);
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, .5);
+    font-size: var(--oe-font-size-xlarge);
+    max-width: 30%;
+    align-self: center;
+}
+
+.oe-hero-caption {
+    color: var(--oe-font-color-bright);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--oe-background-dark);
+    opacity: 0.8;
+    padding: var(--oe-padding-small);
+    font-size: var(--oe-font-size-xsmall);
+}
+  
+/*----- Call to Action  -----*/
+.oe-call-to-action {
+    font-size: var(--oe-font-size-medium);
+    padding: var(--oe-padding-large) 0;
+}
+
+/*----- Grid  -----*/
+.oe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
+    gap: var(--oe-padding-small); /* Space between grid items */
+}
+
+/*----- Image Column  -----*/
+.oe-image-column {
+  display: flex;
+  align-items: center;
+  gap: var(--oe-padding-medium);
+
+  img {
+    max-width: 100%;
+  }
+
+  > div {
+    flex: 1 1 0;
+  }
+  
+  & .oe-image-right {
+    flex-direction: row-reverse;
+  }
+}
+
+/*----- Smaller screen styles -----*/
+@media (max-width: 1024px) {
+    .oe-hero-title {
+        font-size: var(--oe-font-size-large);
+        max-width: 50%;
+        padding: var(--oe-padding-small);
+    }
+}
+  
+@media (max-width: 768px) {
+    .oe-hero-title {
+        max-width: 95%;
+    }
+    .oe-call-to-action {
+        font-size: var(--oe-font-size-small);
+    }
+    .oe-image-column {
+        flex-direction: column;
+
+        & > * {
+          padding: 0;
+        }
+    }
+}
+  
+@media (max-width: 425px) {
+    .oe-hero-title {
+        font-size: var(--oe-font-size-medium);
+    }
+
+    .oe-hero .container {
+        height: auto;
+    }
+
+    .oe-hero-caption {
+        /* overriding caption styles to look better on mobile*/
+        color: var(--oe-font-color-toned);
+        bottom: calc(var(--oe-padding-large)* -1);
+        left: 0;
+        right: auto;
+        background: none;
+        opacity: 1;
+        padding:0;
+    }
+}

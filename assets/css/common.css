@@ -1,10 +1,9 @@
 body {
     color: var(--oe-font-color);
     background-color: var(--oe-background-color);
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
     font-family: var(--oe-body-font);
     margin: 0;
 }
@@ -16,10 +15,6 @@ h4,
 h5,
 h6 {
     font-family: var(--oe-heading-font);
-}
-
-img {
-  max-width: 100%;
 }
 
 .oe-theme-emphasis {
@@ -35,28 +30,8 @@ img {
   display: flex;
 }
 
-/* Grid container that uses CSS Grid to layout its children */
-.oe-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
-    gap: var(--oe-padding-small); /* Space between grid items */
-}
-
-.oe-image-columns {
-  align-items: center;
-
-  &__image-column,
-  &__content-column {
-    flex: 1 1 0;
-    padding-right: var(--oe-padding-medium);
-  }
-}
-@media (max-width: 768px) {
-  .oe-image-columns {
-    flex-direction: column;
-
-    & > * {
-      padding: 0;
-    }
-  }
+/* Image captions */
+.oe-image-caption {
+  color: var(--oe-font-color-toned);
+  font-size: var(--oe-font-size-xsmall);
 }

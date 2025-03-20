@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import "common";
-@import "home";
+@import "sections";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
@@ -17,14 +17,13 @@
     --oe-body-font: 'Inter', sans-serif;
     --oe-font-color: #000;
     --oe-font-color-bright: #fff;
-    --oe-font-color-toned: #bbb;
+    --oe-font-color-toned: #707070;
     --oe-inverse-color: #000;
-    --oe-background-color: #fff;
-    --oe-background-color-darker: #fbfbfb;
-    --oe-pane-background: #fcfcfc;
-    --color-link: #0055bb;
-    --color-visited-link: #8440f1;
-    --oe-inline-code-bg-color: #dfefff;
+
+    /* Backgrounds */
+    --oe-background-light: #fff;
+    --oe-background-dark: #000;
+    --oe-background-pane: #fcfcfc;
 
     /* Font Sizes */
     --oe-font-size-xsmall: 0.8rem;
@@ -36,8 +35,8 @@
     /* Paddings */
     --oe-padding-small: 0.5rem;
     --oe-padding-medium: 1rem;
-    --oe-padding-large: 1.5rem;
-    --oe-padding-xlarge: 2rem;
+    --oe-padding-large: 2rem;
+    --oe-padding-xlarge: 2.5rem;
 
     /* Other */
     --oe-navbar-height: 4rem;
