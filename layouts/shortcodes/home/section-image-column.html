@@ -1,9 +1,0 @@
-<section class="oe-image-columns flex">
-  <div class="oe-image-columns__image-column">
-    <img src="{{ with .Get "image" }}{{ $image := resources.Get . }}{{ $image.RelPermalink }}{{ end }}"
-         {{ with .Get "alt" }}alt="{{ . }}"{{ end }}>
-  </div>
-  <div class="oe-image-columns__content-column">
-        {{.Inner  | $.Page.RenderString }}
-  </div>
-</section>

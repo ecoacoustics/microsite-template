@@ -1,0 +1,11 @@
+<section class="oe-section oe-hero" {{ with .Get "image"  -}}
+{{- $image := resources.Get . -}}
+style="background-image: url('{{ $image.RelPermalink }}');"
+{{- end -}}
+{{- with .Get "class" -}}class="{{ . }}"{{- end -}}
+>
+  <div class="container">
+        <h1 class="oe-hero-title">{{.Inner  | $.Page.RenderString }}</h1>
+        {{ with .Get "caption"  -}}<span class="oe-hero-caption">{{ . }}</span>{{- end -}}
+  </div>
+</section>
