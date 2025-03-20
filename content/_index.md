@@ -9,7 +9,7 @@ Can you hear a <br><span class="oe-theme-emphasis">Plains Wanderer</span>?
 {{< /home/section-hero >}}
 
 {{< home/section-cta >}}
-We need your help in training our system to regognise Plains Wanderer sounds. You can help by verifying sounds and tags noting if the sounds you hear is correct or not.
+The Plains Wanderer bird is critically endangered due to habitat loss, predation, and climate change. We're on a mission to train our AI to recognize their calls, and we need your help! By checking the tags our system has put on bird calls, you can help ensure they're correct. This helps us monitor their populations and habitats more effectively, contributing to conservation efforts. Let's work together to protect this incredible species!
 
 <a class="oe-theme-emphasis" href="/verify">
 Start Verifying
