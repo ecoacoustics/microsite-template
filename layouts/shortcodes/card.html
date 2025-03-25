@@ -1,0 +1,11 @@
+<sl-card class="class-image">
+  <img
+    slot="image"
+    {{ with .Get "image"  -}}
+    {{- $image := resources.Get . -}}
+    src="{{ $image.RelPermalink }}"
+    {{- end -}}
+    {{- with .Get "alt" -}}alt="{{ . }}"{{- end -}}
+  />
+  {{.Inner  | $.Page.RenderString }}
+</sl-card>

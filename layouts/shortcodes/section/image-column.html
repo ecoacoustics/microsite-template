@@ -1,0 +1,12 @@
+<section class="oe-section oe-image-column {{ with .Get "imagePosition" }}oe-image-{{ . }}{{ end }}">
+  <figure>
+    <img src="{{ with .Get "image" }}{{ $image := resources.Get . }}{{ $image.RelPermalink }}{{ end }}"
+         {{ with .Get "alt" }}alt="{{ . }}"{{ end }}>
+    {{ with .Get "caption" -}}
+      <figcaption class="oe-image-caption">{{ . }}</figcaption>
+    {{- end }}
+  </figure>
+  <div class="oe-image-column-text">
+    {{ .Inner | $.Page.RenderString }}
+  </div>
+</section>

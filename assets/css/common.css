@@ -1,0 +1,41 @@
+body {
+    color: var(--oe-font-color);
+    background-color: var(--oe-background-color);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--oe-body-font);
+    margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--oe-heading-font);
+}
+
+.oe-theme-emphasis {
+  color: var(--oe-theme-color);
+}
+
+a.o-theme-emphasis {
+  text-decoration: none; /*links with theme emphasis no underline */
+}
+
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.flex {
+  display: flex;
+}
+
+/* Image captions */
+.oe-image-caption {
+  color: var(--oe-font-color-toned);
+  font-size: var(--oe-font-size-xsmall);
+}

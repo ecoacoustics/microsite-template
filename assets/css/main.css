@@ -1,23 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import "common";
+@import "sections";
 
-body {
-  color: #222;
-  font-family: sans-serif;
-  line-height: 1.5;
-  margin: 1rem;
-  max-width: 768px;
+/* Added a second definition to separate templated values from not so syntax
+  highlighting will work */
+:root {
+    --theme-color-raw: {{ .Site.Params.style.ThemeColor }};
 }
 
-header {
-  border-bottom: 1px solid #222;
-  margin-bottom: 1rem;
-}
+:root {
+    /* Colors */
+    --oe-theme-color: var(--theme-color-raw);
 
-footer {
-  border-top: 1px solid #222;
-  margin-top: 1rem;
-}
+    /* Fonts */
+    --oe-heading-font: 'Inter', sans-serif;
+    --oe-body-font: 'Inter', sans-serif;
+    --oe-font-color: #000;
+    --oe-font-color-bright: #fff;
+    --oe-font-color-toned: #707070;
+    --oe-inverse-color: #000;
 
-a {
-  color: #00e;
-  text-decoration: none;
+    /* Backgrounds */
+    --oe-background-light: #fff;
+    --oe-background-dark: #000;
+    --oe-background-pane: #fcfcfc;
+
+    /* Font Sizes */
+    --oe-font-size-xsmall: 0.8rem;
+    --oe-font-size-small: 1rem;
+    --oe-font-size-medium: 1.5rem;
+    --oe-font-size-large: 2.25rem;
+    --oe-font-size-xlarge: 4.5rem;
+
+    /* Paddings */
+    --oe-padding-small: 0.5rem;
+    --oe-padding-medium: 1rem;
+    --oe-padding-large: 2rem;
+    --oe-padding-xlarge: 2.5rem;
+
+    /* Other */
+    --oe-navbar-height: 4rem;
+    --oe-panel-opacity: 0.8;
+    --oe-transition-duration: 0.3s;
+    --oe-transition-timing: ease-in-out;
+    --oe-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --oe-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --oe-border-radius: 0.25rem;
 }

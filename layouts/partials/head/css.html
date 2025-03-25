@@ -1,4 +1,8 @@
-{{- with resources.Get "css/main.css" }}
+{{ $css := resources.Get "css/main.css" }}
+{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" . | css.Sass }}
+<!-- Using Sass to import .css files as Hugo doesn't support direct CSS imports from assets folder. All files remain CSS. -->
+
+{{- with  $css }}
   {{- if eq hugo.Environment "development" }}
     <link rel="stylesheet" href="{{ .RelPermalink }}">
   {{- else }}

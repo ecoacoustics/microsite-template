@@ -1,6 +1,8 @@
 baseURL = 'https://example.org/'
 languageCode = 'en-US'
-title = 'My New Hugo Site'
+title = 'Call Detective'
+
+ignoreLogs = ['warning-goldmark-raw-html']
 
 [[menus.main]]
 name = 'Home'
@@ -8,16 +10,24 @@ pageRef = '/'
 weight = 10
 
 [[menus.main]]
-name = 'Posts'
-pageRef = '/posts'
+name = 'Verify'
+pageRef = '/verify'
 weight = 20
-
-[[menus.main]]
-name = 'Tags'
-pageRef = '/tags'
-weight = 30
 
 [module]
   [module.hugoVersion]
     extended = false
     min = "0.116.0"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[params]
+  [params.style]
+    ThemeColor = '#CB7E30'
+    xsmallBreakPoint = '425px'
+    smallBreakPoint = '768px'
+    mediumBreakPoint = '1024px'
+    largeBreakPoint = '1200px'
