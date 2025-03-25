@@ -8,7 +8,9 @@
   top: 0;
   z-index: 1;
   width: 100lvw;
-  margin-top: var(--oe-padding-medium);
+  padding-top: var(--oe-padding-medium);
+  padding-bottom: var(--oe-padding-medium);
+  background: linear-gradient(to bottom, black 0%, transparent 100%);
 
   .oe-brand {
     color: var(--oe-font-color-bright);
