@@ -1,5 +1,5 @@
 /*----- Sections -----*/
-.oe-section {
+body > section {
     padding-top: var(--oe-padding-large);
     padding-bottom: var(--oe-padding-large);
 }
