@@ -27,3 +27,7 @@ weight = 20
 [params]
   [params.style]
     ThemeColor = '#CB7E30'
+    xsmallBreakPoint = '425px'
+    smallBreakPoint = '768px'
+    mediumBreakPoint = '1024px'
+    largeBreakPoint = '1200px'
