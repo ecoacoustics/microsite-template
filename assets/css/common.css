@@ -21,6 +21,10 @@ h6 {
   color: var(--oe-theme-color);
 }
 
+a.o-theme-emphasis {
+  text-decoration: none; /*links with theme emphasis no underline */
+}
+
 .container {
   max-width: 80rem;
   margin: 0 auto;
