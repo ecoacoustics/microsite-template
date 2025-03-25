@@ -31,3 +31,17 @@ weight = 20
     smallBreakPoint = '768px'
     mediumBreakPoint = '1024px'
     largeBreakPoint = '1200px'
+    ThemeColorHsl = '30deg, 62%, 49%'
+    [params.style.ThemeShades]
+    # https://codepen.io/claviska/pen/QWveRgL
+      50 = '252 249 245'
+      100 = '247 234 222'
+      200 = '240 219 196'
+      300 = '233 201 168'
+      400 = '224 177 130'
+      500 = '211 146 80'
+      600 = '186 115 44'
+      700 = '153 95 36'
+      800 = '126 78 30'
+      900 = '90 56 21'
+      950 = '55 34 13'

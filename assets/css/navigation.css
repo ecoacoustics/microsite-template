@@ -1,0 +1,34 @@
+.oe-navigation {
+  font-family: var(--oe-heading-font);
+  font-size: var(--oe-font-size-medium);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 100lvw;
+  margin-top: var(--oe-padding-medium);
+
+  .oe-brand {
+    color: var(--oe-font-color-bright);
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding-left: var(--oe-padding-medium);
+  }
+
+  a {
+    color: var(--oe-font-color-bright);
+    text-decoration: none;
+    padding-left: var(--oe-padding-medium);
+
+    &.active {
+      color: var(--oe-theme-color);
+    }
+  }
+
+  sl-button {
+    margin-left: var(--oe-padding-medium);
+    margin-right: var(--oe-padding-medium);
+  }
+}

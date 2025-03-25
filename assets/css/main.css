@@ -1,11 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import "common";
 @import "sections";
+@import "navigation";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
 :root {
     --theme-color-raw: {{ .Site.Params.style.ThemeColor }};
+    /* Shoelace Overrides */
+    {{ range $key, $value := .Site.Params.style.ThemeShades }}
+    --sl-color-primary-{{ $key }}: rgb({{ $value }});
+    {{ end }}
 }
 
 :root {
