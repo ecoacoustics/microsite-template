@@ -1,7 +1,0 @@
-<section class="oe-section oe-grid">
-  {{ range split .Inner "<--->" }}
-    <div class="oe-grid__item">
-        {{ . | $.Page.RenderString }}
-    </div>
-  {{ end }}
-</section>
