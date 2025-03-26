@@ -1,6 +1,6 @@
 .oe-navigation {
   font-family: var(--oe-body-font);
-  font-size: var(--oe-font-size-medium);
+  font-size: var(--oe-font-size-small);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -14,6 +14,7 @@
 
   .oe-brand {
     font-family: var(--oe-header-font);
+    font-size: var(--oe-font-size-medium);
     flex-grow: 1;
     flex-shrink: 1;
     padding-left: var(--oe-padding-medium);

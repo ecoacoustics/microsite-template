@@ -31,7 +31,7 @@ body section {
 
 .oe-hero-title {
     color: var(--oe-font-color-bright);
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, .5);
+    text-shadow: 4px 2px 3px var(--oe-font-color);
     font-size: var(--oe-font-size-xlarge);
     max-width: 30%;
     align-self: center;
