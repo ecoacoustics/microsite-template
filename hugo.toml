@@ -5,14 +5,9 @@ title = 'Call Detective'
 ignoreLogs = ['warning-goldmark-raw-html']
 
 [[menus.main]]
-name = 'Home'
-pageRef = '/'
+name = 'About'
+pageRef = '/about'
 weight = 10
-
-[[menus.main]]
-name = 'Verify'
-pageRef = '/verify'
-weight = 20
 
 [module]
   [module.hugoVersion]

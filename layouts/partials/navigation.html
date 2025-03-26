@@ -12,9 +12,9 @@ Renders a menu for the given menu ID.
 
 {{- with index site.Menus $menuID }}
   <nav class="oe-navigation">
-    <div class="oe-brand">{{ site.Title }}</div>
+    <a href="/" class="oe-brand">{{ site.Title }}</a>
       {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
-      <sl-button href="/log-in" variant="primary">Log In</sl-button>
+      <sl-button href="/verify" variant="primary" pill>Validate Calls</sl-button>
   </nav>
 {{- end }}
 
