@@ -24,5 +24,6 @@ Play example Call (Female):
 <a class="oe-theme-emphasis" href="/verify">
 More examples
 <sl-icon slot="suffix" name="arrow-right-short"></sl-icon>
+</a>
 
 {{< /section/image-column >}}
