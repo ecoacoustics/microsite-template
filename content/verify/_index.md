@@ -4,8 +4,8 @@ draft = false
 +++
 
 # Can you hear a Plains Wanderer?
-![Verification UI example](/images/verification-ui.jpg)
-![Bird](/images/Plains-wanderer.jpg)
+![Verification UI example](./verification-ui.jpg)
+
 
 # What does a Plains Wanderer sound like?
 Play example 1 (male)
