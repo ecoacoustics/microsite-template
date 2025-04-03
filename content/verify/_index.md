@@ -1,17 +1,22 @@
 +++
-title = 'Verify'
+title = 'Can you hear a Plains Wanderer?'
 draft = false
 +++
 
-# Can you hear a Plains Wanderer?
 ![Verification UI example](./verification-ui.jpg)
 
-
 # What does a Plains Wanderer sound like?
-Play example 1 (male)
+{{< section/image-column
+    image="images/Plains-wanderer.jpg"
+    alt="Plains Wanderer in Grass. Image by Dominic Sherony"
+    caption="Image: Dominic Sherony, CC BY-SA 2.0, via Wikimedia Commons"
+    imagePosition="right"
+>}}
 
-Play example 2 (female)
+Example Call 1
 
-Play example 3 (young)
+Example Call 2
 
-More examples
+Example Call 3
+
+{{< /section/image-column >}}
