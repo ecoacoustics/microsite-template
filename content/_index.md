@@ -12,12 +12,8 @@ Can you hear a <br><span class="oe-theme-emphasis">Plains Wanderer</span>?
 
 {{< section/call-to-action >}}
 The Plains Wanderer is critically endangered due to habitat loss, predation, and climate change. We're on a mission to train our AI to recognise their calls, and we need your help! By checking the tags our system has put on bird calls, you can help ensure they're correct. This helps us monitor their populations and habitats more effectively, contributing to conservation efforts.
-
 <a class="oe-theme-emphasis" href="/verify">
-Start Verifying
-<sl-icon slot="suffix" name="arrow-right-short"></sl-icon>
-</a>
-
+Sign up or log in </a> to start verifying calls.
 {{< /section/call-to-action >}}
 
 ## About the group
@@ -27,7 +23,7 @@ Start Verifying
 ### Card Title 1
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card>}}
 
 <--->
@@ -36,7 +32,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 ### Card Title 2
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card>}}
 
 <--->
@@ -44,7 +40,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 ### Card Title 3
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card>}}
 
 {{< /section/cards >}}
