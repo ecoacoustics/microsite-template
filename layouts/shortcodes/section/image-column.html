@@ -1,4 +1,4 @@
-<section class="oe-section oe-image-column {{ with .Get "imagePosition" }}oe-image-{{ . }}{{ end }}">
+<section class="oe-section oe-image-column {{ with .Get "imagePosition" }}oe-image-{{ . }}{{ end }}" {{ with .Get "backgroundColor" }} style="background-color: {{ .  | safeCSS }};" {{ end }}>
   <figure>
     <img src="{{ with .Get "image" }}{{ $image := resources.Get . }}{{ $image.RelPermalink }}{{ end }}"
          {{ with .Get "alt" }}alt="{{ . }}"{{ end }}>
