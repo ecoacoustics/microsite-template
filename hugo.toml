@@ -2,12 +2,15 @@ baseURL = 'https://example.org/'
 languageCode = 'en-US'
 title = 'Call Detective'
 
-ignoreLogs = ['warning-goldmark-raw-html']
+[[server.headers]]
+for = "/**"
 
-[[menus.main]]
-name = 'About'
-pageRef = '/about'
-weight = 10
+[server.headers.values]
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+X-Content-Type-Options = "nosniff"
+
+ignoreLogs = ['warning-goldmark-raw-html']
 
 [module]
   [module.hugoVersion]
@@ -18,6 +21,11 @@ weight = 10
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+[[menus.main]]
+name = 'About'
+pageRef = '/about'
+weight = 10
 
 [params]
   [params.style]
