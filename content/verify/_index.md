@@ -3,14 +3,8 @@ title = 'Can you hear a Plains Wanderer?'
 draft = false
 +++
 
-<oe-verification-grid></oe-verification-grid>
-
-# What does a Plains Wanderer sound like?
-
-Play example Call (Female):
-![Example Call 1](./example-call-spectrogram.jpg)
-
-<a class="oe-theme-emphasis" href="/verify">
-More examples
-<sl-icon slot="suffix" name="arrow-right-short"></sl-icon>
-</a>
+<oe-verification-grid id="verification-grid" grid-size="1" selection-behavior="desktop">
+    <oe-verification verified="true" shortcut="y">Yes</oe-verification>
+    <oe-verification verified="false" shortcut="n">No</oe-verification>
+</oe-verification-grid>
+<oe-data-source for="verification-grid" src="/example.csv"></oe-data-source>
