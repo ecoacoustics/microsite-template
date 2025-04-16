@@ -1,16 +1,17 @@
-<!doctype html>
-<html
-  lang="{{ site.Language.LanguageCode }}"
-  dir="{{ or site.Language.LanguageDirection `ltr` }}"
->
-  <head>
-    {{ partial "head.html" . }}
-  </head>
-  <body>
-    <header class="{{ if .IsHome }}oe-home-header{{ end }}">
-      {{ partial "header.html" . }}
-    </header>
-    <main class="container">{{ block "main" . }}{{ end }}</main>
-    <footer>{{ partial "footer.html" . }}</footer>
-  </body>
+<!DOCTYPE html>
+<html lang="{{ site.Language.LanguageCode }}" dir="{{ or site.Language.LanguageDirection `ltr` }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <header class="{{ if .IsHome }}oe-home-header{{ end }}">
+    {{ partial "header.html" . }}
+  </header>
+  <main class="container">
+    {{ block "main" . }}{{ end }}
+  </main>
+  <footer>
+    {{ partial "footer.html" . }}
+  </footer>
+</body>
 </html>

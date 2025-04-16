@@ -17,13 +17,10 @@ Sign up or log in </a> to start verifying calls.
 {{< /section/call-to-action >}}
 
 ## About the group
-
 {{< section/cards >}}
 
 {{< card image="images/Plains-wanderer.jpg" alt="Plains Wanderer" >}}
-
 ### Card Title 1
-
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
 <sl-button href="/" pill>Link to a page</sl-button>
@@ -32,9 +29,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 <--->
 
 {{< card image="images/Plains-wanderer.jpg" alt="Plains Wanderer" >}}
-
 ### Card Title 2
-
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
 <sl-button href="/" pill>Link to a page</sl-button>
@@ -42,9 +37,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 
 <--->
 {{< card image="images/Plains-wanderer.jpg" alt="Plains Wanderer" >}}
-
 ### Card Title 3
-
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
 <sl-button href="/" pill>Link to a page</sl-button>
@@ -53,15 +46,12 @@ Some quick example text to build on the card title and make up the bulk of the c
 {{< /section/cards >}}
 
 {{< section/image-column
-image="images/Plains-wanderer.jpg"
-alt="Plains Wanderer in Grass. Image by Dominic Sherony"
-caption="Image: Dominic Sherony, CC BY-SA 2.0, via Wikimedia Commons"
-imagePosition="left"
-
-> }}
-
+    image="images/Plains-wanderer.jpg"
+    alt="Plains Wanderer in Grass. Image by Dominic Sherony"
+    caption="Image: Dominic Sherony, CC BY-SA 2.0, via Wikimedia Commons"
+    imagePosition="left"
+>}}
 ## Plains Wanderer Status
-
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <a class="microsite-btn microsite-btn-primary"> Read more </a>
 {{< /section/image-column >}}

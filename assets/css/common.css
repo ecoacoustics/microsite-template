@@ -1,12 +1,12 @@
 body {
-  color: var(--oe-font-color);
-  background-color: var(--oe-background-color);
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  font-family: var(--oe-body-font);
-  margin: 0;
-  justify-content: space-between;
+    color: var(--oe-font-color);
+    background-color: var(--oe-background-color);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--oe-body-font);
+    margin: 0;
+    justify-content: space-between;
 }
 
 h1,
@@ -15,7 +15,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--oe-heading-font);
+    font-family: var(--oe-heading-font);
 }
 
 .oe-theme-emphasis {
