@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import "common";
 @import "sections";
-@import "navigation";
+@import "footer";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */

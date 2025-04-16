@@ -6,6 +6,7 @@ body {
     flex-direction: column;
     font-family: var(--oe-body-font);
     margin: 0;
+    justify-content: space-between;
 }
 
 h1,
