@@ -1,0 +1,39 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true,
+      "public": true,
+    },
+    "markdownlint.config": {
+      "MD028": false,
+      "MD025": {
+        "front_matter_title": "",
+      },
+      "MD033": false,
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.rulers": [80, 120],
+    "prettier.enable": true,
+    "html.format.templating": true,
+    "html.format.indentHandlebars": false,
+    "html.format.wrapAttributes": "preserve",
+    "cSpell.words": [],
+  },
+  "extensions": {
+    "recommendations": [
+      "kaellarkin.hugo-shortcode-syntax",
+      "budparr.language-hugo-vscode",
+      "bierner.lit-html",
+      "esbenp.prettier-vscode",
+      "streetsidesoftware.code-spell-checker",
+    ],
+  },
+}
