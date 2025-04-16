@@ -37,10 +37,10 @@
 }
 
 .oe-home-header .oe-navigation {
-    background: linear-gradient(to bottom, black 50%, transparent 100%);
-    margin-bottom: calc(50%* -1);
+  background: linear-gradient(to bottom, black 50%, transparent 100%);
+  margin-bottom: calc(50% * -1);
 
-    a {
-      color: var(--oe-font-color-bright);
-    }
+  a {
+    color: var(--oe-font-color-bright);
+  }
 }
