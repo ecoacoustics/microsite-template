@@ -12,6 +12,7 @@
             "**/Thumbs.db": true,
             "public": true,
         },
+        "files.eol": "\n",
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
