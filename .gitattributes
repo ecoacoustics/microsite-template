@@ -34,7 +34,7 @@
 *.adoc     text
 *.textile  text
 *.mustache text
-*.csv filter=lfs diff=lfs merge=lfs -text
+*.csv      text
 *.tab      text
 *.tsv      text
 *.txt      text
