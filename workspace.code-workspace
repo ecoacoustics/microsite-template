@@ -1,8 +1,8 @@
 {
     "folders": [
         {
-            "path": "."
-        }
+            "path": ".",
+        },
     ],
     "settings": {
         "files.exclude": {
@@ -10,26 +10,33 @@
             "**/CVS": true,
             "**/.DS_Store": true,
             "**/Thumbs.db": true,
-            "public": true
+            "public": true,
         },
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
-                "front_matter_title": ""
+                "front_matter_title": "",
             },
-            "MD033": false
+            "MD033": false,
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
         "editor.rulers": [80, 120],
         "editor.tabSize": 4,
+        "prettier.tabWidth": 4,
         "prettier.enable": true,
         "html.format.templating": true,
         "html.format.indentHandlebars": false,
         "html.format.wrapAttributes": "preserve",
-        "cSpell.words": [
-            "xsmall"
-        ]
+        "[html]": {
+            "editor.suggest.insertMode": "replace",
+            // this is causing so many templating issues with auto formatting, disabled
+            // "editor.defaultFormatter": "GitHub.vscode-pull-request-github",
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "files.insertFinalNewline": false,
+            "files.trimFinalNewlines": true,
+        },
+        "cSpell.words": ["xsmall"],
     },
     "extensions": {
         "recommendations": [
@@ -37,7 +44,7 @@
             "budparr.language-hugo-vscode",
             "bierner.lit-html",
             "esbenp.prettier-vscode",
-            "streetsidesoftware.code-spell-checker"
-        ]
-    }
+            "streetsidesoftware.code-spell-checker",
+        ],
+    },
 }
