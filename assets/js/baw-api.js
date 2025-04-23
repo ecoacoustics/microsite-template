@@ -225,7 +225,7 @@ export class BawApi {
      *
      * @param {string} method
      * @param {string} url
-     * @param {object} body
+     * @param {Record<string, unknown> | null} body
      *
      * @returns {Promise<Response>}
      */
