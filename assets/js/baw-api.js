@@ -12,13 +12,23 @@ const bawApiDecisionMapping = {
 
 /**
  * A service to interact with the baw-api
+ *
+ * ## Example usage
+ * ```js
+ * const api = new BawApi("https://api.ecosounds.org");
+ * ```
  */
 export class BawApi {
     /** @param {string} host */
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
         if (!host.startsWith("http")) {
-            throw new Error("Host must start with http or https");
+            const errorMessage = `
+                Api host must start with http or https.
+                    Incorrect Example: api.ecosounds.org
+                    Correct Example: https://api.ecosounds.org
+            `;
+            throw new Error(errorMessage);
         }
 
         this.#host = host;
@@ -151,7 +161,7 @@ export class BawApi {
             const authToken = this.#authToken;
 
             const urlBase = this.#createUrl(
-                `/audio_recordings/${recordingId}/media.flac`
+                `/audio_recordings/${recordingId}/media.flac`,
             );
             const params = `?start_offset=${start}&end_offset=${end}&user_token=${authToken}`;
 
@@ -164,7 +174,12 @@ export class BawApi {
      * @returns {string}
      */
     #createUrl(path) {
-        return `${this.#host}${path}`;
+        // I use a URL constructor here so that a lot of edge cases are handled.
+        // e.g. if the user adds a trailing slash to the host, or if they forget
+        // to add the leading slash to the path will be automatically handled
+        // by the URL constructor.
+        const url = new URL(path, this.#host);
+        return url.href;
     }
 
     /**
