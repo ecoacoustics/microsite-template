@@ -1,3 +1,15 @@
+// The decisions returned by the web components are not the same as the
+// decisions recorded by the baw-api.
+// This object maps web component decisions (key) to baw-api decisions (values).
+// note: to prevent leaking internal details, this is not exported from this
+// module, so I do not expect it to be used outside of this module.
+const bawApiDecisionMapping = {
+    true: "correct",
+    false: "incorrect",
+    unsure: "unsure",
+    skip: "skip",
+};
+
 /**
  * A service to interact with the baw-api
  */
@@ -30,12 +42,7 @@ export class BawApi {
      */
     async getUserProfile() {
         const url = this.#createUrl("/my_account");
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-            },
-        });
+        const response = await this.#fetch("GET", url);
 
         const responseBody = await response.json();
         return responseBody;
@@ -43,7 +50,7 @@ export class BawApi {
 
     /**
      * @param {number} verificationId
-     * @returns {Promise<Verification>}
+     * @returns {Promise<BawVerification>}
      */
     async getVerification(verificationId) {
         const url = this.#createUrl(`/verifications/${verificationId}`);
@@ -59,25 +66,26 @@ export class BawApi {
     }
 
     /**
-     * Creates a new verification object on the server
+     * Creates a new verification object on the server if it doesn't exist,
+     * or updates the existing verification object already exists.
      *
-     * @param {Verification} model - The verification object to create
+     * @param {SubjectWrapper} model - The verification object to create
      * @returns {Promise<boolean>} - A boolean value indicating whether the verification was created successfully
      */
     async upsertVerification(model) {
+        // convert the verification model to a baw-api compatible model
+        // I do this here so that the entire app can have no knowledge of how
+        // the baw-api model records verifications and they only have to deal
+        // with the web components verification model.
+        const bawModel = this.#verificationToBawModel(model);
         const payload = {
-            verification: model,
+            verification: bawModel,
         };
 
+        // associated api controller
+        // https://github.com/QutEcoacoustics/baw-server/blob/master/app/controllers/verifications_controller.rb#L67-L79
         const url = this.#createUrl("/verifications");
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
+        const response = await this.#fetch("PUT", url, payload);
 
         return response.ok;
     }
@@ -111,14 +119,7 @@ export class BawApi {
                 paging: pagingBody,
             };
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
+            const response = await this.#fetch("POST", url, payload);
 
             const responseBody = await response.json();
             const responseMeta = responseBody.meta;
@@ -127,7 +128,8 @@ export class BawApi {
 
             // add the "tag" property to the event models
             eventModels.forEach((model) => {
-                model.tag = tag;
+                model.tag = model.taggings[0];
+                model.tag.text = tag;
             });
 
             const callbackResponse = {
@@ -163,5 +165,66 @@ export class BawApi {
      */
     #createUrl(path) {
         return `${this.#host}${path}`;
+    }
+
+    /**
+     * Converts a web component verification model to a baw-api verification
+     * model that can be committed to the servers database.
+     *
+     * This method is private so that it is transparent to the rest of the
+     * microsite.
+     * The rest of the website should be working with the web component
+     * verification model, and then this service should convert it to a baw-api
+     * compatible model only before sending it to the server.
+     *
+     * @param {SubjectWrapper} model
+     * @returns {BawVerification}
+     */
+    #verificationToBawModel(model) {
+        const apiDecision = bawApiDecisionMapping[model.verification.confirmed];
+        const tagId = model.tag.tag_id;
+
+        console.debug(model.tag);
+
+        const subject = model.subject;
+        const apiModel = {
+            audio_event_id: subject.id,
+            tag_id: tagId,
+            confirmed: apiDecision,
+        };
+
+        return apiModel;
+    }
+
+    /**
+     * A wrapped fetch() function that injects authentication information
+     * and sends the sets the content type for JSON body's.
+     *
+     * @param {string} method
+     * @param {string} url
+     * @param {object} body
+     *
+     * @returns {Promise<Response>}
+     */
+    #fetch(method, url, body = null) {
+        const headers = {
+            Accept: "application/json",
+        };
+
+        if (this.#authToken) {
+            headers["Authorization"] = `Token token=\"${this.#authToken}\"`;
+        }
+
+        // TODO: this does not support OPTION, HEAD, or DELETE requests
+        if (method !== "GET") {
+            headers["Content-Type"] = "application/json";
+            body = JSON.stringify(body);
+        }
+
+        return fetch(url, {
+            method,
+            headers,
+            body,
+        });
     }
 }

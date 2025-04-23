@@ -43,7 +43,9 @@ draft = false
 
         target.addEventListener("decision-made", (event) => {
             const decisions = event.detail;
-            console.debug(decisions[0]);
+            for (const decision of decisions) {
+                bawApi.upsertVerification(decision);
+            }
         });
     }
 
