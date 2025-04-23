@@ -1,8 +1,8 @@
 {
     "folders": [
         {
-            "path": ".",
-        },
+            "path": "."
+        }
     ],
     "settings": {
         "files.exclude": {
@@ -10,15 +10,15 @@
             "**/CVS": true,
             "**/.DS_Store": true,
             "**/Thumbs.db": true,
-            "public": true,
+            "public": true
         },
         "files.eol": "\n",
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
-                "front_matter_title": "",
+                "front_matter_title": ""
             },
-            "MD033": false,
+            "MD033": false
         },
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true,
@@ -26,6 +26,11 @@
         "editor.tabSize": 4,
         "prettier.tabWidth": 4,
         "prettier.enable": true,
+        // attempt to wrap lines at 80 characters (the first ruler)
+        // I have explicitly added this to the workspace because prettier is
+        // installed globally, and I don't want different computer environments
+        // to have different prettier settings
+        "prettier.printWidth": 80,
         "html.format.templating": true,
         "html.format.indentHandlebars": false,
         "html.format.wrapAttributes": "preserve",
@@ -35,9 +40,9 @@
             // "editor.defaultFormatter": "GitHub.vscode-pull-request-github",
             "editor.defaultFormatter": "esbenp.prettier-vscode",
             "files.insertFinalNewline": false,
-            "files.trimFinalNewlines": true,
+            "files.trimFinalNewlines": true
         },
-        "cSpell.words": ["xsmall"],
+        "cSpell.words": ["xsmall"]
     },
     "extensions": {
         "recommendations": [
@@ -46,6 +51,7 @@
             "bierner.lit-html",
             "esbenp.prettier-vscode",
             "streetsidesoftware.code-spell-checker",
-        ],
-    },
+            "tamasfe.even-better-toml"
+        ]
+    }
 }

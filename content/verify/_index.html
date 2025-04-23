@@ -8,12 +8,22 @@ draft = false
     src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components/dist/components.js"
 ></script>
 
-<sl-input
-    id="auth-token-input"
-    type="password"
-    label="Authentication Token"
-    password-toggle
-></sl-input>
+<div>
+    <sl-input
+        id="auth-token-input"
+        type="password"
+        label="Authentication Token"
+        password-toggle
+    ></sl-input>
+
+    <p>
+        You can find your authentication token by navigating to
+        <a href="https://staging.ecosounds.org/my_account" target="_blank">
+            staging.ecosounds.org/my_account
+        </a>
+        and clicking on the "Copy" icon on the bottom left of the page.
+    </p>
+</div>
 
 <oe-verification-grid id="verification-grid" grid-size="1">
     <oe-verification verified="true" shortcut="y">Yes</oe-verification>
@@ -23,43 +33,53 @@ draft = false
 
 <script type="module">
     import { BawApi } from "/js/baw-api.js";
-    let bawApi = new BawApi("https://api.staging.ecosounds.org");
 
-    async function handleDecision(model) {
-        await this.api.upsertVerification();
-    }
+    let bawApi = new BawApi("https://api.staging.ecosounds.org");
+    const gridElements = document.querySelectorAll("oe-verification-grid");
 
     async function bootstrapVerificationGrid(target) {
-        const callback = await bawApi.eventCallback("Willie Wagtail");
+        const callback = await bawApi.eventCallback("Abbott's Babbler");
         target.getPage = callback;
-        updateUrlTransformer(target);
 
-        target.addEventListener("decision-made", (decision) => {
-            handleDecision(decision);
+        target.addEventListener("decision-made", (event) => {
+            const decisions = event.detail;
+            console.debug(decisions[0]);
         });
     }
 
     async function updateUrlTransformers() {
-        const targets = document.querySelectorAll("oe-verification-grid");
-        for (const element of targets) {
+        for (const element of gridElements) {
             element.urlTransformer = bawApi.createUrlTransformer();
+
+            // restart the verification task to explicitly reset the
+            // verification task back to the start and regenerate all of the
+            // spectrograms.
+            //
+            // TODO: Remove this hack once upstream bugs are fixed
+            // see: https://github.com/ecoacoustics/web-components/issues/333
             element.subjects = [];
         }
     }
 
     async function setup() {
-        const targets = document.querySelectorAll("oe-verification-grid");
-        for (const element of targets) {
+        for (const element of gridElements) {
             bootstrapVerificationGrid(element);
         }
+        updateUrlTransformers();
 
         const authElement = document.getElementById("auth-token-input");
         authElement.addEventListener("sl-change", (event) => {
             const value = event.target.value;
-            bawApi.setAuthToken = value;
+            bawApi.authToken = value;
             updateUrlTransformers();
         });
     }
 
     setup();
 </script>
+
+<style>
+    #auth-token-input {
+        margin-bottom: 1rem;
+    }
+</style>
