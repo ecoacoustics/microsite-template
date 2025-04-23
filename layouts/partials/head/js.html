@@ -27,3 +27,21 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{/* 
+  TODO: We should create a separate layout for pages that have a verification
+  grid so that we don't have to import the verification grid bootstrap script
+  on every page.
+*/}}
+{{- with resources.Get "js/bootstrap-verification-grid.js" }}
+  {{- if eq hugo.Environment "development" }}
+    {{- with . }}
+      <script src="{{ .RelPermalink }}" type="module"></script>
+    {{- end }}
+  {{- else }}
+    {{- $opts := dict "minify" true }}
+    {{- with . | fingerprint }}
+      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
+  {{- end }}
+{{- end }}
