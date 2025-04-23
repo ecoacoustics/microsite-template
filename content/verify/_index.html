@@ -21,39 +21,45 @@ draft = false
 </oe-verification-grid>
 <oe-data-source for="verification-grid"></oe-data-source>
 
-<script>
-    (async () => {
-        const api = await import("/js/baw-api.js");
-        let bawApi = new api.BawApi("https://api.staging.ecosounds.org");
+<script type="module">
+    import { BawApi } from "/js/baw-api.js";
+    let bawApi = new BawApi("https://api.staging.ecosounds.org");
+
+    async function handleDecision(model) {
+        await this.api.upsertVerification();
+    }
+
+    async function bootstrapVerificationGrid(target) {
+        const callback = await bawApi.eventCallback("Willie Wagtail");
+        target.getPage = callback;
+        updateUrlTransformer(target);
+
+        target.addEventListener("decision-made", (decision) => {
+            handleDecision(decision);
+        });
+    }
+
+    async function updateUrlTransformers() {
+        const targets = document.querySelectorAll("oe-verification-grid");
+        for (const element of targets) {
+            element.urlTransformer = bawApi.createUrlTransformer();
+            element.subjects = [];
+        }
+    }
+
+    async function setup() {
+        const targets = document.querySelectorAll("oe-verification-grid");
+        for (const element of targets) {
+            bootstrapVerificationGrid(element);
+        }
 
         const authElement = document.getElementById("auth-token-input");
         authElement.addEventListener("sl-change", (event) => {
-            console.debug(event);
+            const value = event.target.value;
+            bawApi.setAuthToken = value;
+            updateUrlTransformers();
         });
+    }
 
-        async function bootstrapVerificationGrid(target) {
-            const callback = await bawApi.getEvents("Willie Wagtail");
-            target.getPage = callback;
-            target.urlTransformer = bawApi.createUrlTransformer();
-
-            target.addEventListener("decision-made", (decision) => {
-                handleDecision(decision);
-            });
-        }
-
-        async function handleDecision(model) {
-            await this.api.upsertVerification();
-        }
-
-        async function setup() {
-            const verificationGrids = document.querySelectorAll(
-                "oe-verification-grid"
-            );
-            for (const element of verificationGrids) {
-                bootstrapVerificationGrid(element);
-            }
-        }
-
-        await setup();
-    })();
+    setup();
 </script>

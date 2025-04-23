@@ -36,7 +36,7 @@ export class BawApi {
      * @param {string} tag
      * @returns {Promise<AudioEvent[]>}
      */
-    async getEvents(tag) {
+    async eventCallback(tag) {
         const url = this.createUrl("/audio_events/filter");
 
         const filterBody = {
