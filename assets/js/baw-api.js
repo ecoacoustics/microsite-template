@@ -44,9 +44,18 @@ export class BawApi {
 
     /** @type {string} */
     #host;
+
     /** @type {number} */
     #page = 1;
-    /** @type {string | null} */
+
+    /**
+     * An authentication token that will be added to all API requests.
+     * If you want to set the auth token, you can use the "authToken" setter.
+     *
+     * If no auth token has been provided, the #authToken will be set to null.
+     *
+     * @type {string | null}
+     */
     #authToken = null;
 
     /** @param {string} value */
@@ -55,8 +64,13 @@ export class BawApi {
     }
 
     /**
-     * Fetches the current users profile from the API
-     * @returns {Promise<User>}
+     * Fetches the current users profile from the API.
+     * Calling this method requires an authentication token to be set.
+     *
+     * If no authentication token is set, or the authentication token is
+     * invalid, this method will return "null".
+     *
+     * @returns {Promise<User | null>}
      */
     async getUserProfile() {
         const url = this.#createUrl("/my_account");
@@ -67,8 +81,13 @@ export class BawApi {
     }
 
     /**
+     * Uses a verification model id to fetch the verification object from the
+     * baw-api.
+     * If there is no verification object with the given id, this method will
+     * return null.
+     *
      * @param {number} verificationId
-     * @returns {Promise<BawVerification>}
+     * @returns {Promise<BawVerification | null>}
      */
     async getVerification(verificationId) {
         const url = this.#createUrl(`/verifications/${verificationId}`);
