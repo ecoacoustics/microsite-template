@@ -12,10 +12,18 @@ const bawApiDecisionMapping = {
 
 /**
  * A service to interact with the baw-api
+ * Note: When contacting the baw-api, a lot of endpoints require authentication
+ * therefore it is recommended that you set the authToken property before
+ * calling any of the methods.
  *
  * ## Example usage
+ *
  * ```js
  * const api = new BawApi("https://api.ecosounds.org");
+ *  api.authToken = "your-auth-token";
+ *
+ * const user = await api.getUserProfile();
+ * const verification = await api.getVerification(123);
  * ```
  */
 export class BawApi {
