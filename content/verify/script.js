@@ -34,9 +34,15 @@ async function setup() {
     for (const element of gridElements) {
         bootstrapVerificationGrid(element);
     }
-    updateUrlTransformers();
 
     const authElement = document.getElementById("auth-token-input");
+
+    // This sl-change event will only trigger when enter is pressed.
+    // I created this UI to test and serve as an example on how to use the
+    // BawApi service.
+    //
+    // TODO: when we refactor the authentication UI, we might want to use a
+    // html <form> element and listen for a submit event instead.
     authElement.addEventListener("sl-change", (event) => {
         const value = event.target.value;
         bawApi.authToken = value;

@@ -226,8 +226,6 @@ export class BawApi {
         const apiDecision = bawApiDecisionMapping[model.verification.confirmed];
         const tagId = model.tag.tag_id;
 
-        console.debug(model.tag);
-
         const subject = model.subject;
         const apiModel = {
             audio_event_id: subject.id,
