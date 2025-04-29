@@ -53,6 +53,7 @@
             "esbenp.prettier-vscode",
             "streetsidesoftware.code-spell-checker",
             "tamasfe.even-better-toml",
+            "dbaeumer.vscode-eslint",
         ]
     }
 }

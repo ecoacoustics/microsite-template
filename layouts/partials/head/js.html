@@ -33,7 +33,7 @@
   grid so that we don't have to import the verification grid bootstrap script
   on every page.
 */}}
-{{- with resources.Get "js/bootstrap-verification-grid.js" }}
+{{- with resources.Get "js/bootstrapVerificationGrid.js" }}
   {{- if eq hugo.Environment "development" }}
     {{- with . }}
       <script src="{{ .RelPermalink }}" type="module"></script>

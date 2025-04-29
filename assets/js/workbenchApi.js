@@ -45,9 +45,6 @@ export class WorkbenchApi {
     /** @type {string} */
     #host;
 
-    /** @type {number} */
-    #page = 1;
-
     /**
      * An authentication token that will be added to all API requests.
      * If you want to set the auth token, you can use the "authToken" setter.
@@ -131,9 +128,9 @@ export class WorkbenchApi {
      * Fetches a verification object from the API
      *
      * @param {string} tag
-     * @returns {Promise<AudioEvent[]>}
+     * @returns {() => Promise<AudioEvent[]>}
      */
-    async eventCallback(tag) {
+    async getVerificationCallback(tag) {
         const url = this.#createUrl("/audio_events/filter");
 
         const filterBody = {
@@ -142,13 +139,16 @@ export class WorkbenchApi {
             },
         };
 
+        // we wrap the "page" variable in a closure so that only this callback
+        // is stateful and the service can remain stateless.
+        let page = 0;
         return async () => {
             const pagingBody = {
-                page: this.#page,
                 // I hard-locked the page size to 25 so that (if for some
                 // reason) there is an api update that changes the page size
                 // while the user is verifying results, nothing will break
                 items: 25,
+                page,
             };
 
             const payload = {
@@ -179,12 +179,23 @@ export class WorkbenchApi {
         };
     }
 
-    /** @returns {string} */
-    createMediaUrlGenerator() {
-        return (_, model) => {
-            const recordingId = model.audio_recording_id;
-            const start = model.start_time_seconds;
-            const end = model.end_time_seconds;
+    /**
+     * @description
+     * Creates a callback that can be used by the oe-verification-grid
+     * components `urlTransformer` property.
+     * This URL converts a subject model (AudioEvent) into a baw-api endpoint
+     * to download the segment of audio referenced in the audio event.
+     *
+     * This callback is defined in the web components subjectParser
+     * @see https://github.com/ecoacoustics/web-components/blob/eb0c366/src/services/subjectParser.ts#L10
+     *
+     * @returns {() => string}
+     */
+    createMediaUrlTransformer() {
+        return (_url, subject) => {
+            const recordingId = subject.audio_recording_id;
+            const start = subject.start_time_seconds;
+            const end = subject.end_time_seconds;
             const authToken = this.#authToken;
 
             const urlBase = this.#createUrl(

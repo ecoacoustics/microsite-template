@@ -5,12 +5,21 @@ const gridElements = document.querySelectorAll("oe-verification-grid");
 
 async function bootstrapVerificationGrid(target) {
     // TODO: this event name should be inlined by the microsite config
-    const callback = await workbenchApi.eventCallback("Abbott's Babbler");
+    const callback = await workbenchApi.getVerificationCallback("Abbott's Babbler");
     target.getPage = callback;
 
     target.addEventListener("decision-made", (event) => {
         const decisions = event.detail;
         for (const decision of decisions) {
+            // Each call to "upsertVerification" is an async fire and forget
+            // call to the api.
+            // Each request is an un-awaited async method call so that it
+            // doesn't lock up the main thread and freeze the website when an
+            // api call is made.
+            //
+            // If an upsert request errors or fails to be applied, there is no
+            // retry logic, and the verification will fail to commit to the
+            // database.
             workbenchApi.upsertVerification(decision);
         }
     });
@@ -18,7 +27,7 @@ async function bootstrapVerificationGrid(target) {
 
 async function updateUrlTransformers() {
     for (const element of gridElements) {
-        element.urlTransformer = workbenchApi.createUrlTransformer();
+        element.urlTransformer = workbenchApi.createMediaUrlTransformer();
 
         // restart the verification task to explicitly reset the
         // verification task back to the start and regenerate all of the
