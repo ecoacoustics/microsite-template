@@ -58,7 +58,7 @@ export class BawApi {
      */
     #authToken = null;
 
-    /** @param {string} value */
+    /** @param {string | null} value */
     set authToken(value) {
         this.#authToken = value;
     }
@@ -180,7 +180,7 @@ export class BawApi {
     }
 
     /** @returns {string} */
-    createUrlTransformer() {
+    createMediaUrlGenerator() {
         return (_, model) => {
             const recordingId = model.audio_recording_id;
             const start = model.start_time_seconds;
@@ -245,6 +245,10 @@ export class BawApi {
      * @returns {Promise<Response>}
      */
     #fetch(method, url, body = null) {
+        if (method !== "GET" || method !== "POST") {
+            throw new Error(`Fetch method: '${method}' is not supported by the baw-api service.`);
+        }
+
         const headers = {
             Accept: "application/json",
         };
