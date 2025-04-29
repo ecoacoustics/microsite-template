@@ -213,8 +213,6 @@ export class BawApi {
      * Converts a web component verification model to a baw-api verification
      * model that can be committed to the servers database.
      *
-     * This method is private so that it is transparent to the rest of the
-     * microsite.
      * The rest of the website should be working with the web component
      * verification model, and then this service should convert it to a baw-api
      * compatible model only before sending it to the server.
