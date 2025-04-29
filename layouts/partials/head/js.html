@@ -11,11 +11,11 @@
   {{- end }}
 {{- end }}
 
-{{- with resources.Get "js/baw-api.js" }}
+{{- with resources.Get "js/workbenchApi.js" }}
   {{- if eq hugo.Environment "development" }}
     {{- with . }}
       {{/*
-        We load the baw-api as a module because is uses the esmodule
+        We load the workbenchApi as a module because is uses the esmodule
         import/export syntax
       */}}
       <script src="{{ .RelPermalink }}" type="module"></script>

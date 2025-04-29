@@ -19,14 +19,14 @@ const bawApiDecisionMapping = {
  * ## Example usage
  *
  * ```js
- * const api = new BawApi("https://api.ecosounds.org");
+ * const api = new WorkbenchApi("https://api.ecosounds.org");
  *  api.authToken = "your-auth-token";
  *
  * const user = await api.getUserProfile();
  * const verification = await api.getVerification(123);
  * ```
  */
-export class BawApi {
+export class WorkbenchApi {
     /** @param {string} host */
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
