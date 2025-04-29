@@ -1,11 +1,20 @@
-import { WorkbenchApi } from "/js/baw-api.js";
+import { WorkbenchApi } from "/js/workbenchApi.js";
 
 let workbenchApi = new WorkbenchApi("https://api.staging.ecosounds.org");
 const gridElements = document.querySelectorAll("oe-verification-grid");
 
-async function bootstrapVerificationGrid(target) {
-    // TODO: this event name should be inlined by the microsite config
-    const callback = await workbenchApi.getVerificationCallback("Abbott's Babbler");
+/**
+ * @description
+ * Prepares a verification grid with the necessary config to contact the
+ * baw-api and perform verification tasks.
+ *
+ * @param {VerificationGridComponent} target
+ * @param {Record<string, unknown>} filterBody
+ */
+async function bootstrapVerificationGrid(target, filterBody) {
+    // TODO: this event name and filter body should be pulled from the microsite
+    // config file
+    const callback = await workbenchApi.getVerificationCallback(filterBody);
     target.getPage = callback;
 
     target.addEventListener("decision-made", (event) => {
@@ -25,23 +34,37 @@ async function bootstrapVerificationGrid(target) {
     });
 }
 
-async function updateUrlTransformers() {
-    for (const element of gridElements) {
-        element.urlTransformer = workbenchApi.createMediaUrlTransformer();
+/**
+ * @description
+ * Updates the verification grids urlTransformer which is used to add auth
+ * tokens when downloading audio files.
+ * This resets the verification grid task because a different user may have
+ * access to different audio events or audio files.
+ *
+ * @param {VerificationGridComponent} target
+ */
+async function updateUrlTransformers(target) {
+    target.urlTransformer = workbenchApi.createMediaUrlTransformer();
 
-        // restart the verification task to explicitly reset the
-        // verification task back to the start and regenerate all of the
-        // spectrograms.
-        //
-        // TODO: Remove this hack once upstream bugs are fixed
-        // see: https://github.com/ecoacoustics/web-components/issues/333
-        element.subjects = [];
-    }
+    // restart the verification task to explicitly reset the
+    // verification task back to the start and regenerate all of the
+    // spectrograms.
+    //
+    // TODO: Remove this hack once upstream bugs are fixed
+    // see: https://github.com/ecoacoustics/web-components/issues/333
+    target.subjects = [];
 }
 
 async function setup() {
     for (const element of gridElements) {
-        bootstrapVerificationGrid(element);
+        // TODO: remove this temporary filter body once the microsite config
+        // supports defining a filter body
+        const tempFilterBody = {
+            "tags.text": {
+                eq: "Abbott's Babbler",
+            },
+        };
+        bootstrapVerificationGrid(element, tempFilterBody);
     }
 
     const authElement = document.getElementById("auth-token-input");
@@ -55,7 +78,10 @@ async function setup() {
     authElement.addEventListener("sl-change", (event) => {
         const value = event.target.value;
         workbenchApi.authToken = value;
-        updateUrlTransformers();
+
+        for (const invalidatedGrid of gridElements) {
+            updateUrlTransformers(invalidatedGrid);
+        }
     });
 }
 

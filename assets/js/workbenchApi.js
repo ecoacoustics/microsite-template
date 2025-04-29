@@ -78,6 +78,18 @@ export class WorkbenchApi {
     }
 
     /**
+     * @param {number} tagId
+     * @returns {Promise<Tag | null>}
+     */
+    async getTag(tagId) {
+        const url = this.#createUrl(`/tags/${tagId}`);
+        const response = await this.#fetch("GET", url)
+
+        const responseBody = await response.json();
+        return responseBody;
+    }
+
+    /**
      * Uses a verification model id to fetch the verification object from the
      * baw-api.
      * If there is no verification object with the given id, this method will
@@ -88,12 +100,7 @@ export class WorkbenchApi {
      */
     async getVerification(verificationId) {
         const url = this.#createUrl(`/verifications/${verificationId}`);
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-            },
-        });
+        const response = await this.#fetch("GET", url);
 
         const responseBody = await response.json();
         return responseBody;
@@ -130,18 +137,12 @@ export class WorkbenchApi {
      * @param {string} tag
      * @returns {() => Promise<AudioEvent[]>}
      */
-    async getVerificationCallback(tag) {
+    async getVerificationCallback(filterBody) {
         const url = this.#createUrl("/audio_events/filter");
-
-        const filterBody = {
-            "tags.text": {
-                eq: tag,
-            },
-        };
 
         // we wrap the "page" variable in a closure so that only this callback
         // is stateful and the service can remain stateless.
-        let page = 0;
+        let page = 1;
         return async () => {
             const pagingBody = {
                 // I hard-locked the page size to 25 so that (if for some
@@ -163,11 +164,21 @@ export class WorkbenchApi {
             const eventModels = responseBody.data;
             const gridContext = {};
 
-            // add the "tag" property to the event models
-            eventModels.forEach((model) => {
-                model.tag = model.taggings[0];
-                model.tag.text = tag;
+            // add a "tag" model to every subject by fetching the tag of
+            // interest
+            const associatedModelPromises = eventModels.map(async (model) => {
+                const taggings = model.taggings;
+                if (taggings.length < 1) {
+                    return;
+                }
+
+                const tagOfInterest = taggings[0];
+                const tag = await this.getTag(tagOfInterest.tag_id)
+
+                model.tag = tag.data;
             });
+
+            await Promise.allSettled(associatedModelPromises);
 
             const callbackResponse = {
                 subjects: eventModels,
@@ -182,9 +193,9 @@ export class WorkbenchApi {
     /**
      * @description
      * Creates a callback that can be used by the oe-verification-grid
-     * components `urlTransformer` property.
+     * components `urlTransformer` .
      * This URL converts a subject model (AudioEvent) into a baw-api endpoint
-     * to download the segment of audio referenced in the audio event.
+     * to download the segment of audio referenced by the audio event.
      *
      * This callback is defined in the web components subjectParser
      * @see https://github.com/ecoacoustics/web-components/blob/eb0c366/src/services/subjectParser.ts#L10
@@ -192,6 +203,9 @@ export class WorkbenchApi {
      * @returns {() => string}
      */
     createMediaUrlTransformer() {
+        // the "url" is not used in this callback because the original subject
+        // model (AudioEvent model) does not have any of the "url" fields
+        // supported by the web components.
         return (_url, subject) => {
             const recordingId = subject.audio_recording_id;
             const start = subject.start_time_seconds;
@@ -205,19 +219,6 @@ export class WorkbenchApi {
 
             return urlBase + params;
         };
-    }
-
-    /**
-     * @param {string} path
-     * @returns {string}
-     */
-    #createUrl(path) {
-        // I use a URL constructor here so that a lot of edge cases are handled.
-        // e.g. if the user adds a trailing slash to the host, or if they forget
-        // to add the leading slash to the path will be automatically handled
-        // by the URL constructor.
-        const url = new URL(path, this.#host);
-        return url.href;
     }
 
     /**
@@ -246,6 +247,19 @@ export class WorkbenchApi {
     }
 
     /**
+     * @param {string} path
+     * @returns {string}
+     */
+    #createUrl(path) {
+        // I use a URL constructor here so that a lot of edge cases are handled.
+        // e.g. if the user adds a trailing slash to the host, or if they forget
+        // to add the leading slash to the path will be automatically handled
+        // by the URL constructor.
+        const url = new URL(path, this.#host);
+        return url.href;
+    }
+
+    /**
      * A wrapped fetch() function that injects authentication information
      * and sends the sets the content type for JSON body's.
      *
@@ -256,7 +270,12 @@ export class WorkbenchApi {
      * @returns {Promise<Response>}
      */
     #fetch(method, url, body = null) {
-        if (method !== "GET" || method !== "POST") {
+        if (
+            method !== "GET" &&
+            method !== "POST" &&
+            method !== "PUT" &&
+            method !== "PATCH"
+        ) {
             throw new Error(`Fetch method: '${method}' is not supported by the baw-api service.`);
         }
 
