@@ -83,6 +83,12 @@ body section {
     flex-direction: row-reverse;
   }
 }
+
+/*----- Spectrogram Cards -----*/
+.oe-spectrogram-card-text {
+    padding-top: var(--oe-padding-small);
+}
+
 /*----- Smaller screen styles -----*/
 @media (max-width: 1024px) {
     .oe-hero-title {
