@@ -9,7 +9,7 @@ draft = false
     Female
     </div>
     <div class="oe-spectrogram">
-        <oe-axes x-title="Time (Seconds)" y-title="Frequency (KHz)">
+        <oe-axes>
             <oe-indicator>
                 <oe-spectrogram
                 id="spectrogram-1"
@@ -29,7 +29,7 @@ draft = false
     Male
     </div>
     <div class="oe-spectrogram">
-        <oe-axes x-title="Time (Seconds)" y-title="Frequency (KHz)">
+        <oe-axes>
             <oe-indicator>
                 <oe-spectrogram
                 id="spectrogram-2"
@@ -49,7 +49,7 @@ draft = false
     Young Female
     </div>
     <div class="oe-spectrogram">
-        <oe-axes x-title="Time (Seconds)" y-title="Frequency (KHz)">
+        <oe-axes>
             <oe-indicator>
                 <oe-spectrogram
                 id="spectrogram-3"
