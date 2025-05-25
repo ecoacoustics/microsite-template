@@ -12,6 +12,7 @@
             "**/Thumbs.db": true,
             "public": true,
         },
+        "files.eol": "\n",
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
@@ -25,6 +26,12 @@
         "editor.tabSize": 4,
         "prettier.tabWidth": 4,
         "prettier.enable": true,
+        "prettier.trailingComma": "all",
+        // attempt to wrap lines at 80 characters (the first ruler)
+        // I have explicitly added this to the workspace because this project
+        // installs prettier globally, and I don't want different computer
+        // environments to have different prettier settings
+        "prettier.printWidth": 80,
         "html.format.templating": true,
         "html.format.indentHandlebars": false,
         "html.format.wrapAttributes": "preserve",
@@ -36,7 +43,7 @@
             "files.insertFinalNewline": false,
             "files.trimFinalNewlines": true,
         },
-        "cSpell.words": ["xsmall"],
+        "cSpell.words": ["xsmall", "microsite", "taggings"],
     },
     "extensions": {
         "recommendations": [
@@ -45,6 +52,8 @@
             "bierner.lit-html",
             "esbenp.prettier-vscode",
             "streetsidesoftware.code-spell-checker",
-        ],
-    },
+            "tamasfe.even-better-toml",
+            "dbaeumer.vscode-eslint",
+        ]
+    }
 }

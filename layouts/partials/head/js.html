@@ -10,7 +10,38 @@
     {{- end }}
   {{- end }}
 {{- end }}
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components/dist/components.js"
-></script>
+
+{{- with resources.Get "js/workbenchApi.js" }}
+  {{- if eq hugo.Environment "development" }}
+    {{- with . }}
+      {{/*
+        We load the workbenchApi as a module because is uses the esmodule
+        import/export syntax
+      */}}
+      <script src="{{ .RelPermalink }}" type="module"></script>
+    {{- end }}
+  {{- else }}
+    {{- $opts := dict "minify" true }}
+    {{- with . | fingerprint }}
+      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{/* 
+  TODO: We should create a separate layout for pages that have a verification
+  grid so that we don't have to import the verification grid bootstrap script
+  on every page.
+*/}}
+{{- with resources.Get "js/bootstrapVerificationGrid.js" }}
+  {{- if eq hugo.Environment "development" }}
+    {{- with . }}
+      <script src="{{ .RelPermalink }}" type="module"></script>
+    {{- end }}
+  {{- else }}
+    {{- $opts := dict "minify" true }}
+    {{- with . | fingerprint }}
+      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
+  {{- end }}
+{{- end }}
