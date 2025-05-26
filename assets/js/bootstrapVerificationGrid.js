@@ -66,6 +66,10 @@ async function setup() {
 
         // Find the corresponding campaign configuration from hugo.yaml
         const campaign = campaigns.find(c => c.name === campaignName);
+        if (!campaign) {
+        	console.error(`No matching campaign found for ${campaignName}`);
+        	continue;
+        }
 
         // Extract the filter settings from the campaign configuration (hugo.yaml)
         const filterBody = campaign?.filter?.filter;
