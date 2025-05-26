@@ -26,7 +26,7 @@ menus:
 params:
   campaign:
     - name: "Powerful Owl"
-      filter:
+      filters:
         filter:
           tags.text:
             eq: "Powerful Owl"
