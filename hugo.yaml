@@ -24,6 +24,7 @@ menus:
       pageRef: /about
       weight: 10
 params:
+  campaign:
     - name: "Powerful Owl"
       filter:
         filter:
