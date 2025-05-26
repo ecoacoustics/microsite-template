@@ -55,19 +55,29 @@ async function updateUrlTransformers(target) {
     target.subjects = [];
 }
 
-async function setup() {
-    for (const element of gridElements) {
-        // TODO: remove this temporary filter body once the microsite config
-        // supports defining a filter body
-        const tempFilterBody = {
-            "tags.text": {
-                eq: "Abbott's Babbler",
-            },
-        };
-        bootstrapVerificationGrid(element, tempFilterBody);
-    }
 
-    const authElement = document.getElementById("auth-token-input");
+async function setup() {
+
+    const campaigns = window.siteParams?.campaign || [];
+
+    gridElements.forEach((element) => {
+        // Retrieve the campaign name from the web component set in HTML/MD
+        const campaignName = element.dataset.campaign;
+
+        // Find the corresponding campaign configuration from hugo.yaml
+        const campaign = campaigns.find(c => c.name === campaignName);
+
+        // Extract the filter settings from the campaign configuration (hugo.yaml)
+        const filterBody = campaign?.filter?.filter;
+
+        if (filterBody) {
+            // Initialize the verification grid with the filter settings
+            bootstrapVerificationGrid(element, filterBody);
+        } else {
+            console.warn(`No matching campaign found for ${campaignName}`);
+        }
+    });
+
 
     // This sl-change event will only trigger when enter is pressed.
     // I created this UI to test and serve as an example on how to use the
@@ -75,6 +85,8 @@ async function setup() {
     //
     // TODO: when we refactor the authentication UI, we might want to use a
     // html <form> element and listen for a submit event instead.
+    const authElement = document.getElementById("auth-token-input");
+
     authElement.addEventListener("sl-change", (event) => {
         const value = event.target.value;
         workbenchApi.authToken = value;
