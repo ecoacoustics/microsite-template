@@ -69,13 +69,13 @@ async function setup() {
 
         // Extract the filter settings from the campaign configuration (hugo.yaml)
         const filterBody = campaign?.filter?.filter;
-
-        if (filterBody) {
-            // Initialize the verification grid with the filter settings
-            bootstrapVerificationGrid(element, filterBody);
-        } else {
-            console.warn(`No matching campaign found for ${campaignName}`);
+        if (!filterBody) {
+        	console.error(`Campaign ${campaign} does not have a filter body`);
+        	continue;
         }
+
+        // Initialize the verification grid with the filter settings
+        bootstrapVerificationGrid(element, filterBody);
     });
 
 
