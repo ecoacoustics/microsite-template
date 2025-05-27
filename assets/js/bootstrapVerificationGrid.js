@@ -59,6 +59,16 @@ async function updateUrlTransformers(target) {
 async function setup() {
 
     const campaigns = window.siteParams?.campaign || [];
+    // This guard condition is not exhaustive because it doesn't check every
+    // element in the "campaigns" array.
+    if (
+    	!Array.isArray(campaigns) ||
+    	campaigns.length === 0 ||
+    	typeof campaigns[0] !== "string"
+    ) {
+    	console.error("'Campaigns' must be an array of strings");
+    	return;
+    }
 
     gridElements.forEach((element) => {
         // Retrieve the campaign name from the web component set in HTML/MD
