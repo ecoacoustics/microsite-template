@@ -82,7 +82,7 @@ async function setup() {
         }
 
         // Extract the filter settings from the campaign configuration (hugo.yaml)
-        const filterBody = campaign?.filter?.filter;
+        const filterBody = campaign.filters;
         if (!filterBody) {
         	console.error(`Campaign ${campaign} does not have a filter body`);
         	continue;
