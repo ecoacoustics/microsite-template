@@ -1,3 +1,10 @@
+<script>
+    {{/*
+    Making hugo.yaml site params accessible through Json
+  */}}
+  window.siteParams = {{ site.Params | jsonify | safeJS }};
+</script>
+
 {{- with resources.Get "js/main.js" }}
   {{- if eq hugo.Environment "development" }}
     {{- with . | js.Build }}

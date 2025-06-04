@@ -55,20 +55,45 @@ async function updateUrlTransformers(target) {
     target.subjects = [];
 }
 
+
 async function setup() {
-    for (const element of gridElements) {
-        // TODO: remove this temporary filter body once the microsite config
-        // supports defining a filter body
-        const tempFilterBody = {
-            "tags.text": {
-                eq: "Abbott's Babbler",
-            },
-        };
-        bootstrapVerificationGrid(element, tempFilterBody);
+
+    const campaigns = window.siteParams?.campaign || [];
+    // This guard condition is not exhaustive because it doesn't check every
+    // element in the "campaigns" array.
+    if (
+    	!Array.isArray(campaigns) ||
+    	campaigns.length === 0 ||
+    	typeof campaigns[0] !== "string"
+    ) {
+    	console.error("'Campaigns' must be an array of strings");
+    	return;
     }
 
-    const authElement = document.getElementById("auth-token-input");
+    gridElements.forEach((element) => {
+        // Retrieve the campaign name from the web component set in HTML/MD
+        const campaignName = element.dataset.campaign;
 
+        // Find the corresponding campaign configuration from hugo.yaml
+        const campaign = campaigns.find(c => c.name === campaignName);
+        if (!campaign) {
+        	console.error(`No matching campaign found for ${campaignName}`);
+        	continue;
+        }
+
+        // Extract the filter settings from the campaign configuration (hugo.yaml)
+        const filterBody = campaign.filters;
+        if (!filterBody) {
+        	console.error(`Campaign ${campaign} does not have a filter body`);
+        	continue;
+        }
+
+        // Initialize the verification grid with the filter settings
+        bootstrapVerificationGrid(element, filterBody);
+    });
+
+    const authElement = document.getElementById("auth-token-input");
+    
     // This sl-change event will only trigger when enter is pressed.
     // I created this UI to test and serve as an example on how to use the
     // BawApi service.
