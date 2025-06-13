@@ -24,6 +24,7 @@
         "editor.tabSize": 4,
         "editor.insertSpaces": true,
         "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "prettier.tabWidth": 4,
         "prettier.trailingComma": "all",
         // attempt to wrap lines at 80 characters (the first ruler)
@@ -35,14 +36,15 @@
         "html.format.indentHandlebars": false,
         "html.format.wrapAttributes": "preserve",
         "[html]": {
+            // We disable the prettier for html and markdown files because it
+            // doesn't work nicely with hugo templates.
+            "editor.defaultFormatter": null,
             "editor.suggest.insertMode": "replace",
             "files.insertFinalNewline": false,
             "files.trimFinalNewlines": true
         },
-        // We only use prettier for javascript and css files because prettier
-        // doesn't work nicely with hugo templates.
-        "[javascript]": {
-            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "[md]": {
+            "editor.defaultFormatter": null
         },
         "cSpell.words": ["xsmall", "microsite", "taggings"]
     },
