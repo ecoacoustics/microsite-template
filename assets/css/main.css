@@ -7,12 +7,10 @@
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
 :root {
-    --theme-color-raw: {{ .Site.Params.style.ThemeColor }};
     /* Shoelace Overrides */
     {{ range $key, $value := .Site.Params.style.ThemeShades }}
     --sl-color-primary-{{ $key }}: rgb({{ $value }});
     {{ end }}
-
 
     /*
       These destructured hsl theming variables are needed to style the web
@@ -20,9 +18,15 @@
 
       see: https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css#L28-L30
     */
-    --oe-theme-hue: {{ .Site.Params.style.ThemeColorHsl.hue }} !important;
-    --oe-theme-saturation: {{ .Site.Params.style.ThemeColorHsl.saturation }} !important;
-    --oe-theme-lightness: {{ .Site.Params.style.ThemeColorHsl.lightness }} !important;
+    --oe-theme-hue: {{ .Site.Params.style.ThemeColor.hue }} !important;
+    --oe-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }} !important;
+    --oe-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }} !important;
+
+    --theme-color-raw: hsl(
+      var(--oe-theme-hue)
+      var(--oe-theme-saturation)
+      var(--oe-theme-lightness)
+    );
 }
 
 :root {
