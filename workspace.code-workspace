@@ -1,8 +1,8 @@
 {
     "folders": [
         {
-            "path": ".",
-        },
+            "path": "."
+        }
     ],
     "settings": {
         "files.exclude": {
@@ -10,22 +10,22 @@
             "**/CVS": true,
             "**/.DS_Store": true,
             "**/Thumbs.db": true,
-            "public": true,
+            "public": true
         },
         "files.eol": "\n",
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
-                "front_matter_title": "",
+                "front_matter_title": ""
             },
-            "MD033": false,
+            "MD033": false
         },
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true,
         "editor.rulers": [80, 120],
         "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "prettier.tabWidth": 4,
-        "prettier.enable": true,
         "prettier.trailingComma": "all",
         // attempt to wrap lines at 80 characters (the first ruler)
         // I have explicitly added this to the workspace because this project
@@ -36,14 +36,14 @@
         "html.format.indentHandlebars": false,
         "html.format.wrapAttributes": "preserve",
         "[html]": {
+            // We disable the prettier for html and markdown files because it
+            // doesn't work nicely with hugo templates.
+            "editor.defaultFormatter": null,
             "editor.suggest.insertMode": "replace",
-            // this is causing so many templating issues with auto formatting, disabled
-            // "editor.defaultFormatter": "GitHub.vscode-pull-request-github",
-            "editor.defaultFormatter": "esbenp.prettier-vscode",
             "files.insertFinalNewline": false,
-            "files.trimFinalNewlines": true,
+            "files.trimFinalNewlines": true
         },
-        "cSpell.words": ["xsmall", "microsite", "taggings"],
+        "cSpell.words": ["xsmall", "microsite", "taggings"]
     },
     "extensions": {
         "recommendations": [
@@ -53,7 +53,7 @@
             "esbenp.prettier-vscode",
             "streetsidesoftware.code-spell-checker",
             "tamasfe.even-better-toml",
-            "dbaeumer.vscode-eslint",
+            "dbaeumer.vscode-eslint"
         ]
     }
 }

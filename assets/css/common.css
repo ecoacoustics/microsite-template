@@ -1,6 +1,6 @@
 body {
     color: var(--oe-font-color);
-    background-color: var(--oe-background-color);
+    background-color: var(--oe-background-light);
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -19,24 +19,24 @@ h6 {
 }
 
 .oe-theme-emphasis {
-  color: var(--oe-theme-color);
+    color: var(--oe-theme-color);
 }
 
 a.o-theme-emphasis {
-  text-decoration: none; /*links with theme emphasis no underline */
+    text-decoration: none; /*links with theme emphasis no underline */
 }
 
 .container {
-  max-width: 80rem;
-  margin: 0 auto;
+    max-width: 80rem;
+    margin: 0 auto;
 }
 
 .flex {
-  display: flex;
+    display: flex;
 }
 
 /* Image captions */
 .oe-image-caption {
-  color: var(--oe-font-color-toned);
-  font-size: var(--oe-font-size-xsmall);
+    color: var(--oe-font-color-toned);
+    font-size: var(--oe-font-size-xsmall);
 }

@@ -5,4 +5,4 @@ draft = false
 
 # About this project
 
-// Placeholder 
+// Placeholder
