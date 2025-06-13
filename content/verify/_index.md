@@ -17,5 +17,9 @@ clicking on the "Copy" icon on the bottom left of the page.
 <oe-verification-grid data-campaign="Powerful Owl" id="verification-grid" grid-size="1">
     <oe-verification verified="true" shortcut="y">Yes</oe-verification>
     <oe-verification verified="false" shortcut="n">No</oe-verification>
+    <oe-data-source
+        slot="data-source"
+        for="verification-grid"
+        allow-downloads="false"
+    ></oe-data-source>
 </oe-verification-grid>
-<oe-data-source for="verification-grid"></oe-data-source>

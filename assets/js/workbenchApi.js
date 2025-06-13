@@ -83,7 +83,7 @@ export class WorkbenchApi {
      */
     async getTag(tagId) {
         const url = this.#createUrl(`/tags/${tagId}`);
-        const response = await this.#fetch("GET", url)
+        const response = await this.#fetch("GET", url);
 
         const responseBody = await response.json();
         return responseBody;
@@ -153,8 +153,8 @@ export class WorkbenchApi {
             };
 
             const payload = {
-                filter: filterBody,
                 paging: pagingBody,
+                ...filterBody,
             };
 
             const response = await this.#fetch("POST", url, payload);
@@ -173,7 +173,7 @@ export class WorkbenchApi {
                 }
 
                 const tagOfInterest = taggings[0];
-                const tag = await this.getTag(tagOfInterest.tag_id)
+                const tag = await this.getTag(tagOfInterest.tag_id);
 
                 model.tag = tag.data;
             });
@@ -276,7 +276,9 @@ export class WorkbenchApi {
             method !== "PUT" &&
             method !== "PATCH"
         ) {
-            throw new Error(`Fetch method: '${method}' is not supported by the baw-api service.`);
+            throw new Error(
+                `Fetch method: '${method}' is not supported by the baw-api service.`,
+            );
         }
 
         const headers = {
