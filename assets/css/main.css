@@ -23,9 +23,9 @@
     --oe-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }} !important;
 
     --theme-color-raw: hsl(
-      var(--oe-theme-hue)
-      var(--oe-theme-saturation)
-      var(--oe-theme-lightness)
+      var(--oe-theme-hue),
+      var(--oe-theme-saturation),
+      var(--oe-theme-lightness),
     );
 }
 

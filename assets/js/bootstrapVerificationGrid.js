@@ -64,7 +64,8 @@ async function setup() {
         campaigns.length === 0 ||
         typeof campaigns[0] !== "object"
     ) {
-        console.error("'Campaigns' must be an array of strings");
+        console.error("'Campaigns' must be an array of objects");
+        strings;
         return;
     }
 
