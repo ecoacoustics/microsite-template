@@ -43,9 +43,6 @@
             "files.insertFinalNewline": false,
             "files.trimFinalNewlines": true
         },
-        "[markdown]": {
-            "editor.defaultFormatter": null
-        },
         "cSpell.words": ["xsmall", "microsite", "taggings"]
     },
     "extensions": {

@@ -4,6 +4,7 @@ draft = false
 +++
 
 {{< section/cards >}}
+
 <sl-card class="card-header">
     <div slot="header">
     Female
@@ -63,4 +64,5 @@ draft = false
          More details
     </div>
 </sl-card>
+
 {{< /section/cards >}}
