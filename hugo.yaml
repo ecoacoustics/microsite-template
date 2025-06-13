@@ -31,12 +31,15 @@ params:
           tags.text:
             eq: "Powerful Owl"
   style:
-    ThemeColor: '#CB7E30'
     xsmallBreakPoint: 425px
     smallBreakPoint: 768px
     mediumBreakPoint: 1024px
     largeBreakPoint: 1200px
-    ThemeColorHsl: '30deg, 62%, 49%'
+    ThemeColor: '#CB7E30'
+    ThemeColorHsl:
+      hue: 30deg
+      saturation: 62%
+      lightness: 49%
     ThemeShades:
       '50': 252 249 245
       '100': 247 234 222

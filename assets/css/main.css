@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @import "common";
 @import "sections";
 @import "footer";
@@ -12,6 +12,17 @@
     {{ range $key, $value := .Site.Params.style.ThemeShades }}
     --sl-color-primary-{{ $key }}: rgb({{ $value }});
     {{ end }}
+
+
+    /*
+      These destructured hsl theming variables are needed to style the web
+      components to match the host sites theming.
+
+      see: https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css#L28-L30
+    */
+    --oe-theme-hue: {{ .Site.Params.style.ThemeColorHsl.hue }} !important;
+    --oe-theme-saturation: {{ .Site.Params.style.ThemeColorHsl.saturation }} !important;
+    --oe-theme-lightness: {{ .Site.Params.style.ThemeColorHsl.lightness }} !important;
 }
 
 :root {
