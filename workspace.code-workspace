@@ -43,7 +43,7 @@
             "files.insertFinalNewline": false,
             "files.trimFinalNewlines": true
         },
-        "cSpell.words": ["xsmall", "microsite", "taggings"]
+        "cSpell.words": ["xsmall", "microsite", "taggings", "ecosounds"]
     },
     "extensions": {
         "recommendations": [

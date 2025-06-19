@@ -1,8 +1,9 @@
 <script>
-    {{/*
-    Making hugo.yaml site params accessible through Json
-  */}}
+  import { WorkbenchApi } from "/js/workbenchApi.js";
+
+  {{/* Making hugo.yaml site params accessible through Json */}}
   window.siteParams = {{ site.Params | jsonify | safeJS }};
+  window.workbenchApi = new WorkbenchApi("https://api.staging.ecosounds.org");
 </script>
 
 {{- with resources.Get "js/main.js" }}

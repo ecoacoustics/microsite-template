@@ -1,7 +1,7 @@
 import { WorkbenchApi } from "/js/workbenchApi.js";
 
 let workbenchApi = new WorkbenchApi("https://api.staging.ecosounds.org");
-const gridElements = document.querySelectorAll("oe-verification-grid");
+const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
 /**
  * @description
@@ -14,7 +14,9 @@ const gridElements = document.querySelectorAll("oe-verification-grid");
 async function bootstrapVerificationGrid(target, filterBody) {
     // TODO: this event name and filter body should be pulled from the microsite
     // config file
-    const callback = await workbenchApi.getVerificationCallback(filterBody);
+    const callback = await window.workbenchApi.getVerificationCallback(
+        filterBody,
+    );
     target.getPage = callback;
 
     target.addEventListener("decision-made", (event) => {
@@ -29,7 +31,7 @@ async function bootstrapVerificationGrid(target, filterBody) {
             // If an upsert request errors or fails to be applied, there is no
             // retry logic, and the verification will fail to commit to the
             // database.
-            workbenchApi.upsertVerification(decision);
+            window.workbenchApi.upsertVerification(decision);
         }
     });
 }
@@ -44,7 +46,7 @@ async function bootstrapVerificationGrid(target, filterBody) {
  * @param {VerificationGridComponent} target
  */
 async function updateUrlTransformers(target) {
-    target.urlTransformer = workbenchApi.createMediaUrlTransformer();
+    target.urlTransformer = window.workbenchApi.createMediaUrlTransformer();
 
     // restart the verification task to explicitly reset the
     // verification task back to the start and regenerate all of the
@@ -65,11 +67,20 @@ async function setup() {
         typeof campaigns[0] !== "object"
     ) {
         console.error("'Campaigns' must be an array of objects");
-        strings;
         return;
     }
 
-    for (const element of gridElements) {
+    const targetElements = gridElements();
+    if (targetElements.length > 0) {
+        const userModel = await window.workbenchApi.getUserProfile();
+        if (!userModel) {
+            window.location.href = "/login";
+        }
+
+        workbenchApi.authToken = userModel.authToken;
+    }
+
+    for (const element of targetElements) {
         // Retrieve the campaign name from the web component set in HTML/MD
         const campaignName = element.dataset.campaign;
 
@@ -90,23 +101,6 @@ async function setup() {
         // Initialize the verification grid with the filter settings
         bootstrapVerificationGrid(element, filterBody);
     }
-
-    const authElement = document.getElementById("auth-token-input");
-
-    // This sl-change event will only trigger when enter is pressed.
-    // I created this UI to test and serve as an example on how to use the
-    // BawApi service.
-    //
-    // TODO: when we refactor the authentication UI, we might want to use a
-    // html <form> element and listen for a submit event instead.
-    authElement.addEventListener("sl-change", (event) => {
-        const value = event.target.value;
-        workbenchApi.authToken = value;
-
-        for (const invalidatedGrid of gridElements) {
-            updateUrlTransformers(invalidatedGrid);
-        }
-    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

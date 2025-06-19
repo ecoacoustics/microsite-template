@@ -1,0 +1,106 @@
+{{ define "main" }}
+    <div class="login-container">
+        <sl-card class="card-header">
+            <div slot="header"><h1>{{ .Title }}</h1></div>
+            <form id="form" method="post">
+                <sl-input
+                    type="email"
+                    name="user[login]"
+                    label="Name"
+                    required
+                ></sl-input>
+                <sl-input
+                    type="password"
+                    name="user[password]"
+                    label="Password"
+                    password-toggle
+                    required
+                ></sl-input>
+                <sl-checkbox name="user[remember_me]">Remember Me</sl-checkbox>
+                <sl-button type="submit" variant="primary">Log In</sl-button>
+            </form>
+
+            {{ .Content }}
+            <p>Don't have an account?
+                <a href="https://ecosounds.org/security/register">Register here</a>.
+            </p>
+        </sl-card>
+    </div>
+
+    <style>
+        form {
+            display: inline-block;
+            width: 500px;
+            max-width: 100%;
+
+            & > * {
+                display: block;
+                margin-top: 1rem;
+            }
+        }
+
+        body {
+            background-image: url("ecosounds-hero.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .login-container {
+            display: flex;
+            gap: 12em;
+        }
+    </style>
+
+    <script type="module">
+        function redirectSuccess() {
+            const hasHistory = window.history && window.history.length > 0;
+            if (hasHistory) {
+                window.history.back();
+            } else {
+                window.location.href = "/";
+            }
+        }
+
+        function printFailure(error) {
+            console.error(error);
+        }
+
+        async function setupLogin() {
+            // If the user is already logged in, it is likely that the user
+            // navigated to this page using the back button.
+            // Therefore, we want to go back one more page as re-logging in will
+            // have no effect.
+            const userModel = await window.workbenchApi.getUserProfile();
+            if (userModel) {
+                redirectSuccess();
+            }
+
+            const form = document.getElementById("form");
+            form.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                const requestOptions = {
+                    method: "POST",
+                    body: formData,
+                    redirect: "follow",
+                };
+
+                fetch("https://api.staging.ecosounds.org/my_account/sign_in", requestOptions)
+                    .then((response) => {
+                        if (response.ok) {
+                            redirectSuccess();
+                        } else {
+                            printFailure("Login failed.");
+                        }
+                    })
+                    .catch((error) => printFailure(error));
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setupLogin();
+        });
+    </script>
+{{ end }}

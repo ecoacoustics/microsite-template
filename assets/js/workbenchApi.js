@@ -72,6 +72,9 @@ export class WorkbenchApi {
     async getUserProfile() {
         const url = this.#createUrl("/my_account");
         const response = await this.#fetch("GET", url);
+        if (!response.ok) {
+            return null;
+        }
 
         const responseBody = await response.json();
         return responseBody;
@@ -158,6 +161,14 @@ export class WorkbenchApi {
             };
 
             const response = await this.#fetch("POST", url, payload);
+            if (!response.ok) {
+                console.error("Failed to fetch page of events");
+                return {
+                    subjects: [],
+                    totalItems: 0,
+                    context: {},
+                };
+            }
 
             const responseBody = await response.json();
             const responseMeta = responseBody.meta;
