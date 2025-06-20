@@ -57,14 +57,9 @@ export class WorkbenchApi {
      */
     #authToken = null;
 
-    /** @param {string | null} value */
-    set authToken(value) {
-        this.#authToken = value;
-    }
-
     /** @returns {boolean} */
     get isAuthenticated() {
-        return "";
+        return this.#authToken !== null;
     }
 
     /**
@@ -139,6 +134,20 @@ export class WorkbenchApi {
         );
 
         return signInResponse.ok;
+    }
+
+    /**
+     * @returns {boolean} A boolean indicating if the user is logged in
+     */
+    async login() {
+        const securityEndpoint = this.#createUrl("/security");
+        const response = await this.#fetch("GET", securityEndpoint);
+        if (!response.ok) {
+            return false;
+        }
+
+        const authToken = response.data.auth_token;
+        this.#authToken = authToken;
     }
 
     /**
@@ -370,22 +379,20 @@ export class WorkbenchApi {
 
         // If the "fetch" function fails due to CORS or other security related
         // issues, it will throw an error instead of returning a "bad" response.
-        try {
-            return fetch(url, {
-                method,
-                headers,
-                body,
-                credentials: "include",
-            });
-        } catch (error) {
+        fetch(url, {
+            method,
+            headers,
+            body,
+            credentials: "include",
+        }).catch((error) => {
             const errorMessage = `Failed to connect to the API.
-Possible errors:
+Possible reasons:
     - API CORS headers are not configured to allow this origin
     - The API could not be contacted because you are not connected to the internet
     - The API is temporarily unavailable due to an internal error
 `;
 
             throw new Error(errorMessage, error);
-        }
+        });
     }
 }

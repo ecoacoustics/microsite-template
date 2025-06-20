@@ -71,12 +71,10 @@ async function setup() {
 
     const targetElements = gridElements();
     if (targetElements.length > 0) {
-        const userModel = await window.workbenchApi.getUserProfile();
+        const userModel = await window.workbenchApi.login();
         if (!userModel) {
             window.location.href = "/login";
         }
-
-        window.workbenchApi.authToken = userModel.authToken;
     }
 
     for (const element of targetElements) {
