@@ -62,6 +62,11 @@ export class WorkbenchApi {
         this.#authToken = value;
     }
 
+    /** @returns {boolean} */
+    get isAuthenticated() {
+        return "";
+    }
+
     /**
      * Fetches the current users profile from the API.
      * Calling this method requires an authentication token to be set.
@@ -91,6 +96,45 @@ export class WorkbenchApi {
 
         const responseBody = await response.json();
         return responseBody;
+    }
+
+    /**
+     * Authenticates the user using a username and password combination.
+     * This function will return a boolean indicating if authentication was
+     * successful.
+     *
+     * @returns {Promise<boolean>}
+     */
+    async authenticateUser() {
+        const signInEndpoint = this.#createUrl("/my_account/sign_in");
+        const initRequest = await this.#fetch("GET", signInEndpoint, null, {
+            Accept: "*",
+        });
+        if (!initRequest.ok) {
+            return false;
+        }
+
+        const page = await initRequest.text();
+        const authenticityToken = page.match(
+            /name="authenticity_token" value="(.+?)"/,
+        );
+
+        const formData = new FormData(form);
+        const formValues = Object.fromEntries(formData);
+
+        const urlParams = new URLSearchParams();
+        urlParams.set("user[login]", formValues["user[login]"]);
+        urlParams.set("user[password]", formValues["user[password]"]);
+        urlParams.set("commit", "Log+in");
+        urlParams.set("authenticity_token", authenticityToken[1]);
+
+        const signInResponse = await this.#fetch(
+            "POST",
+            signInEndpoint,
+            urlParams.toString(),
+        );
+
+        return signInResponse.ok;
     }
 
     /**
@@ -289,11 +333,11 @@ export class WorkbenchApi {
      *
      * @param {string} method
      * @param {string} url
-     * @param {Record<string, unknown> | null} body
+     * @param {Record<string, unknown> | FormData | null} body
      *
      * @returns {Promise<Response>}
      */
-    #fetch(method, url, body = null) {
+    #fetch(method, url, body = null, headerOverride = {}) {
         if (
             method !== "GET" &&
             method !== "POST" &&
@@ -308,6 +352,7 @@ export class WorkbenchApi {
 
         const headers = {
             Accept: "application/json",
+            ...headerOverride,
         };
 
         if (this.#authToken) {
@@ -319,11 +364,24 @@ export class WorkbenchApi {
             body = JSON.stringify(body);
         }
 
-        return fetch(url, {
-            method,
-            headers,
-            body,
-            credentials: "include",
-        });
+        // If the "fetch" function fails due to CORS or other security related
+        // issues, it will throw an error instead of returning a "bad" response.
+        try {
+            return fetch(url, {
+                method,
+                headers,
+                body,
+                credentials: "include",
+            });
+        } catch (error) {
+            const errorMessage = `Failed to connect to the API.
+Possible errors:
+    - API CORS headers are not configured to allow this origin
+    - The API could not be contacted because you are not connected to the internet
+    - The API is temporarily unavailable due to an internal error
+`;
+
+            throw new Error(errorMessage, error);
+        }
     }
 }

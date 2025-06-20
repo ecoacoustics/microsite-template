@@ -105,50 +105,15 @@
             }
 
             const form = document.getElementById("form");
-            form.addEventListener("submit", (event) => {
+            form.addEventListener("submit", async (event) => {
                 event.preventDefault();
 
-                fetch("https://api.staging.ecosounds.org/my_account/sign_in", {
-                    credentials: "include",
-                }).then(async (getResponse) => {
-                    const formData = new FormData(form);
-                    const formValues = Object.fromEntries(formData);
-                    
-                    const page = await getResponse.text();
-                    const token= page.match(/name="authenticity_token" value="(.+?)"/);
-
-                    const urlParams = new URLSearchParams();
-                    urlParams.set("user[login]", formValues["user[login]"]);
-                    urlParams.set("user[password]", formValues["user[password]"]);
-                    urlParams.set("commit", "Log+in")
-                    urlParams.set("authenticity_token", token[1]);
-
-                    const requestOptions = {
-                        method: "POST",
-                        body: urlParams.toString(),
-                        redirect: "follow",
-                        headers: {
-                            Accept: "text/html",
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        credentials: "include",
-                    };
-
-                    fetch("https://api.staging.ecosounds.org/my_account/sign_in", requestOptions)
-                        .then(async (response) => {
-                            if (response.ok) {
-                                const userModel = await window.workbenchApi.getUserProfile();
-                                if (userModel) {
-                                    redirectSuccess();
-                                } else {
-                                    printFailure("Website error");
-                                }
-                            } else {
-                                printFailure("Incorrect username or password.");
-                            }
-                        })
-                        .catch((error) => printFailure(error));
-                });
+                const authSuccess = await window.workbenchApi.authenticateUser();
+                if (authSuccess) {
+                    redirectSuccess();
+                } else {
+                    printFailure("Incorrect username or password.");
+                }
             });
         }
 
