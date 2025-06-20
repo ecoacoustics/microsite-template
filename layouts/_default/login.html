@@ -55,6 +55,11 @@
         .login-container {
             display: flex;
             gap: 12em;
+        
+            & > * {
+                flex-shrink: 1;
+                min-width: 0;
+            }
         }
 
         /* user invalid styles */
