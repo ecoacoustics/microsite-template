@@ -19,6 +19,8 @@ async function bootstrapVerificationGrid(target, filterBody) {
     );
     target.getPage = callback;
 
+    updateUrlTransformers(target);
+
     target.addEventListener("decision-made", (event) => {
         const decisions = event.detail;
         for (const decision of decisions) {

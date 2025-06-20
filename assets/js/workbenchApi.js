@@ -301,8 +301,8 @@ export class WorkbenchApi {
         }
 
         // TODO: this does not support OPTION, HEAD, or DELETE requests
+        headers["Content-Type"] = "application/json";
         if (method !== "GET") {
-            headers["Content-Type"] = "application/json";
             body = JSON.stringify(body);
         }
 
@@ -310,6 +310,7 @@ export class WorkbenchApi {
             method,
             headers,
             body,
+            credentials: "include",
         });
     }
 }

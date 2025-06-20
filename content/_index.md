@@ -56,9 +56,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 image="images/Plains-wanderer.jpg"
 alt="Plains Wanderer in Grass. Image by Dominic Sherony"
 caption="Image: Dominic Sherony, CC BY-SA 2.0, via Wikimedia Commons"
-imagePosition="left"
-
-> }}
+imagePosition="left" >}}
 
 ## Plains Wanderer Status
 
