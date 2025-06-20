@@ -31,7 +31,7 @@ export class WorkbenchApi {
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
         if (host === undefined) {
-            throw new Error("hugo.yaml: 'apiHost' is not defined.");
+            throw new Error("apiHost is not defined.");
         } else if (!host.startsWith("http")) {
             const errorMessage = `
                 Api host must start with http or https.
