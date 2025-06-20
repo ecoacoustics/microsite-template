@@ -25,6 +25,7 @@ menus:
       pageRef: /about
       weight: 10
 params:
+  apiHost: https://api.staging.ecosounds.org
   campaigns:
     - name: "Powerful Owl"
       filters:

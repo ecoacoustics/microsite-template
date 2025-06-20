@@ -30,7 +30,9 @@ export class WorkbenchApi {
     /** @param {string} host */
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
-        if (!host.startsWith("http")) {
+        if (host === undefined) {
+            throw new Error("hugo.yaml: 'apiHost' is not defined.");
+        } else if (!host.startsWith("http")) {
             const errorMessage = `
                 Api host must start with http or https.
                     Incorrect Example: api.ecosounds.org
@@ -72,6 +74,17 @@ export class WorkbenchApi {
     async getUserProfile() {
         const url = this.#createUrl("/my_account");
         const response = await this.#fetch("GET", url);
+        if (!response.ok) {
+            return null;
+        }
+
+        const responseBody = await response.json();
+        return responseBody;
+    }
+
+    async logoutUser() {
+        const url = this.#createUrl("/security");
+        const response = await this.#fetch("DELETE", url);
         if (!response.ok) {
             return null;
         }
@@ -285,7 +298,8 @@ export class WorkbenchApi {
             method !== "GET" &&
             method !== "POST" &&
             method !== "PUT" &&
-            method !== "PATCH"
+            method !== "PATCH" &&
+            method !== "DELETE"
         ) {
             throw new Error(
                 `Fetch method: '${method}' is not supported by the baw-api service.`,
@@ -300,9 +314,8 @@ export class WorkbenchApi {
             headers["Authorization"] = `Token token=\"${this.#authToken}\"`;
         }
 
-        // TODO: this does not support OPTION, HEAD, or DELETE requests
-        headers["Content-Type"] = "application/json";
         if (method !== "GET") {
+            headers["Content-Type"] = "application/json";
             body = JSON.stringify(body);
         }
 

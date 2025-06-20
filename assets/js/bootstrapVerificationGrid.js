@@ -1,6 +1,3 @@
-import { WorkbenchApi } from "/js/workbenchApi.js";
-
-let workbenchApi = new WorkbenchApi("https://api.staging.ecosounds.org");
 const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
 /**
@@ -79,7 +76,7 @@ async function setup() {
             window.location.href = "/login";
         }
 
-        workbenchApi.authToken = userModel.authToken;
+        window.workbenchApi.authToken = userModel.authToken;
     }
 
     for (const element of targetElements) {

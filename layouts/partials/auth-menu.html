@@ -1,0 +1,81 @@
+<span id="menu-container">
+    <sl-dropdown id="authed-menu">
+        <sl-button slot="trigger" variant="default" caret pill>
+            <sl-icon id="profile-icon" name="person-circle"></sl-icon>
+            <span id="username-outlet"></span>
+        </sl-button>
+
+        <sl-menu>
+            <sl-menu-item id="log-out-menu-item">Log Out</sl-menu-item>
+        </sl-menu>
+    </sl-dropdown>
+
+    <sl-button id="unauthed-menu" href="/login" variant="default" pill>
+        <sl-icon id="profile-icon" name="person-add"></sl-icon>
+        Login
+    </sl-button>
+</span>
+
+<style>
+    #authed-menu {
+        display: none;
+    }
+
+    #profile-icon {
+        margin-right: 0.25rem;
+    }
+
+    .user-is-authenticated {
+        #authed-menu {
+            display: inline-block;
+        }
+
+        #unauthed-menu {
+            display: none;
+        }
+    }
+</style>
+
+<script type="module">
+    const userModel = await window.workbenchApi.getUserProfile();
+
+    const logOutMenuItem = document.getElementById("log-out-menu-item");
+    logOutMenuItem.addEventListener("click", () => {
+        window.workbenchApi.logoutUser()
+            .then(() => {
+                // Because we are in a MPA application, it is generally hard to
+                // keep track of state.
+                // While inefficient, I reload the application so that we're
+                // sure that the state has changed to a "logged out" state.
+                window.location.reload();
+            })
+            .catch((err) => {
+                console.error("Failed to log out user.", err);
+            });
+    });
+
+    // Because we are in a type="module" script, this script will run after the
+    // page content has rendered, meaning that we do not have to wait for an
+    // "onload" (or similar) event.
+    // However, I still use a setup() function to limit the scope of my init
+    // variables.
+    async function setup() {
+        const userModel = await window.workbenchApi.getUserProfile();
+        if (!userModel) {
+            console.log("User is not logged in");
+            return;
+        }
+
+        updateUsernameOutlet(userModel.data.user_name);
+    }
+
+    function updateUsernameOutlet(username) {
+        const usernameOutlet = document.getElementById("username-outlet");
+        usernameOutlet.textContent = username;
+
+        const menuContainer = document.getElementById("menu-container");
+        menuContainer.classList.add("user-is-authenticated");
+    }
+
+    setup();
+</script>
