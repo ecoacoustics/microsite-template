@@ -103,30 +103,34 @@ export class WorkbenchApi {
      * This function will return a boolean indicating if authentication was
      * successful.
      *
+     * @param {string} username
+     * @param {string} password
+     *
      * @returns {Promise<boolean>}
      */
-    async authenticateUser() {
+    async authenticateUser(username, password) {
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
-        const initRequest = await this.#fetch("GET", signInEndpoint, null, {
-            Accept: "*",
-        });
-        if (!initRequest.ok) {
+        const authTokenRequest = await this.#fetch(
+            "GET",
+            signInEndpoint,
+            null,
+            { Accept: "*" },
+        );
+
+        if (!authTokenRequest.ok) {
             return false;
         }
 
-        const page = await initRequest.text();
+        const page = await authTokenRequest.text();
         const authenticityToken = page.match(
             /name="authenticity_token" value="(.+?)"/,
         );
 
-        const formData = new FormData(form);
-        const formValues = Object.fromEntries(formData);
-
-        const urlParams = new URLSearchParams();
-        urlParams.set("user[login]", formValues["user[login]"]);
-        urlParams.set("user[password]", formValues["user[password]"]);
-        urlParams.set("commit", "Log+in");
-        urlParams.set("authenticity_token", authenticityToken[1]);
+        const requestBody = new FormData();
+        requestBody.append("user[login]", username);
+        requestBody.append("user[password]", password);
+        requestBody.append("commit", "Log+in");
+        requestBody.append("authenticity_token", authenticityToken[1]);
 
         const signInResponse = await this.#fetch(
             "POST",

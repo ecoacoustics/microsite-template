@@ -2,7 +2,7 @@
     <div class="login-container">
         <sl-card class="card-header">
             <div slot="header"><h1>{{ .Title }}</h1></div>
-            <form id="form" method="post" class="validity-styles">
+            <form id="form" class="validity-styles">
                 <sl-input
                     type="email"
                     name="user[login]"
@@ -24,7 +24,7 @@
 
             {{ .Content }}
             <p>Don't have an account?
-                <a href="https://ecosounds.org/security/register">Register here</a>.
+                <a href="{{ site.Params.workbenchhost }}/register">Register here</a>.
             </p>
         </sl-card>
     </div>
@@ -105,15 +105,25 @@
             }
 
             const form = document.getElementById("form");
-            form.addEventListener("submit", async (event) => {
+            form.addEventListener("submit", (event) => {
                 event.preventDefault();
 
-                const authSuccess = await window.workbenchApi.authenticateUser();
-                if (authSuccess) {
-                    redirectSuccess();
-                } else {
-                    printFailure("Incorrect username or password.");
-                }
+                /*
+                const formData = new FormData(form);
+                const formValues = Object.fromEntries(event);
+
+                const username = formValues["user[login]"];
+                const password = formValues["user[password]"];
+
+                window.workbenchApi.authenticateUser(username, password)
+                    .then((authSuccess) => {
+                        if (authSuccess) {
+                            redirectSuccess();
+                        } else {
+                            printFailure("Incorrect username or password.");
+                        }
+                    });
+                */
             });
         }
 
