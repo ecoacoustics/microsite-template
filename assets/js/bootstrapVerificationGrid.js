@@ -71,8 +71,9 @@ async function setup() {
 
     const targetElements = gridElements();
     if (targetElements.length > 0) {
-        const userModel = await window.workbenchApi.login();
-        if (!userModel) {
+        await window.workbenchApi.refreshAuthToken();
+
+        if (!window.workbenchApi.isLoggedIn) {
             window.location.href = "/login";
         }
     }

@@ -119,7 +119,7 @@
                 const username = formValues["user[login]"];
                 const password = formValues["user[password]"];
 
-                window.workbenchApi.authenticateUser(username, password)
+                window.workbenchApi.loginUser(username, password)
                     .then((authSuccess) => {
                         if (authSuccess) {
                             redirectSuccess();
@@ -130,8 +130,6 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            setupLogin();
-        });
+        setupLogin();
     </script>
 {{ end }}

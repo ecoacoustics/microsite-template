@@ -58,7 +58,7 @@ export class WorkbenchApi {
     #authToken = null;
 
     /** @returns {boolean} */
-    get isAuthenticated() {
+    get isLoggedIn() {
         return this.#authToken !== null;
     }
 
@@ -98,12 +98,14 @@ export class WorkbenchApi {
      * This function will return a boolean indicating if authentication was
      * successful.
      *
+     * Note that this method does not refresh the authentication token.
+     *
      * @param {string} username
      * @param {string} password
      *
      * @returns {Promise<boolean>}
      */
-    async authenticateUser(username, password) {
+    async loginUser(username, password) {
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
@@ -137,9 +139,9 @@ export class WorkbenchApi {
     }
 
     /**
-     * @returns {boolean} A boolean indicating if the user is logged in
+     * Refreshes the authentication token and cookies used for authentication.
      */
-    async login() {
+    async refreshAuthToken() {
         const securityEndpoint = this.#createUrl("/security");
         const response = await this.#fetch("GET", securityEndpoint);
         if (!response.ok) {
@@ -148,6 +150,8 @@ export class WorkbenchApi {
 
         const authToken = response.data.auth_token;
         this.#authToken = authToken;
+
+        return true;
     }
 
     /**
