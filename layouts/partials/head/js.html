@@ -1,22 +1,10 @@
-<script>
-    {{/*
-    Making hugo.yaml site params accessible through Json
-  */}}
-  window.siteParams = {{ site.Params | jsonify | safeJS }};
-</script>
+<script type="module">
+  import { WorkbenchApi } from "/js/workbenchApi.js";
 
-{{- with resources.Get "js/main.js" }}
-  {{- if eq hugo.Environment "development" }}
-    {{- with . | js.Build }}
-      <script src="{{ .RelPermalink }}"></script>
-    {{- end }}
-  {{- else }}
-    {{- $opts := dict "minify" true }}
-    {{- with . | js.Build $opts | fingerprint }}
-      <script src="{{ .RelPermalink }}" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- end }}
-  {{- end }}
-{{- end }}
+  {{/* Making hugo.yaml site params accessible through Json */}}
+  globalThis.siteParams = {{ site.Params | jsonify | safeJS }};
+  globalThis.workbenchApi = () => WorkbenchApi.instance(globalThis.siteParams.apihost);
+</script>
 
 {{- with resources.Get "js/workbenchApi.js" }}
   {{- if eq hugo.Environment "development" }}

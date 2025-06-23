@@ -27,10 +27,19 @@ const bawApiDecisionMapping = {
  * ```
  */
 export class WorkbenchApi {
-    /** @param {string} host */
+    /**
+     * You should not be using this constructor directly, and should instead get
+     * and instance of this service through the WorkbenchApi.instance function
+     * to get a initialized singleton instance of this service.
+     *
+     * @private
+     * @param {string} host
+     */
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
-        if (!host.startsWith("http")) {
+        if (host === undefined) {
+            throw new Error("apiHost is not defined.");
+        } else if (!host.startsWith("http")) {
             const errorMessage = `
                 Api host must start with http or https.
                     Incorrect Example: api.ecosounds.org
@@ -40,6 +49,37 @@ export class WorkbenchApi {
         }
 
         this.#host = host;
+    }
+
+    /** @type {WorkbenchApi} */
+    static #instance;
+
+    /**
+     * Service consumers that are awaiting on the service being initialized.
+     *
+     * @type {((service: WorkbenchApi) => void)[]}
+     */
+    static #initResolvers = [];
+
+    /**
+     * Gets a singleton instance of the workbench api service configured with
+     * the login state pre-configured.
+     *
+     * @param {string} host
+     * @returns {WorkbenchApi}
+     */
+    static async instance(host) {
+        const makeInstance = async () => {
+            const newInstance = new WorkbenchApi(host);
+            await newInstance.#refreshAuthToken();
+            return newInstance;
+        };
+
+        if (!WorkbenchApi.#instance) {
+            WorkbenchApi.#instance = makeInstance();
+        }
+
+        return await WorkbenchApi.#instance;
     }
 
     /** @type {string} */
@@ -55,9 +95,10 @@ export class WorkbenchApi {
      */
     #authToken = null;
 
-    /** @param {string | null} value */
-    set authToken(value) {
-        this.#authToken = value;
+    /** @returns {Promise<boolean>} */
+    async isLoggedIn() {
+        await this.#refreshAuthToken();
+        return this.#authToken !== null;
     }
 
     /**
@@ -72,9 +113,75 @@ export class WorkbenchApi {
     async getUserProfile() {
         const url = this.#createUrl("/my_account");
         const response = await this.#fetch("GET", url);
+        if (!response.ok) {
+            return null;
+        }
 
         const responseBody = await response.json();
         return responseBody;
+    }
+
+    async logoutUser() {
+        const url = this.#createUrl("/security");
+        const response = await this.#fetch("DELETE", url);
+        if (!response.ok) {
+            return null;
+        }
+
+        this.#authToken = null;
+
+        const responseBody = await response.json();
+        return responseBody;
+    }
+
+    /**
+     * Authenticates the user using a username and password combination.
+     * This function will return a boolean indicating if authentication was
+     * successful.
+     *
+     * Note that this method does not refresh the authentication token because
+     * after logging in, the user will typically navigate to another page,
+     * causing the service to re-init (which will refresh the auth token).
+     * This is an optimization decision that was made to minimize making an API
+     * requests.
+     *
+     * @param {string} username
+     * @param {string} password
+     *
+     * @returns {Promise<boolean>}
+     */
+    async loginUser(username, password) {
+        const signInEndpoint = this.#createUrl("/my_account/sign_in");
+        const authTokenRequest = await this.#fetch(
+            "GET",
+            signInEndpoint,
+            null,
+            { Accept: "text/html" },
+        );
+
+        if (!authTokenRequest.ok) {
+            return false;
+        }
+
+        const page = await authTokenRequest.text();
+        const authenticityToken = page.match(
+            /name="authenticity_token" value="(.+?)"/,
+        );
+
+        const requestBody = new FormData();
+        requestBody.append("user[login]", username);
+        requestBody.append("user[password]", password);
+        requestBody.append("commit", "Log+in");
+        requestBody.append("authenticity_token", authenticityToken[1]);
+
+        const signInResponse = await this.#fetch(
+            "POST",
+            signInEndpoint,
+            requestBody,
+            { Accept: "text/html" },
+        );
+
+        return signInResponse.ok;
     }
 
     /**
@@ -158,6 +265,14 @@ export class WorkbenchApi {
             };
 
             const response = await this.#fetch("POST", url, payload);
+            if (!response.ok) {
+                console.error("Failed to fetch page of events");
+                return {
+                    subjects: [],
+                    totalItems: 0,
+                    context: {},
+                };
+            }
 
             const responseBody = await response.json();
             const responseMeta = responseBody.meta;
@@ -222,6 +337,33 @@ export class WorkbenchApi {
     }
 
     /**
+     * Refreshes the authentication token by using exiting cookies to
+     * authenticate.
+     *
+     * @returns {Promise<boolean>}
+     * A boolean indicating if the auth token was successfully fetched
+     */
+    async #refreshAuthToken() {
+        const securityEndpoint = this.#createUrl("/security/user");
+        const response = await this.#fetch(
+            "GET",
+            securityEndpoint,
+            undefined,
+            undefined,
+            false,
+        );
+        if (!response.ok) {
+            return false;
+        }
+
+        const responseBody = await response.json();
+        const authToken = responseBody.data.auth_token;
+        this.#authToken = authToken;
+
+        return true;
+    }
+
+    /**
      * Converts a web component verification model to a baw-api verification
      * model that can be committed to the servers database.
      *
@@ -265,16 +407,23 @@ export class WorkbenchApi {
      *
      * @param {string} method
      * @param {string} url
-     * @param {Record<string, unknown> | null} body
+     * @param {Record<string, unknown> | FormData | null} body
      *
      * @returns {Promise<Response>}
      */
-    #fetch(method, url, body = null) {
+    #fetch(
+        method,
+        url,
+        body = null,
+        headerOverride = {},
+        withAuthHeader = true,
+    ) {
         if (
             method !== "GET" &&
             method !== "POST" &&
             method !== "PUT" &&
-            method !== "PATCH"
+            method !== "PATCH" &&
+            method !== "DELETE"
         ) {
             throw new Error(
                 `Fetch method: '${method}' is not supported by the baw-api service.`,
@@ -283,22 +432,40 @@ export class WorkbenchApi {
 
         const headers = {
             Accept: "application/json",
+            ...headerOverride,
         };
 
-        if (this.#authToken) {
+        // If the "Authorization" header is omitted, the cookie will be used for
+        // authorization.
+        // This can be useful when refreshing the authentication token, or for
+        // making requests where the auth token may have expired.
+        if (this.#authToken && withAuthHeader) {
             headers["Authorization"] = `Token token=\"${this.#authToken}\"`;
         }
 
-        // TODO: this does not support OPTION, HEAD, or DELETE requests
         if (method !== "GET") {
-            headers["Content-Type"] = "application/json";
-            body = JSON.stringify(body);
+            if (typeof body === "object" && !(body instanceof FormData)) {
+                headers["Content-Type"] = "application/json";
+                body = JSON.stringify(body);
+            }
         }
 
+        // If the "fetch" function fails due to CORS or other security related
+        // issues, it will throw an error instead of returning a "bad" response.
         return fetch(url, {
             method,
             headers,
             body,
+            credentials: "include",
+        }).catch((error) => {
+            const errorMessage = `Failed to connect to the API.
+Possible reasons:
+    - API CORS headers are not configured to allow this origin
+    - The API could not be contacted because you are not connected to the internet
+    - The API is temporarily unavailable due to an internal error
+`;
+
+            throw new Error(errorMessage, error);
         });
     }
 }

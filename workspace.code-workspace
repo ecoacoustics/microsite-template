@@ -13,6 +13,7 @@
             "public": true
         },
         "files.eol": "\n",
+        "files.insertFinalNewline": true,
         "markdownlint.config": {
             "MD028": false,
             "MD025": {
@@ -40,10 +41,12 @@
             // doesn't work nicely with hugo templates.
             "editor.defaultFormatter": null,
             "editor.suggest.insertMode": "replace",
-            "files.insertFinalNewline": false,
-            "files.trimFinalNewlines": true
+            "files.insertFinalNewline": true
         },
-        "cSpell.words": ["xsmall", "microsite", "taggings"]
+        "[yaml]": {
+            "prettier.tabWidth": 2
+        },
+        "cSpell.words": ["xsmall", "microsite", "taggings", "ecosounds"]
     },
     "extensions": {
         "recommendations": [

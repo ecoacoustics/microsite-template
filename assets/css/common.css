@@ -27,7 +27,8 @@ a.o-theme-emphasis {
 }
 
 .container {
-    max-width: 80rem;
+    width: 100%;
+    max-width: calc(min(80rem, 90%));
     margin: 0 auto;
 }
 
@@ -39,4 +40,10 @@ a.o-theme-emphasis {
 .oe-image-caption {
     color: var(--oe-font-color-toned);
     font-size: var(--oe-font-size-xsmall);
+}
+
+@media screen and (max-width: 500px) {
+    .container {
+        max-width: 100%;
+    }
 }

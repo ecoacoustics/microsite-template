@@ -1,0 +1,176 @@
+{{ define "main" }}
+    <div class="login-container">
+        <sl-card class="card-header">
+            <div slot="header"><h1>{{ .Title }}</h1></div>
+            <form id="login-form" class="validity-styles">
+                <sl-input
+                    type="email"
+                    name="user[login]"
+                    label="Name"
+                    class="login-form-input"
+                    required
+                ></sl-input>
+                <sl-input
+                    type="password"
+                    name="user[password]"
+                    label="Password"
+                    class="login-form-input"
+                    password-toggle
+                    required
+                ></sl-input>
+
+                <sl-checkbox
+                    name="user[remember_me]"
+                    class="login-form-input"
+                 >
+                    Remember Me
+                </sl-checkbox>
+
+                <sl-button
+                    type="submit"
+                    variant="primary"
+                    class="login-form-input"
+                >
+                    Log In
+                </sl-button>
+            </form>
+
+            <p><strong id="error-output"></strong></p>
+
+            {{ .Content }}
+            <p>Don't have an account?
+                <a href="{{ site.Params.workbenchhost }}/register">Register here</a>.
+            </p>
+        </sl-card>
+    </div>
+
+    <style>
+        body {
+            background-image: url("ecosounds-hero.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #login-form {
+            display: inline-block;
+            width: 500px;
+            max-width: 100%;
+
+            & > * {
+                display: block;
+                margin-top: 1rem;
+            }
+        }
+
+        #error-output {
+            color: var(--sl-color-danger-600);
+        }
+
+        .login-container {
+            display: flex;
+            gap: 12em;
+        
+            & > * {
+                flex-shrink: 1;
+                min-width: 0;
+            }
+        }
+
+        /* user invalid styles */
+        .validity-styles sl-input[data-user-invalid]::part(base),
+        .validity-styles sl-select[data-user-invalid]::part(combobox),
+        .validity-styles sl-checkbox[data-user-invalid]::part(control) {
+            border-color: var(--sl-color-danger-600);
+        }
+
+        .validity-styles sl-input:focus-within[data-user-invalid]::part(base),
+        .validity-styles sl-select:focus-within[data-user-invalid]::part(combobox),
+        .validity-styles sl-checkbox:focus-within[data-user-invalid]::part(control) {
+            border-color: var(--sl-color-danger-600);
+            box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-color-danger-300);
+        }
+    </style>
+
+    <script type="module">
+        const api = await workbenchApi();
+        const formElement = document.getElementById("login-form");
+        const formInputs = document.getElementsByClassName("login-form-input");
+
+        function redirectSuccess() {
+            const hasHistory = window.history && window.history.length > 0;
+            if (hasHistory) {
+                window.history.back();
+            } else {
+                window.location.href = "/";
+            }
+        }
+
+        function printFailure(error) {
+            console.error(error);
+
+            const errorOutputElement = document.getElementById("error-output");
+            if (!errorOutputElement) {
+                console.error("Error output element does not exist");
+                return;
+            }
+
+            errorOutputElement.innerText = error;
+        }
+
+        function disableForm() {
+            for (const element of formInputs) {
+                element.setAttribute("disabled", true);
+            }
+        }
+
+        function enableForm() {
+            for (const element of formInputs) {
+                element.removeAttribute("disabled");
+            }
+        }
+
+        async function handleSubmission(username, password) {
+            disableForm();
+
+            if (await api.isLoggedIn()) {
+                redirectSuccess();
+            }
+
+            const authSuccess = await api.loginUser(username, password);
+            if (authSuccess) {
+                redirectSuccess();
+            } else {
+                printFailure("Incorrect username or password.");
+            }
+
+            enableForm();
+        }
+
+        async function setupLogin() {
+            // If the user is already logged in, it is likely that the user
+            // navigated to this page using the back button.
+            // Therefore, we want to go back one more page as re-logging in will
+            // have no effect.
+            if (await api.isLoggedIn()) {
+                redirectSuccess();
+            }
+
+            formElement.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(formElement);
+                const formValues = Object.fromEntries(formData);
+
+                const username = formValues["user[login]"];
+                const password = formValues["user[password]"];
+
+                // This async function is not awaited to not lock up the main
+                // render thread.
+                handleSubmission(username, password);
+            });
+        }
+
+        setupLogin();
+    </script>
+{{ end }}
