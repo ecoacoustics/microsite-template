@@ -78,6 +78,8 @@
     </style>
 
     <script type="module">
+        const api = await window.workbenchApi();
+
         function redirectSuccess() {
             const hasHistory = window.history && window.history.length > 0;
             if (hasHistory) {
@@ -104,7 +106,7 @@
             // navigated to this page using the back button.
             // Therefore, we want to go back one more page as re-logging in will
             // have no effect.
-            const userModel = await window.workbenchApi.getUserProfile();
+            const userModel = await api.getUserProfile();
             if (userModel) {
                 redirectSuccess();
             }
@@ -119,7 +121,7 @@
                 const username = formValues["user[login]"];
                 const password = formValues["user[password]"];
 
-                window.workbenchApi.loginUser(username, password)
+                api.loginUser(username, password)
                     .then((authSuccess) => {
                         if (authSuccess) {
                             redirectSuccess();

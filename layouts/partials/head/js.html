@@ -3,7 +3,7 @@
 
   {{/* Making hugo.yaml site params accessible through Json */}}
   window.siteParams = {{ site.Params | jsonify | safeJS }};
-  window.workbenchApi = new WorkbenchApi(window.siteParams.apihost);
+  window.workbenchApi = () => WorkbenchApi.instance(window.siteParams.apihost);
 </script>
 
 {{- with resources.Get "js/workbenchApi.js" }}

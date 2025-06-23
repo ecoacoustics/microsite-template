@@ -1,5 +1,7 @@
 const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
+const api = await window.workbenchApi();
+
 /**
  * @description
  * Prepares a verification grid with the necessary config to contact the
@@ -11,9 +13,7 @@ const gridElements = () => document.querySelectorAll("oe-verification-grid");
 async function bootstrapVerificationGrid(target, filterBody) {
     // TODO: this event name and filter body should be pulled from the microsite
     // config file
-    const callback = await window.workbenchApi.getVerificationCallback(
-        filterBody,
-    );
+    const callback = await api.getVerificationCallback(filterBody);
     target.getPage = callback;
 
     updateUrlTransformers(target);
@@ -30,7 +30,7 @@ async function bootstrapVerificationGrid(target, filterBody) {
             // If an upsert request errors or fails to be applied, there is no
             // retry logic, and the verification will fail to commit to the
             // database.
-            window.workbenchApi.upsertVerification(decision);
+            api.upsertVerification(decision);
         }
     });
 }
@@ -45,7 +45,7 @@ async function bootstrapVerificationGrid(target, filterBody) {
  * @param {VerificationGridComponent} target
  */
 async function updateUrlTransformers(target) {
-    target.urlTransformer = window.workbenchApi.createMediaUrlTransformer();
+    target.urlTransformer = api.createMediaUrlTransformer();
 
     // restart the verification task to explicitly reset the
     // verification task back to the start and regenerate all of the
@@ -71,9 +71,9 @@ async function setup() {
 
     const targetElements = gridElements();
     if (targetElements.length > 0) {
-        await window.workbenchApi.refreshAuthToken();
+        await api.refreshAuthToken();
 
-        if (!window.workbenchApi.isLoggedIn) {
+        if (!api.isLoggedIn) {
             window.location.href = "/login";
         }
     }

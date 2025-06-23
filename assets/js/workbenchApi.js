@@ -27,7 +27,10 @@ const bawApiDecisionMapping = {
  * ```
  */
 export class WorkbenchApi {
-    /** @param {string} host */
+    /**
+     * @private
+     * @param {string} host
+     */
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
         if (host === undefined) {
@@ -42,6 +45,45 @@ export class WorkbenchApi {
         }
 
         this.#host = host;
+    }
+
+    /** @type {WorkbenchApi} */
+    static #instance;
+
+    /** @type {(() => void)[]} */
+    static #initResolvers = [];
+
+    /**
+     * Gets a singleton instance of the workbench api service configured with
+     * the login state pre-configured.
+     *
+     * @param {string} host
+     * @returns
+     */
+    static async instance(host) {
+        if (WorkbenchApi.#instance) {
+            return WorkbenchApi.#instance;
+        }
+
+        if (WorkbenchApi.#initResolvers.length === 0) {
+            const resolver = (value) => value;
+            WorkbenchApi.#initResolvers.push(resolver);
+
+            const newInstance = new WorkbenchApi(host);
+
+            await newInstance.#refreshAuthToken();
+            WorkbenchApi.#instance = newInstance;
+
+            for (const initAwaiter of WorkbenchApi.#initResolvers) {
+                initAwaiter(newInstance);
+            }
+
+            return newInstance;
+        }
+
+        return new Promise((resolver) => {
+            WorkbenchApi.#initResolvers.push(resolver);
+        });
     }
 
     /** @type {string} */
@@ -136,22 +178,6 @@ export class WorkbenchApi {
         );
 
         return signInResponse.ok;
-    }
-
-    /**
-     * Refreshes the authentication token and cookies used for authentication.
-     */
-    async refreshAuthToken() {
-        const securityEndpoint = this.#createUrl("/security");
-        const response = await this.#fetch("GET", securityEndpoint);
-        if (!response.ok) {
-            return false;
-        }
-
-        const authToken = response.data.auth_token;
-        this.#authToken = authToken;
-
-        return true;
     }
 
     /**
@@ -307,6 +333,23 @@ export class WorkbenchApi {
     }
 
     /**
+     * Refreshes the authentication token and cookies used for authentication.
+     */
+    async #refreshAuthToken() {
+        const securityEndpoint = this.#createUrl("/security/user");
+        const response = await this.#fetch("GET", securityEndpoint);
+        if (!response.ok) {
+            return false;
+        }
+
+        const responseBody = await response.json();
+        const authToken = responseBody.data.auth_token;
+        this.#authToken = authToken;
+
+        return true;
+    }
+
+    /**
      * Converts a web component verification model to a baw-api verification
      * model that can be committed to the servers database.
      *
@@ -383,7 +426,7 @@ export class WorkbenchApi {
 
         // If the "fetch" function fails due to CORS or other security related
         // issues, it will throw an error instead of returning a "bad" response.
-        fetch(url, {
+        return fetch(url, {
             method,
             headers,
             body,
