@@ -66,38 +66,20 @@ export class WorkbenchApi {
      * the login state pre-configured.
      *
      * @param {string} host
-     * @returns
+     * @returns {WorkbenchApi}
      */
     static async instance(host) {
-        if (WorkbenchApi.#instance) {
-            return WorkbenchApi.#instance;
-        }
-
-        // If there is not an initialized instance and this is the first call to
-        // WorkbenchApi.instance, then we want to create a new instance.
-        if (WorkbenchApi.#initResolvers.length === 0) {
-            const resolver = (value) => value;
-            WorkbenchApi.#initResolvers.push(resolver);
-
+        const makeInstance = async () => {
             const newInstance = new WorkbenchApi(host);
-
             await newInstance.#refreshAuthToken();
-            WorkbenchApi.#instance = newInstance;
-
-            for (const initAwaiter of WorkbenchApi.#initResolvers) {
-                initAwaiter(newInstance);
-            }
-
             return newInstance;
+        };
+
+        if (!WorkbenchApi.#instance) {
+            WorkbenchApi.#instance = makeInstance();
         }
 
-        // If a WorkbenchApi instance has not been initialized, but another
-        // consumer has already started initializing the service, we return a
-        // new promise that can be resolved with the service once it has been
-        // initialized.
-        return new Promise((resolver) => {
-            WorkbenchApi.#initResolvers.push(resolver);
-        });
+        return await WorkbenchApi.#instance;
     }
 
     /** @type {string} */
@@ -145,6 +127,8 @@ export class WorkbenchApi {
             return null;
         }
 
+        this.#authToken = null;
+
         const responseBody = await response.json();
         return responseBody;
     }
@@ -159,12 +143,17 @@ export class WorkbenchApi {
      * @param {string} username
      * @param {string} password
      *
+     * @param {boolean} refreshAuthToken
+     * Whether to refresh the auth token after a successful login.
+     * If you are navigating directly after logging in this should probably be
+     * set to "false".
+     *
      * @returns {Promise<boolean>}
      */
-    async loginUser(username, password) {
+    async loginUser(username, password, refreshAuthToken = false) {
         // We make a "logout" request before logging the user in so that if the
-        // user somehow manages to login while already logged in, their account
-        // will be overwritten.
+        // user somehow manages to login while already logged in, they will
+        // switch to the new account they want to log into.
         await this.logoutUser();
 
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
@@ -196,6 +185,10 @@ export class WorkbenchApi {
             requestBody,
             { Accept: "text/html" },
         );
+
+        if (refreshAuthToken) {
+            await this.#refreshAuthToken();
+        }
 
         return signInResponse.ok;
     }
@@ -353,7 +346,8 @@ export class WorkbenchApi {
     }
 
     /**
-     * Refreshes the authentication token and cookies used for authentication.
+     * Refreshes the authentication token by using exiting cookies to
+     * authenticate.
      */
     async #refreshAuthToken() {
         const securityEndpoint = this.#createUrl("/security/user");

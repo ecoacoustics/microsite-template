@@ -101,6 +101,15 @@
             errorOutputElement.innerText = error;
         }
 
+        async function handleSubmission(username, password) {
+            const authSuccess = await api.loginUser(username, password);
+            if (authSuccess) {
+                redirectSuccess();
+            } else {
+                printFailure("Incorrect username or password.");
+            }
+        }
+
         async function setupLogin() {
             // If the user is already logged in, it is likely that the user
             // navigated to this page using the back button.
@@ -121,14 +130,9 @@
                 const username = formValues["user[login]"];
                 const password = formValues["user[password]"];
 
-                api.loginUser(username, password)
-                    .then((authSuccess) => {
-                        if (authSuccess) {
-                            redirectSuccess();
-                        } else {
-                            printFailure("Incorrect username or password.");
-                        }
-                    });
+                // This async function is not awaited to not lock up the main
+                // render thread.
+                handleSubmission(username, password);
             });
         }
 

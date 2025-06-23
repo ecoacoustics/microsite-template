@@ -39,19 +39,22 @@
 <script type="module">
     const api = await workbenchApi();
 
+    const usernameOutlet = document.getElementById("username-outlet");
+    const menuContainer = document.getElementById("menu-container");
+
     const logOutMenuItem = document.getElementById("log-out-menu-item");
-    logOutMenuItem.addEventListener("click", () => {
-        api.logoutUser()
-            .then(() => {
-                // Because we are in a MPA application, it is generally hard to
-                // keep track of state.
-                // While inefficient, I reload the application so that we're
-                // sure that the state has changed to a "logged out" state.
-                window.location.reload();
-            })
-            .catch((err) => {
-                console.error("Failed to log out user.", err);
-            });
+    logOutMenuItem.addEventListener("click", async () => {
+        try {
+            await api.logoutUser()
+
+            // Because we are in a MPA application, it is generally hard to
+            // keep track of state.
+            // While inefficient, I reload the application so that we're
+            // sure that the state has changed to a "logged out" state.
+            window.location.reload();
+        } catch(err) {
+            console.error("Failed to log out user.", err);
+        }
     });
 
     // Because we are in a type="module" script, this script will run after the
@@ -70,10 +73,7 @@
     }
 
     function updateUsernameOutlet(username) {
-        const usernameOutlet = document.getElementById("username-outlet");
         usernameOutlet.textContent = username;
-
-        const menuContainer = document.getElementById("menu-container");
         menuContainer.classList.add("user-is-authenticated");
     }
 
