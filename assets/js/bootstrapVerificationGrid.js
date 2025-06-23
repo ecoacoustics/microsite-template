@@ -71,7 +71,7 @@ async function setup() {
 
     const targetElements = gridElements();
     if (targetElements.length > 0) {
-        if (!api.isLoggedIn) {
+        if (!(await api.isLoggedIn())) {
             window.location.href = "/login";
         }
     }

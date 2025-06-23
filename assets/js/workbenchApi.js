@@ -95,8 +95,9 @@ export class WorkbenchApi {
      */
     #authToken = null;
 
-    /** @returns {boolean} */
-    get isLoggedIn() {
+    /** @returns {Promise<boolean>} */
+    async isLoggedIn() {
+        await this.#refreshAuthToken();
         return this.#authToken !== null;
     }
 
@@ -150,11 +151,6 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>}
      */
     async loginUser(username, password) {
-        // We make a "logout" request before logging the user in so that if the
-        // user somehow manages to login while already logged in, they will
-        // switch to the new account they want to log into.
-        await this.logoutUser();
-
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
@@ -344,12 +340,18 @@ export class WorkbenchApi {
      * Refreshes the authentication token by using exiting cookies to
      * authenticate.
      *
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      * A boolean indicating if the auth token was successfully fetched
      */
     async #refreshAuthToken() {
         const securityEndpoint = this.#createUrl("/security/user");
-        const response = await this.#fetch("GET", securityEndpoint);
+        const response = await this.#fetch(
+            "GET",
+            securityEndpoint,
+            undefined,
+            undefined,
+            false,
+        );
         if (!response.ok) {
             return false;
         }
@@ -409,7 +411,13 @@ export class WorkbenchApi {
      *
      * @returns {Promise<Response>}
      */
-    #fetch(method, url, body = null, headerOverride = {}) {
+    #fetch(
+        method,
+        url,
+        body = null,
+        headerOverride = {},
+        withAuthHeader = true,
+    ) {
         if (
             method !== "GET" &&
             method !== "POST" &&
@@ -427,7 +435,11 @@ export class WorkbenchApi {
             ...headerOverride,
         };
 
-        if (this.#authToken) {
+        // If the "Authorization" header is omitted, the cookie will be used for
+        // authorization.
+        // This can be useful when refreshing the authentication token, or for
+        // making requests where the auth token may have expired.
+        if (this.#authToken && withAuthHeader) {
             headers["Authorization"] = `Token token=\"${this.#authToken}\"`;
         }
 

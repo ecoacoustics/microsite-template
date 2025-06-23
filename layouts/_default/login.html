@@ -133,6 +133,10 @@
         async function handleSubmission(username, password) {
             disableForm();
 
+            if (await api.isLoggedIn()) {
+                redirectSuccess();
+            }
+
             const authSuccess = await api.loginUser(username, password);
             if (authSuccess) {
                 redirectSuccess();
@@ -148,8 +152,7 @@
             // navigated to this page using the back button.
             // Therefore, we want to go back one more page as re-logging in will
             // have no effect.
-            const userModel = await api.getUserProfile();
-            if (userModel) {
+            if (await api.isLoggedIn()) {
                 redirectSuccess();
             }
 
