@@ -78,7 +78,7 @@
     </style>
 
     <script type="module">
-        const api = await window.workbenchApi();
+        const api = await workbenchApi();
 
         function redirectSuccess() {
             const hasHistory = window.history && window.history.length > 0;
@@ -116,7 +116,7 @@
                 event.preventDefault();
 
                 const formData = new FormData(form);
-                const formValues = Object.fromEntries(event);
+                const formValues = Object.fromEntries(formData);
 
                 const username = formValues["user[login]"];
                 const password = formValues["user[password]"];

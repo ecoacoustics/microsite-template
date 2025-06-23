@@ -37,8 +37,7 @@
 </style>
 
 <script type="module">
-    const api = await window.workbenchApi();
-    const userModel = await api.getUserProfile();
+    const api = await workbenchApi();
 
     const logOutMenuItem = document.getElementById("log-out-menu-item");
     logOutMenuItem.addEventListener("click", () => {

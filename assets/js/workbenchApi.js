@@ -28,6 +28,10 @@ const bawApiDecisionMapping = {
  */
 export class WorkbenchApi {
     /**
+     * You should not be using this constructor directly, and should instead get
+     * and instance of this service through the WorkbenchApi.instance function
+     * to get a initialized singleton instance of this service.
+     *
      * @private
      * @param {string} host
      */
@@ -50,7 +54,11 @@ export class WorkbenchApi {
     /** @type {WorkbenchApi} */
     static #instance;
 
-    /** @type {(() => void)[]} */
+    /**
+     * Service consumers that are awaiting on the service being initialized.
+     *
+     * @type {((service: WorkbenchApi) => void)[]}
+     */
     static #initResolvers = [];
 
     /**
@@ -65,6 +73,8 @@ export class WorkbenchApi {
             return WorkbenchApi.#instance;
         }
 
+        // If there is not an initialized instance and this is the first call to
+        // WorkbenchApi.instance, then we want to create a new instance.
         if (WorkbenchApi.#initResolvers.length === 0) {
             const resolver = (value) => value;
             WorkbenchApi.#initResolvers.push(resolver);
@@ -81,6 +91,10 @@ export class WorkbenchApi {
             return newInstance;
         }
 
+        // If a WorkbenchApi instance has not been initialized, but another
+        // consumer has already started initializing the service, we return a
+        // new promise that can be resolved with the service once it has been
+        // initialized.
         return new Promise((resolver) => {
             WorkbenchApi.#initResolvers.push(resolver);
         });
@@ -148,12 +162,17 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>}
      */
     async loginUser(username, password) {
+        // We make a "logout" request before logging the user in so that if the
+        // user somehow manages to login while already logged in, their account
+        // will be overwritten.
+        await this.logoutUser();
+
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
             signInEndpoint,
             null,
-            { Accept: "*" },
+            { Accept: "text/html" },
         );
 
         if (!authTokenRequest.ok) {
@@ -174,7 +193,8 @@ export class WorkbenchApi {
         const signInResponse = await this.#fetch(
             "POST",
             signInEndpoint,
-            urlParams.toString(),
+            requestBody,
+            { Accept: "text/html" },
         );
 
         return signInResponse.ok;
@@ -420,8 +440,10 @@ export class WorkbenchApi {
         }
 
         if (method !== "GET") {
-            headers["Content-Type"] = "application/json";
-            body = JSON.stringify(body);
+            if (typeof body === "object" && !(body instanceof FormData)) {
+                headers["Content-Type"] = "application/json";
+                body = JSON.stringify(body);
+            }
         }
 
         // If the "fetch" function fails due to CORS or other security related

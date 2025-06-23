@@ -1,6 +1,6 @@
 const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
-const api = await window.workbenchApi();
+const api = await workbenchApi();
 
 /**
  * @description
@@ -57,7 +57,7 @@ async function updateUrlTransformers(target) {
 }
 
 async function setup() {
-    const campaigns = window.siteParams?.campaigns || [];
+    const campaigns = globalThis.siteParams?.campaigns || [];
     // This guard condition is not exhaustive because it doesn't check every
     // element in the "campaigns" array.
     if (
@@ -71,8 +71,6 @@ async function setup() {
 
     const targetElements = gridElements();
     if (targetElements.length > 0) {
-        await api.refreshAuthToken();
-
         if (!api.isLoggedIn) {
             window.location.href = "/login";
         }
