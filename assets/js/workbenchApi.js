@@ -138,19 +138,18 @@ export class WorkbenchApi {
      * This function will return a boolean indicating if authentication was
      * successful.
      *
-     * Note that this method does not refresh the authentication token.
+     * Note that this method does not refresh the authentication token because
+     * after logging in, the user will typically navigate to another page,
+     * causing the service to re-init (which will refresh the auth token).
+     * This is an optimization decision that was made to minimize making an API
+     * requests.
      *
      * @param {string} username
      * @param {string} password
      *
-     * @param {boolean} refreshAuthToken
-     * Whether to refresh the auth token after a successful login.
-     * If you are navigating directly after logging in this should probably be
-     * set to "false".
-     *
      * @returns {Promise<boolean>}
      */
-    async loginUser(username, password, refreshAuthToken = false) {
+    async loginUser(username, password) {
         // We make a "logout" request before logging the user in so that if the
         // user somehow manages to login while already logged in, they will
         // switch to the new account they want to log into.
@@ -185,10 +184,6 @@ export class WorkbenchApi {
             requestBody,
             { Accept: "text/html" },
         );
-
-        if (refreshAuthToken) {
-            await this.#refreshAuthToken();
-        }
 
         return signInResponse.ok;
     }
@@ -348,6 +343,9 @@ export class WorkbenchApi {
     /**
      * Refreshes the authentication token by using exiting cookies to
      * authenticate.
+     *
+     * @returns {boolean}
+     * A boolean indicating if the auth token was successfully fetched
      */
     async #refreshAuthToken() {
         const securityEndpoint = this.#createUrl("/security/user");

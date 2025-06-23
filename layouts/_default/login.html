@@ -2,22 +2,37 @@
     <div class="login-container">
         <sl-card class="card-header">
             <div slot="header"><h1>{{ .Title }}</h1></div>
-            <form id="form" class="validity-styles">
+            <form id="login-form" class="validity-styles">
                 <sl-input
                     type="email"
                     name="user[login]"
                     label="Name"
+                    class="login-form-input"
                     required
                 ></sl-input>
                 <sl-input
                     type="password"
                     name="user[password]"
                     label="Password"
+                    class="login-form-input"
                     password-toggle
                     required
                 ></sl-input>
-                <sl-checkbox name="user[remember_me]">Remember Me</sl-checkbox>
-                <sl-button type="submit" variant="primary">Log In</sl-button>
+
+                <sl-checkbox
+                    name="user[remember_me]"
+                    class="login-form-input"
+                 >
+                    Remember Me
+                </sl-checkbox>
+
+                <sl-button
+                    type="submit"
+                    variant="primary"
+                    class="login-form-input"
+                >
+                    Log In
+                </sl-button>
             </form>
 
             <p><strong id="error-output"></strong></p>
@@ -30,7 +45,14 @@
     </div>
 
     <style>
-        form {
+        body {
+            background-image: url("ecosounds-hero.jpg");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        #login-form {
             display: inline-block;
             width: 500px;
             max-width: 100%;
@@ -39,13 +61,6 @@
                 display: block;
                 margin-top: 1rem;
             }
-        }
-
-        body {
-            background-image: url("ecosounds-hero.jpg");
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
         }
 
         #error-output {
@@ -79,6 +94,8 @@
 
     <script type="module">
         const api = await workbenchApi();
+        const formElement = document.getElementById("login-form");
+        const formInputs = document.getElementsByClassName("login-form-input");
 
         function redirectSuccess() {
             const hasHistory = window.history && window.history.length > 0;
@@ -101,13 +118,29 @@
             errorOutputElement.innerText = error;
         }
 
+        function disableForm() {
+            for (const element of formInputs) {
+                element.setAttribute("disabled", true);
+            }
+        }
+
+        function enableForm() {
+            for (const element of formInputs) {
+                element.removeAttribute("disabled");
+            }
+        }
+
         async function handleSubmission(username, password) {
+            disableForm();
+
             const authSuccess = await api.loginUser(username, password);
             if (authSuccess) {
                 redirectSuccess();
             } else {
                 printFailure("Incorrect username or password.");
             }
+
+            enableForm();
         }
 
         async function setupLogin() {
@@ -120,11 +153,10 @@
                 redirectSuccess();
             }
 
-            const form = document.getElementById("form");
-            form.addEventListener("submit", (event) => {
+            formElement.addEventListener("submit", (event) => {
                 event.preventDefault();
 
-                const formData = new FormData(form);
+                const formData = new FormData(formElement);
                 const formValues = Object.fromEntries(formData);
 
                 const username = formValues["user[login]"];
