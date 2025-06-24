@@ -1,5 +1,5 @@
 +++
-title = 'Home'
+title = "Home"
 date = 2023-01-01T08:00:00-07:00
 draft = false
 +++
@@ -38,7 +38,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
 <sl-button href="/" pill>Link to a page</sl-button>
-{{< /card>}}
+{{< /card >}}
 
 <--->
 {{< card image="images/Plains-wanderer.jpg" alt="Plains Wanderer" >}}
@@ -48,7 +48,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
 <sl-button href="/" pill>Link to a page</sl-button>
-{{< /card>}}
+{{< /card >}}
 
 {{< /section/cards >}}
 
@@ -63,3 +63,6 @@ imagePosition="left" >}}
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 <a class="microsite-btn microsite-btn-primary"> Read more </a>
 {{< /section/image-column >}}
+
+{{< section/project-progress >}}
+{{< /section/project-progress >}}
