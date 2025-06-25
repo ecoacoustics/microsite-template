@@ -1,9 +1,11 @@
-<div class="project-progress-widget">
+{{ $id := printf "project-progress-%03d" $.Ordinal }}
+
+<div id="{{ $id }}" class="project-progress-widget">
     <sl-card class="progress-card">
         <h2 class="card-heading">Progress So Far</h3>
 
-        <strong id="progress-percentage"></strong>
-        <p id="progress-text"></p>
+        <strong class="progress-percentage"></strong>
+        <p class="progress-text"></p>
 
         <sl-button variant="primary" size="large">
             Contribute your verifications
@@ -13,7 +15,7 @@
 </div>
 
 <style>
-    .project-progress-widget {
+    #{{ $id }}.project-progress-widget {
         .progress-card {
             display: block;
             text-align: center;
@@ -27,14 +29,14 @@
                 We also use min-height (instead of height) so that word
                 wrap/overflow can expand the element.
             */
-            & > #progress-percentage {
+            & > .progress-percentage {
                 display: block;
                 min-height: 6rem;
 
                 font-size: 6rem;
             }
 
-            & > #progress-text {
+            & > .progress-text {
                 display: block;
                 min-height: 1em;
 
@@ -55,8 +57,9 @@
     const endpoint = "/audio_events";
     const campaigns = globalThis.siteParams?.campaigns || [];
 
-    const progressPercentageElement = document.getElementById("progress-percentage");
-    const progressTextElement = document.getElementById("progress-text");
+    const shortcodeHost = document.getElementById("{{ $id }}");
+    const progressPercentageElement = shortcodeHost.querySelector(".progress-percentage");
+    const progressTextElement = shortcodeHost.querySelector(".progress-text");
 
     function projectFilter() {
         if (campaigns.length === 1) {
