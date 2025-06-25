@@ -306,6 +306,29 @@ export class WorkbenchApi {
     }
 
     /**
+     * Performs gets the total number of items that match a filter condition.
+     *
+     * @param {string} path - The endpoint to perform a filter request on (without the /filter suffix)
+     * @param {Record<string, unknown>} filterBody - The filter body
+     * @returns {Promise<Response<Record<PropertyKey, unknown>>>}
+     */
+    async itemCount(path, filterBody) {
+        const endpoint = this.#createUrl(`${path}/filter`);
+
+        const countFilter = {
+            filter: filterBody,
+            paging: {
+                items: 1,
+            },
+        };
+
+        const response = await this.#fetch("POST", endpoint, countFilter);
+        const responseBody = await response.json();
+
+        return responseBody.meta.paging.total;
+    }
+
+    /**
      * @description
      * Creates a callback that can be used by the oe-verification-grid
      * components `urlTransformer` .

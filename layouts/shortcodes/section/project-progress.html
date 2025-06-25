@@ -2,8 +2,8 @@
     <sl-card class="progress-card">
         <h2 class="card-heading">Progress So Far</h3>
 
-        <strong class="card-percentage">24%</strong>
-        <p class="card-text">12,000 of 50,000 audio clips reviewed</p>
+        <strong id="progress-percentage"></strong>
+        <p id="progress-text"></p>
 
         <sl-button variant="primary" size="large">
             Contribute your verifications
@@ -16,20 +16,35 @@
     .project-progress-widget {
         .progress-card {
             display: block;
-                text-align: center;
+            text-align: center;
+
+            /*
+                Dynamic outputs have a fixed height so while the data is being
+                fetched, there is space reserved for the output.
+                We want to reserve space for the output during init to minimize
+                the amount of layout shift.
+
+                We also use min-height so that word wrap / overflow can expand
+                the element.
+            */
+            & > #progress-percentage {
+                display: block;
+                min-height: 6rem;
+
+                font-size: 6rem;
+            }
+
+            & > #progress-text {
+                display: block;
+                min-height: 1em;
+
+                font-weight: 600;
+                color: var(--oe-font-color-toned);
+            }
 
             & > .card-heading {
                 font-size: 2rem;
                 margin: 0;
-            }
-
-            & > .card-percentage {
-                font-size: 6rem;
-            }
-
-            & > .card-text {
-                font-weight: 600;
-                color: var(--oe-font-color-toned);
             }
         }
     }
@@ -37,4 +52,54 @@
 
 <script type="module">
     const api = await workbenchApi();
+    const endpoint = "/audio_events";
+
+    const allCampaigns = globalThis.siteParams?.campaigns || [];
+    const targetCampaign = allCampaigns[0];
+
+    const progressPercentageElement = document.getElementById("progress-percentage");
+    const progressTextElement = document.getElementById("progress-text");
+
+    async function getUnverifiedCount() {
+        const filterBody = {
+            and: [
+                targetCampaign.filters.filter,
+                { "verifications.id": { eq: null } },
+            ],
+        };
+
+        return await api.itemCount(endpoint, filterBody);
+    }
+
+    async function getVerifiedCount() {
+        const filterBody = {
+            and: [
+                targetCampaign.filters.filter,
+                { "verifications.id": { not_eq: null } },
+            ],
+        };
+
+        return await api.itemCount(endpoint, filterBody);
+    }
+
+    function updateCard(unverified, verified) {
+        const totalCount = verified + unverified;
+        const textMessage = `${verified} of ${unverified} audio clips reviewed`;
+
+        // I floor the number so that when we approach 100% verification, users
+        // don't see a 100% verified state and stop verifying.
+        const progressPercentage = Math.floor(100 * (verified / totalCount));
+        const roundedPercentage = progressPercentage.toFixed(0);
+        const percentageMessage = `${roundedPercentage}%`;
+
+        progressPercentageElement.textContent = percentageMessage;
+        progressTextElement.textContent = textMessage;
+    }
+
+    const [unverifiedCount, verifiedCount] = await Promise.all([
+        getUnverifiedCount(),
+        getVerifiedCount(),
+    ]);
+
+    updateCard(unverifiedCount, verifiedCount);
 </script>
