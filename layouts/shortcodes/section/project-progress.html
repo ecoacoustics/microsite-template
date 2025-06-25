@@ -53,17 +53,23 @@
 <script type="module">
     const api = await workbenchApi();
     const endpoint = "/audio_events";
-
-    const allCampaigns = globalThis.siteParams?.campaigns || [];
-    const targetCampaign = allCampaigns[0];
+    const campaigns = globalThis.siteParams?.campaigns || [];
 
     const progressPercentageElement = document.getElementById("progress-percentage");
     const progressTextElement = document.getElementById("progress-text");
 
+    function projectFilter() {
+        return {
+            or: [
+                ...campaigns.map((campaign) => campaign.filters.filter),
+            ],
+        };
+    }
+
     async function getUnverifiedCount() {
         const filterBody = {
             and: [
-                targetCampaign.filters.filter,
+                projectFilter(),
                 { "verifications.id": { eq: null } },
             ],
         };
@@ -74,7 +80,7 @@
     async function getVerifiedCount() {
         const filterBody = {
             and: [
-                targetCampaign.filters.filter,
+                projectFilter(),
                 { "verifications.id": { not_eq: null } },
             ],
         };
