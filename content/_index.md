@@ -64,5 +64,22 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <a class="microsite-btn microsite-btn-primary"> Read more </a>
 {{< /section/image-column >}}
 
-{{< section/project-progress >}}
-{{< /section/project-progress >}}
+<div class="progress-container">
+    {{< section/project-progress >}}
+    {{< /section/project-progress >}}
+    <div>
+        <h2>Why it matters</h3>
+        <p>
+            By helping identify bird calls, you're contributing to a growing
+            library of acoustic data that:
+        </p>
+        <ul>
+            <li>Tracks how species respond to climate change</li>
+            <li>Monitors ecosystem health after disasters</li>
+            <li>
+                Guides restoration efforts to ensure habitats don't just
+                look right — they sound right, too
+            </li>
+        </ul>
+    </div>
+</div>
