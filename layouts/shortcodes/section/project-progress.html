@@ -19,13 +19,13 @@
             text-align: center;
 
             /*
-                Dynamic outputs have a fixed height so while the data is being
+                Dynamic outputs have a min-height so while the data is being
                 fetched, there is space reserved for the output.
                 We want to reserve space for the output during init to minimize
                 the amount of layout shift.
 
-                We also use min-height so that word wrap / overflow can expand
-                the element.
+                We also use min-height (instead of height) so that word
+                wrap/overflow can expand the element.
             */
             & > #progress-percentage {
                 display: block;
@@ -96,6 +96,8 @@
         progressTextElement.textContent = textMessage;
     }
 
+    // I use Promise.all so that both of the requests can be processed by the
+    // server simultaneously without blocking the other request.
     const [unverifiedCount, verifiedCount] = await Promise.all([
         getUnverifiedCount(),
         getVerifiedCount(),

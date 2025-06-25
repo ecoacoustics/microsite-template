@@ -306,10 +306,11 @@ export class WorkbenchApi {
     }
 
     /**
-     * Performs gets the total number of items that match a filter condition.
+     * Efficiently queries the total number of items that match a filter
+     * condition.
      *
-     * @param {string} path - The endpoint to perform a filter request on (without the /filter suffix)
-     * @param {Record<string, unknown>} filterBody - The filter body
+     * @param {string} path - The endpoint to perform a filter request (without the /filter suffix)
+     * @param {Record<string, unknown>} filterBody
      * @returns {Promise<Response<Record<PropertyKey, unknown>>>}
      */
     async itemCount(path, filterBody) {
