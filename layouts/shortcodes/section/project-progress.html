@@ -59,6 +59,10 @@
     const progressTextElement = document.getElementById("progress-text");
 
     function projectFilter() {
+        if (campaigns.length === 1) {
+            return campaigns[0].filters.filter;
+        }
+
         return {
             or: [
                 ...campaigns.map((campaign) => campaign.filters.filter),
