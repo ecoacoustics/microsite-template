@@ -1,0 +1,120 @@
+{{ $id := printf "project-progress-%03d" $.Ordinal }}
+
+<div id="{{ $id }}" class="project-progress-widget">
+    <sl-card class="progress-card">
+        <h2 class="card-heading">Progress So Far</h3>
+
+        <strong class="progress-percentage"></strong>
+        <p class="progress-text"></p>
+
+        <sl-button variant="primary" size="large">
+            Contribute your verifications
+        </sl-button>
+    </sl-card>
+    {{ .Inner | $.Page.RenderString }}
+</div>
+
+<style>
+    #{{ $id }}.project-progress-widget {
+        .progress-card {
+            display: block;
+            text-align: center;
+
+            /*
+                Dynamic outputs have a min-height so while the data is being
+                fetched, there is space reserved for the output.
+                We want to reserve space for the output during init to minimize
+                the amount of layout shift.
+
+                We also use min-height (instead of height) so that word
+                wrap/overflow can expand the element.
+            */
+            & > .progress-percentage {
+                display: block;
+                min-height: 6rem;
+
+                font-size: 6rem;
+            }
+
+            & > .progress-text {
+                display: block;
+                min-height: 1em;
+
+                font-weight: 600;
+                color: var(--oe-font-color-toned);
+            }
+
+            & > .card-heading {
+                font-size: 2rem;
+                margin: 0;
+            }
+        }
+    }
+</style>
+
+<script type="module">
+    const api = await workbenchApi();
+    const endpoint = "/audio_events";
+    const campaigns = globalThis.siteParams?.campaigns || [];
+
+    const shortcodeHost = document.getElementById("{{ $id }}");
+    const progressPercentageElement = shortcodeHost.querySelector(".progress-percentage");
+    const progressTextElement = shortcodeHost.querySelector(".progress-text");
+
+    function projectFilter() {
+        if (campaigns.length === 1) {
+            return campaigns[0].filters.filter;
+        }
+
+        return {
+            or: [
+                ...campaigns.map((campaign) => campaign.filters.filter),
+            ],
+        };
+    }
+
+    async function getUnverifiedCount() {
+        const filterBody = {
+            and: [
+                projectFilter(),
+                { "verifications.id": { eq: null } },
+            ],
+        };
+
+        return await api.itemCount(endpoint, filterBody);
+    }
+
+    async function getVerifiedCount() {
+        const filterBody = {
+            and: [
+                projectFilter(),
+                { "verifications.id": { not_eq: null } },
+            ],
+        };
+
+        return await api.itemCount(endpoint, filterBody);
+    }
+
+    function updateCard(unverified, verified) {
+        const totalCount = verified + unverified;
+        const textMessage = `${verified} of ${unverified} audio clips reviewed`;
+
+        // I floor the number so that when we approach 100% verification, users
+        // don't see a 100% verified state and stop verifying.
+        const progressPercentage = Math.floor(100 * (verified / totalCount));
+        const roundedPercentage = progressPercentage.toFixed(0);
+        const percentageMessage = `${roundedPercentage}%`;
+
+        progressPercentageElement.textContent = percentageMessage;
+        progressTextElement.textContent = textMessage;
+    }
+
+    // I use Promise.all so that both of the requests can be processed by the
+    // server simultaneously without blocking the other request.
+    const [unverifiedCount, verifiedCount] = await Promise.all([
+        getUnverifiedCount(),
+        getVerifiedCount(),
+    ]);
+
+    updateCard(unverifiedCount, verifiedCount);
+</script>

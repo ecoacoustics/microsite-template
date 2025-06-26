@@ -34,6 +34,11 @@ params:
         filter:
           tags.text:
             eq: "Powerful Owl"
+    - name: "Australian Brush-turkey"
+      filters:
+        filter:
+          tags.text:
+            eq: "Australian Brush-turkey"
   style:
     xsmallBreakPoint: 425px
     smallBreakPoint: 768px
