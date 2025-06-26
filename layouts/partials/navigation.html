@@ -14,7 +14,7 @@ Renders a menu for the given menu ID.
   <nav class="oe-navigation">
     <a href="/" class="oe-brand">{{ site.Title }}</a>
     {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
-    {{- partial "./auth-menu.html" }}
+    {{- partial "auth-menu.html" }}
     <sl-button href="/verify" variant="primary" pill>Validate Calls</sl-button>
   </nav>
 {{- end }}

@@ -6,3 +6,13 @@
 <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace.js" ></script>
 {{ partialCached "head/css.html" . }}
 {{ partialCached "head/js.html" . }}
+
+{{/*
+    Because the hero-image is likely to be a large image, we want to start
+    pre-fetching it as fast as possible so that it's visible as soon as the page
+    renders.
+*/}}
+{{ $heroImage := site.Params.HeroImage }}
+{{ with resources.Get $heroImage }}
+    <link rel="preload" as="image" href="{{ .RelPermalink }}">
+{{- end -}}
