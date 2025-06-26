@@ -5,7 +5,6 @@ draft = false
 +++
 
 {{< section/hero
-image="images/Plains_wanderer_female.jpg"
 caption=" Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons">}}
 Can you hear a <br><span class="oe-theme-emphasis">Plains Wanderer</span>?
 {{< /section/hero >}}
