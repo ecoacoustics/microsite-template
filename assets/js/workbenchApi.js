@@ -55,13 +55,6 @@ export class WorkbenchApi {
     static #instance;
 
     /**
-     * Service consumers that are awaiting on the service being initialized.
-     *
-     * @type {((service: WorkbenchApi) => void)[]}
-     */
-    static #initResolvers = [];
-
-    /**
      * Gets a singleton instance of the workbench api service configured with
      * the login state pre-configured.
      *
@@ -94,6 +87,20 @@ export class WorkbenchApi {
      * @type {string | null}
      */
     #authToken = null;
+
+    /**
+     * A tag cache that stores tag ids an their resolved models in a map.
+     *
+     * We assume that there will not be many unique tags because projects are
+     * typically scoped to a specific tag or a geographical location that should
+     * reduce the number of unique tags that the user sees.
+     * If this assumption is broken in the future, we might want to create a
+     * queue with a fixed number of slots so that the least requested tags are
+     * removed from the cache.
+     *
+     * @type {Map<number, Response<Tag>>}
+     */
+    #tagCache = new Map();
 
     /** @returns {Promise<boolean>} */
     async isLoggedIn() {
@@ -189,10 +196,26 @@ export class WorkbenchApi {
      * @returns {Promise<Tag | null>}
      */
     async getTag(tagId) {
-        const url = this.#createUrl(`/tags/${tagId}`);
-        const response = await this.#fetch("GET", url);
+        // We use "get" instead of "has" here to check if the tag is already in
+        // the cache so that if it does exist, we don't have to do a subsequent
+        // get call.
+        //
+        // If multiple requests for the same tag come close together, we'll
+        // cache the response so that subsequent requests for the same tag can
+        // await the same response.
+        const cachedTag = this.#tagCache.get(tagId);
+        if (cachedTag) {
+            return await cachedTag;
+        }
 
-        const responseBody = await response.json();
+        const tagRequest = async () => {
+            const url = this.#createUrl(`/tags/${tagId}`);
+            const response = await this.#fetch("GET", url);
+            const responseBody = await response.json();
+            return responseBody;
+        };
+
+        this.#tagCache.set(tagId, tagRequest());
         return responseBody;
     }
 
