@@ -215,8 +215,10 @@ export class WorkbenchApi {
             return responseBody;
         };
 
-        this.#tagCache.set(tagId, tagRequest());
-        return responseBody;
+        const tagModel = tagRequest();
+        this.#tagCache.set(tagId, tagModel);
+
+        return await tagModel;
     }
 
     /**
