@@ -89,14 +89,12 @@ export class WorkbenchApi {
     #authToken = null;
 
     /**
-     * A tag cache that stores tag ids an their resolved models in a map.
+     * A tag cache that stores tag ids and their model resolvers in a map.
+     * We use a promise as the value so that we can store pending responses in
+     * the cache.
      *
-     * We assume that there will not be many unique tags because projects are
-     * typically scoped to a specific tag or a geographical location that should
-     * reduce the number of unique tags that the user sees.
-     * If this assumption is broken in the future, we might want to create a
-     * queue with a fixed number of slots so that the least requested tags are
-     * removed from the cache.
+     * Note that because the tag cache is a map, it is in-memory and not
+     * persistent between sessions or users.
      *
      * @type {Map<number, Response<Tag>>}
      */
@@ -200,8 +198,8 @@ export class WorkbenchApi {
         // the cache so that if it does exist, we don't have to do a subsequent
         // get call.
         //
-        // If multiple requests for the same tag come close together, we'll
-        // cache the response so that subsequent requests for the same tag can
+        // If multiple requests for the same tag come close together, we cache
+        // the response handler so that subsequent requests for the same tag can
         // await the same response.
         const cachedTag = this.#tagCache.get(tagId);
         if (cachedTag) {
@@ -211,14 +209,14 @@ export class WorkbenchApi {
         const tagRequest = async () => {
             const url = this.#createUrl(`/tags/${tagId}`);
             const response = await this.#fetch("GET", url);
-            const responseBody = await response.json();
+            const responseBody = response.body;
             return responseBody;
         };
 
-        const tagModel = tagRequest();
-        this.#tagCache.set(tagId, tagModel);
+        const tagPromise = tagRequest();
+        this.#tagCache.set(tagId, tagPromise);
 
-        return await tagModel;
+        return await tagPromise;
     }
 
     /**
