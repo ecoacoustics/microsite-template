@@ -209,8 +209,8 @@ export class WorkbenchApi {
         const tagRequest = async () => {
             const url = this.#createUrl(`/tags/${tagId}`);
             const response = await this.#fetch("GET", url);
-            const responseBody = response.body;
-            return responseBody;
+            const responseBody = await response.json();
+            return responseBody.data;
         };
 
         const tagPromise = tagRequest();
@@ -313,7 +313,7 @@ export class WorkbenchApi {
                 const tagOfInterest = taggings[0];
                 const tag = await this.getTag(tagOfInterest.tag_id);
 
-                model.tag = tag.data;
+                model.tag = tag;
             });
 
             await Promise.allSettled(associatedModelPromises);
