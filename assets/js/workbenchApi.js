@@ -55,13 +55,6 @@ export class WorkbenchApi {
     static #instance;
 
     /**
-     * Service consumers that are awaiting on the service being initialized.
-     *
-     * @type {((service: WorkbenchApi) => void)[]}
-     */
-    static #initResolvers = [];
-
-    /**
      * Gets a singleton instance of the workbench api service configured with
      * the login state pre-configured.
      *
@@ -94,6 +87,18 @@ export class WorkbenchApi {
      * @type {string | null}
      */
     #authToken = null;
+
+    /**
+     * A tag cache that stores tag ids and their model resolvers in a map.
+     * We use a promise as the value so that we can store pending responses in
+     * the cache.
+     *
+     * Note that because the tag cache is a map, it is in-memory and not
+     * persistent between sessions or users.
+     *
+     * @type {Map<number, Response<Tag>>}
+     */
+    #tagCache = new Map();
 
     /** @returns {Promise<boolean>} */
     async isLoggedIn() {
@@ -189,11 +194,29 @@ export class WorkbenchApi {
      * @returns {Promise<Tag | null>}
      */
     async getTag(tagId) {
-        const url = this.#createUrl(`/tags/${tagId}`);
-        const response = await this.#fetch("GET", url);
+        // We use "get" instead of "has" here to check if the tag is already in
+        // the cache so that if it does exist, we don't have to do a subsequent
+        // get call.
+        //
+        // If multiple requests for the same tag come close together, we cache
+        // the response handler so that subsequent requests for the same tag can
+        // await the same response.
+        const cachedTag = this.#tagCache.get(tagId);
+        if (cachedTag) {
+            return await cachedTag;
+        }
 
-        const responseBody = await response.json();
-        return responseBody;
+        const tagRequest = async () => {
+            const url = this.#createUrl(`/tags/${tagId}`);
+            const response = await this.#fetch("GET", url);
+            const responseBody = await response.json();
+            return responseBody.data;
+        };
+
+        const tagPromise = tagRequest();
+        this.#tagCache.set(tagId, tagPromise);
+
+        return await tagPromise;
     }
 
     /**
@@ -290,7 +313,7 @@ export class WorkbenchApi {
                 const tagOfInterest = taggings[0];
                 const tag = await this.getTag(tagOfInterest.tag_id);
 
-                model.tag = tag.data;
+                model.tag = tag;
             });
 
             await Promise.allSettled(associatedModelPromises);
