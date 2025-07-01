@@ -423,7 +423,7 @@ export class WorkbenchApi {
      */
     #verificationToBawModel(model) {
         const apiDecision = bawApiDecisionMapping[model.verification.confirmed];
-        const tagId = model.tag.tag_id;
+        const tagId = model.tag.id;
 
         const subject = model.subject;
         const apiModel = {
