@@ -12,12 +12,15 @@ Most of the steps described can be found in the hugo
     - We typically use the `-microsite` suffix in the repository name.
       E.g. (`australasian-bittern-microsite`)
 2. Clone the repository and run `hugo new site .`
-3. Add the microsite template as a theme
+3. Install [git lfs](https://git-lfs.com/) hooks into the repository by running `git lfs install`
+4. Add the microsite template as a theme
     - `git submodule add https://github.com/ecoacoustics/microsite-template.git themes/microsite-template`
     - `echo "theme: "microsite-template" >> hugo.yaml`
-4. Initialize the websites content from the microsite template
+5. Initialize the websites content from the microsite template
     - `cp -r ./themes/microsite-template/content/* ./content/`
     - `cp -r ./themes/microsite-template/layouts/shortcodes/* ./layouts/shortcodes/`
+    - `cp ./themes/microsite-template/hugo.yaml ./hugo.yaml`
+    - `cp ./themes/microsite-template/netlify.toml ./hugo.toml`
 
 Spectrograms require
 [special security requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements)
@@ -39,7 +42,6 @@ server:
 
 ## Deploying a Microsite
 
-1. Create a Netlify site with a custom domain
-2. You will have to add the microsite's domain to the api's CORS allow list
+1. Ensure that the new repository is public and deploy to Netlify
 
 You have now deployed a microsite!
