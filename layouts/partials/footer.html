@@ -8,7 +8,29 @@
       {{- end }}
     </ul>
   </div>
+
   <div class="oe-footer-row">
     <p>Copyright {{ now.Year }}. All rights reserved.</p>
   </div>
+
+  <div class="oe-footer-row">
+    <p>
+      Created by
+      <a href="https://openecoacoustics.org/" target="_blank">
+        {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
+        <img
+          src="{{ .RelPermalink }}"
+          alt="OpenEcoacoustics Logo"
+          class="sponsor-logo"
+        >
+        {{- end -}}
+      </a>
+    </p>
+  </div>
 </div>
+
+<style>
+  .sponsor-logo {
+    min-height: 4rem;
+  }
+</style>
