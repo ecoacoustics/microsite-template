@@ -1,14 +1,11 @@
 <div class="oe-footer">
   <div class="oe-footer-row">
-    <a href="#"><sl-icon name="facebook"></sl-icon></a>
-    <a href="#"><sl-icon name="github"></sl-icon></a>
-    <a href="#"><sl-icon name="youtube"></sl-icon></a>
-  </div>
-  <div class="oe-footer-row">
     <ul>
-      <li><a href="/contact">Contact us</a></li>
-      <li><a href="/about">About Us</a></li>
-      <li><a href="#">Data Policy</a></li>
+      {{- range .Site.Menus.footer }}
+        <li>
+          <a href="{{ .PageRef }}">{{ .Name }}</a>
+        </li>
+      {{- end }}
     </ul>
   </div>
   <div class="oe-footer-row">
