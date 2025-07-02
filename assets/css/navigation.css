@@ -7,7 +7,7 @@
     top: 0;
     z-index: 1;
 
-    background-color: var(--oe-background-light);
+    background-color: var(--oe-background-dark);
     font-family: var(--oe-body-font);
     font-size: var(--oe-font-size-small);
 
@@ -36,14 +36,5 @@
         &.active {
             color: var(--oe-theme-color);
         }
-    }
-}
-
-.oe-home-header .oe-navigation {
-    background: linear-gradient(to bottom, black 50%, transparent 100%);
-    margin-bottom: calc(50% * -1);
-
-    a {
-        color: var(--oe-font-color-bright);
     }
 }
