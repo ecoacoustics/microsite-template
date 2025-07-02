@@ -30,8 +30,13 @@ body section {
 }
 
 .oe-hero-title {
-    color: var(--oe-font-color-bright);
-    text-shadow: 4px 2px 3px var(--oe-font-color);
+    /*
+        We don't use the theme font color here because theme colors might not
+        work nicely with the text shadow.
+    */
+    color: white;
+    text-shadow: 4px 2px 3px black;
+
     font-size: var(--oe-font-size-xlarge);
     max-width: 30%;
     align-self: center;

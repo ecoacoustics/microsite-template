@@ -4,9 +4,7 @@
   {{ partial "head.html" . }}
 </head>
 <body>
-  <header class="{{ if .IsHome }}oe-home-header{{ end }}">
-    {{ partial "header.html" . }}
-  </header>
+  {{ partial "header.html" . }}
   <main class="container">
     {{ block "main" . }}{{ end }}
   </main>
