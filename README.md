@@ -13,3 +13,7 @@ $
 
 Once you have run the above command, you will be able to access a local version
 of the website at <https://development.ecosounds.org:1313>.
+
+## Deployment
+
+Deployment instructions can be found in [DEPLOYMENT.md](./DEPLOYMENT.md)
