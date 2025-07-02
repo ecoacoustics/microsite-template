@@ -22,24 +22,6 @@ Most of the steps described can be found in the hugo
     - `cp ./themes/microsite-template/hugo.yaml ./hugo.yaml`
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
 
-Spectrograms require
-[special security requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements)
-otherwise you will run into the error "SharedArrayBuffer is not defined".
-
-To support spectrograms, you will need to add the following code to your site
-configs `server.headers`.
-
-```yml
-server:
-    headers:
-        - for: /**
-          values:
-              Access-Control-Allow-Origin: "*"
-              Cross-Origin-Opener-Policy: same-origin
-              Cross-Origin-Embedder-Policy: require-corp
-              Cross-Origin-Resource-Policy: cross-origin
-```
-
 ## Deploying a Microsite
 
 1. Ensure that the new microsite repository is public
