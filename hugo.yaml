@@ -20,10 +20,10 @@ markup:
     renderer:
       unsafe: true
 menus:
-  main:
-    - name: About
-      pageRef: https://ecosounds.org/about/credits
-      weight: 10
+#   main:
+#     - name: Credits
+#       pageRef: https://ecosounds.org/about/credits
+#       weight: 10
 params:
   apiHost: https://api.staging.ecosounds.org
   workbenchHost: https://staging.ecosounds.org
