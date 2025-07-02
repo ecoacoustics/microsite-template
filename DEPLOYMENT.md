@@ -14,7 +14,10 @@ Most of the steps described can be found in the hugo
 2. Clone the repository and run `hugo new site .`
 3. Add the microsite template as a theme
     - `git submodule add https://github.com/ecoacoustics/microsite-template.git themes/microsite-template`
-    - `echo "theme = 'microsite-template'" >> hugo.toml`
+    - `echo "theme: "microsite-template" >> hugo.yaml`
+4. Initialize the websites content from the microsite template
+    - `cp -r ./themes/microsite-template/content/* ./content/`
+    - `cp -r ./themes/microsite-template/layouts/shortcodes/* ./layouts/shortcodes/`
 
 Spectrograms require
 [special security requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements)
