@@ -22,7 +22,7 @@ markup:
 menus:
   main:
     - name: About
-      pageRef: /about
+      pageRef: https://ecosounds.org/about/credits
       weight: 10
 params:
   apiHost: https://api.staging.ecosounds.org

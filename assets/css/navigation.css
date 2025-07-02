@@ -1,6 +1,6 @@
 .oe-navigation {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
 
     position: relative;
@@ -11,19 +11,27 @@
     font-family: var(--oe-body-font);
     font-size: var(--oe-font-size-small);
 
+    /*
+        We set a gap here so that there is a minimum spacing between the left
+        and right navigation blocks.
+    */
     gap: var(--oe-padding-medium);
     padding: var(--oe-padding-medium);
+
+    & > * {
+        display: flex;
+        align-items: center;
+        gap: var(--oe-padding-medium);
+    }
 
     .oe-brand {
         font-family: var(--oe-header-font);
         font-size: var(--oe-font-size-medium);
-        flex: 1 1;
     }
 
     a {
         color: var(--oe-font-color);
         text-decoration: none;
-        padding-left: var(--oe-padding-medium);
 
         &.active {
             color: var(--oe-theme-color);
