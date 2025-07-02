@@ -20,7 +20,7 @@ Most of the steps described can be found in the hugo
     - `cp -r ./themes/microsite-template/content/* ./content/`
     - `cp -r ./themes/microsite-template/layouts/shortcodes/* ./layouts/shortcodes/`
     - `cp ./themes/microsite-template/hugo.yaml ./hugo.yaml`
-    - `cp ./themes/microsite-template/netlify.toml ./hugo.toml`
+    - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
 
 Spectrograms require
 [special security requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements)
@@ -42,6 +42,6 @@ server:
 
 ## Deploying a Microsite
 
-1. Ensure that the new repository is public and deploy to Netlify
-
-You have now deployed a microsite!
+1. Ensure that the new microsite repository is public
+2. Publish to Netlify using the repository as the websites source
+3. Create and publish a `call-detective.org` sub-domain
