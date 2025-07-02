@@ -11,6 +11,11 @@ const bawApiDecisionMapping = {
 };
 
 /**
+ * A callback that can be used to get the current global WorkbenchApi instance
+ */
+globalThis.workbenchApi ??= () => WorkbenchApi.instance(globalThis.siteParams.apihost);
+
+/**
  * A service to interact with the baw-api
  * Note: When contacting the baw-api, a lot of endpoints require authentication
  * therefore it is recommended that you set the authToken property before
