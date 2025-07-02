@@ -1,0 +1,38 @@
+{{ define "main" }}
+    {{ .Content }}
+
+    <style>
+        /*
+            TODO: remove this once upstream max tile sizes have been implemented
+            see: https://github.com/ecoacoustics/web-components/issues/391
+        */
+        oe-verification-grid[grid-size="1"] {
+            display: block;
+            
+            /*
+                50rem is 800px on a default browser with font size 16.
+                We use rem units instead of px so that if the user zooms in, or
+                is on a high dpi screen, the verification grid can fill up a
+                relatively larger portion of the screen.
+
+                I have also chosen 800px for the maximum size because it is
+                close to the minimum size before the controls start wrapping.
+            */
+            max-width: 50rem;
+            margin: auto;
+        }
+    </style>
+
+    {{- with resources.Get "js/bootstrapVerificationGrid.js" }}
+    {{- if eq hugo.Environment "development" }}
+        {{- with . }}
+        <script src="{{ .RelPermalink }}" type="module"></script>
+        {{- end }}
+    {{- else }}
+        {{- $opts := dict "minify" true }}
+        {{- with . | fingerprint }}
+        <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+        {{- end }}
+    {{- end }}
+    {{- end }}
+{{ end }}
