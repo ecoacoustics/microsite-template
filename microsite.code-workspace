@@ -47,7 +47,13 @@
         "[yaml]": {
             "prettier.tabWidth": 2
         },
-        "cSpell.words": ["xsmall", "microsite", "taggings", "ecosounds"]
+        "cSpell.words": [
+            "xsmall",
+            "microsite",
+            "taggings",
+            "ecosounds",
+            "ecoacoustics"
+        ]
     },
     "extensions": {
         "recommendations": [
