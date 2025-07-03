@@ -18,12 +18,26 @@ Most of the steps described can be found in the hugo
     - `echo "theme: "microsite-template" >> hugo.yaml`
 5. Initialize the websites content from the microsite template
     - `cp -r ./themes/microsite-template/content/* ./content/`
-    - `cp -r ./themes/microsite-template/layouts/shortcodes/* ./layouts/shortcodes/`
-    - `cp ./themes/microsite-template/hugo.yaml ./hugo.yaml`
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
+
+## Adding personalized content
+
+1. Modify the `hugo.yaml` file in your microsite's root directory, with the required fields
+    - `title`
+    - `params.apiHost`
+    - `params.workbenchHost`
+    - `params.heroImage`
+    - `params.campaigns`
+2. Optional fields for your `hugo.yaml` include
+    - `menus.main` (navigation bar menu items)
+    - `menus.footer` (footer bar menu items)
+3. Customize the microsite's theme to match your clients color scheme
+    - `params.style.ThemeColor`
+    - And modify the ThemeShade's using the [Shoelace Color Token Generator](https://github.com/ecoacoustics/microsite-template/issues/49)
 
 ## Deploying a Microsite
 
 1. Ensure that the new microsite repository is public
 2. Publish to Netlify using the repository as the websites source
 3. Create and publish a `call-detective.org` sub-domain
+4. Setup dns, dns challenge, and ssl in netlify

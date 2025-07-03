@@ -53,6 +53,7 @@ params:
       lightness: 49%
     # TODO: We should derive the theme shades from the ThemeColor so that we
     # don't have to explicitly define every theme color shade.
+    # https://github.com/ecoacoustics/microsite-template/issues/49
     #
     # In the interim, you can create theme colors using the shoelace color
     # token generator.
