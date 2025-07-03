@@ -114,11 +114,12 @@
             if (redirectQsp) {
                 // To minimize security risks, we don't allow the redirect parameter
                 // to point to an external site (or different sub-domain).
-                const redirectLocation = new URL(redirectQsp, location.host);
+                const redirectLocation = new URL(redirectQsp, location.origin);
                 const isRedirectSafe = redirectLocation.hostname === location.hostname;
 
                 if (isRedirectSafe) {
                     location.replace(redirectLocation);
+                    return;
                 }
             }
 
