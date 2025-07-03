@@ -18,6 +18,10 @@
             &:hover {
                 color: var(--oe-font-color-toned);
             }
+
+            &.inline-link {
+                text-decoration: underline;
+            }
         }
 
         ul {
