@@ -1,9 +1,6 @@
 <script type="module">
-  import { WorkbenchApi } from "/js/workbenchApi.js";
-
-  {{/* Making hugo.yaml site params accessible through Json */}}
+  {{/* Making hugo.yaml site params accessible through js */}}
   globalThis.siteParams = {{ site.Params | jsonify | safeJS }};
-  globalThis.workbenchApi = () => WorkbenchApi.instance(globalThis.siteParams.apihost);
 </script>
 
 {{- with resources.Get "js/workbenchApi.js" }}
