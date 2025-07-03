@@ -18,12 +18,20 @@ h6 {
     font-family: var(--oe-heading-font);
 }
 
-.oe-theme-emphasis {
-    color: var(--oe-theme-color);
+a {
+    color: var(--oe-font-color);
+
+    &:active {
+        color: var(--oe-font-color);
+    }
 }
 
-a.o-theme-emphasis {
-    text-decoration: none; /*links with theme emphasis no underline */
+.oe-theme-emphasis {
+    color: var(--oe-theme-color);
+
+    a {
+        text-decoration: none;
+    }
 }
 
 .container {
