@@ -27,6 +27,7 @@
     .oe-brand {
         font-family: var(--oe-header-font);
         font-size: var(--oe-font-size-medium);
+        color: var(--oe-font-color-bright);
     }
 
     a {

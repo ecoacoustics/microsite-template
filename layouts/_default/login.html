@@ -98,12 +98,32 @@
         const formInputs = document.getElementsByClassName("login-form-input");
 
         function redirectSuccess() {
-            const hasHistory = window.history && window.history.length > 0;
-            if (hasHistory) {
-                window.history.back();
-            } else {
-                window.location.href = "/";
+            // We can navigate the user back to a previous page location using
+            // the "?redirect=/path" parameter.
+            const queryStrings = new URLSearchParams(location.search);
+            const redirectQsp = queryStrings.get("redirect");
+
+            // We don't use history.back here because the browsers bfcache
+            // would return a stale version of the webpage where the user is
+            // not logged in.
+            // https://web.dev/articles/bfcache
+            //
+            // We also use window.location.replace() instead of
+            // window.location.href so that if the user presses the back
+            // button, they will not be navigated back to the login page.
+            if (redirectQsp) {
+                // To minimize security risks, we don't allow the redirect parameter
+                // to point to an external site (or different sub-domain).
+                const redirectLocation = new URL(redirectQsp, location.origin);
+                const isRedirectSafe = redirectLocation.hostname === location.hostname;
+
+                if (isRedirectSafe) {
+                    location.replace(redirectLocation);
+                    return;
+                }
             }
+
+            location.replace("/");
         }
 
         function printFailure(error) {
