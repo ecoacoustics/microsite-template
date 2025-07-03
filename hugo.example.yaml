@@ -1,0 +1,41 @@
+title: Call Detective
+menus:
+#   main:
+#     - name: Credits
+#       pageRef: https://ecosounds.org/about/credits
+#       weight: 10
+params:
+  apiHost: https://api.staging.ecosounds.org
+  workbenchHost: https://staging.ecosounds.org
+  heroImage: images/Plains_wanderer_female.jpg
+  campaigns:
+    - name: "Powerful Owl"
+      filters:
+        filter:
+          tags.text:
+            eq: "Powerful Owl"
+    - name: "Australian Brush-turkey"
+      filters:
+        filter:
+          tags.text:
+            eq: "Australian Brush-turkey"
+  style:
+    # Theme colors are defined using "hsl" (hue, saturation, lightness).
+    # To create your own hsl theme color, you can use the following website.
+    # https://hslpicker.com/#ca7d2f
+    ThemeColor:
+      hue: 30deg
+      saturation: 62%
+      lightness: 49%
+    ThemeShades:
+      "50": 252 249 245
+      "100": 247 234 222
+      "200": 240 219 196
+      "300": 233 201 168
+      "400": 224 177 130
+      "500": 211 146 80
+      "600": 186 115 44
+      "700": 153 95 36
+      "800": 126 78 30
+      "900": 90 56 21
+      "950": 55 34 13

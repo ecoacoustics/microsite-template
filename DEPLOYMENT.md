@@ -19,21 +19,8 @@ Most of the steps described can be found in the hugo
 5. Initialize the websites content from the microsite template
     - `cp -r ./themes/microsite-template/content/* ./content/`
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
-
-## Adding personalized content
-
-1. Modify the `hugo.yaml` file in your microsite's root directory, with the required fields
-    - `title`
-    - `params.apiHost`
-    - `params.workbenchHost`
-    - `params.heroImage`
-    - `params.campaigns`
-2. Optional fields for your `hugo.yaml` include
-    - `menus.main` (navigation bar menu items)
-    - `menus.footer` (footer bar menu items)
-3. Customize the microsite's theme to match your clients color scheme
-    - `params.style.ThemeColor`
-    - And modify the ThemeShade's using the [Shoelace Color Token Generator](https://github.com/ecoacoustics/microsite-template/issues/49)
+6. Copy the microsite theme's config template
+    - `cp ./themes/microsite-template/hugo.example.yaml ./hugo.yaml`
 
 ## Deploying a Microsite
 
