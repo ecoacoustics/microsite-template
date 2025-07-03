@@ -19,7 +19,7 @@ Most of the steps described can be found in the hugo
 5. Initialize the websites content from the microsite template
     - `cp -r ./themes/microsite-template/content/* ./content/`
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
-6. Copy the microsite theme's config template
+6. Copy the microsite theme's config template and customize the values for client personalization
     - `cp ./themes/microsite-template/hugo.example.yaml ./hugo.yaml`
 
 ## Deploying a Microsite
