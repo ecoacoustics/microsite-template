@@ -4,7 +4,7 @@ body {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    font-family: var(--oe-body-font);
+    font-family: var(--oe-font-family);
     margin: 0;
     justify-content: space-between;
 }
@@ -39,7 +39,7 @@ a.o-theme-emphasis {
 /* Image captions */
 .oe-image-caption {
     color: var(--oe-font-color-toned);
-    font-size: var(--oe-font-size-xsmall);
+    font-size: var(--oe-font-size-small);
 }
 
 @media screen and (max-width: 500px) {

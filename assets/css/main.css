@@ -3,6 +3,7 @@
 @import "sections";
 @import "footer";
 @import "navigation";
+@import "theme";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
@@ -27,44 +28,4 @@
       var(--oe-theme-saturation),
       var(--oe-theme-lightness),
     );
-}
-
-:root {
-    /* Colors */
-    --oe-theme-color: var(--theme-color-raw);
-
-    /* Fonts */
-    --oe-heading-font: 'Inter', sans-serif;
-    --oe-body-font: 'Inter', sans-serif;
-    --oe-font-color: #000;
-    --oe-font-color-bright: #fff;
-    --oe-font-color-toned: #707070;
-    --oe-inverse-color: #000;
-
-    /* Backgrounds */
-    --oe-background-light: #fff;
-    --oe-background-dark: #000;
-    --oe-background-pane: #fcfcfc;
-
-    /* Font Sizes */
-    --oe-font-size-xsmall: 0.8rem;
-    --oe-font-size-small: 1rem;
-    --oe-font-size-medium: 1.5rem;
-    --oe-font-size-large: 2.25rem;
-    --oe-font-size-xlarge: 4.5rem;
-
-    /* Paddings */
-    --oe-padding-small: 0.5rem;
-    --oe-padding-medium: 1rem;
-    --oe-padding-large: 2rem;
-    --oe-padding-xlarge: 2.5rem;
-
-    /* Other */
-    --oe-navbar-height: 4rem;
-    --oe-panel-opacity: 0.8;
-    --oe-transition-duration: 0.3s;
-    --oe-transition-timing: ease-in-out;
-    --oe-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --oe-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --oe-border-radius: 0.25rem;
 }

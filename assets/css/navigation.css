@@ -8,8 +8,7 @@
     z-index: 1;
 
     background-color: var(--oe-background-dark);
-    font-family: var(--oe-body-font);
-    font-size: var(--oe-font-size-small);
+    font-family: var(--oe-font-family);
 
     /*
         We set a gap here so that there is a minimum spacing between the left
