@@ -1,19 +1,19 @@
 .oe-footer {
     background: var(--sl-color-primary-950);
     padding: var(--oe-padding-medium) 0px;
-    color: var(--oe-font-color-lighter);
+    color: var(--oe-font-color-light);
     text-align: center;
     margin-top: var(--oe-padding-medium);
 
     .oe-footer-row {
         margin: var(--oe-padding-small);
-        font-size: var(--oe-font-size-small);
+        font-size: var(--oe-font-size-xsmall);
         display: flex;
         justify-content: center;
 
         a {
             text-decoration: none;
-            color: var(--oe-font-color-lighter);
+            color: var(--oe-font-color-light);
 
             &:hover {
                 color: var(--oe-font-color-toned);

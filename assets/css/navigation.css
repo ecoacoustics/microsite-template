@@ -9,6 +9,8 @@
 
     background-color: var(--oe-background-dark);
     font-family: var(--oe-font-family);
+    font-size: var(--oe-font-size-small);
+    color: var(--oe-font-color-light);
 
     /*
         We set a gap here so that there is a minimum spacing between the left
@@ -24,16 +26,12 @@
     }
 
     .oe-brand {
-        font-family: var(--oe-header-font);
+        font-family: var(--oe-font-family);
         font-size: var(--oe-font-size-medium);
     }
 
     a {
-        color: var(--oe-font-color);
+        color: var(--oe-font-color-light);
         text-decoration: none;
-
-        &.active {
-            color: var(--oe-theme-color);
-        }
     }
 }

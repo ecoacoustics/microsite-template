@@ -15,7 +15,15 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: var(--oe-heading-font);
+    font-family: var(--oe-font-family);
+}
+
+a:active {
+    color: var(--oe-font-color);
+    
+    &:active {
+        color: var(--oe-font-color);
+    }
 }
 
 .oe-theme-emphasis {
@@ -39,7 +47,7 @@ a.o-theme-emphasis {
 /* Image captions */
 .oe-image-caption {
     color: var(--oe-font-color-toned);
-    font-size: var(--oe-font-size-small);
+    font-size: var(--oe-font-size-xsmall);
 }
 
 @media screen and (max-width: 500px) {
