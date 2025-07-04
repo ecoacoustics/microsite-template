@@ -21,6 +21,7 @@ params:
           tags.text:
             eq: "Australian Brush-turkey"
   style:
+    roundedButtons: true
     # Theme colors are defined using "hsl" (hue, saturation, lightness).
     # To create your own hsl theme color, you can use the following website.
     # https://hslpicker.com/#ca7d2f

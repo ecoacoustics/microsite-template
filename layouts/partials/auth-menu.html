@@ -1,6 +1,13 @@
 <span id="menu-container">
     <sl-dropdown id="authed-menu">
-        <sl-button slot="trigger" variant="default" caret pill>
+        <sl-button
+            slot="trigger"
+            variant="default"
+            caret
+            {{- if eq site.Params.Style.RoundedButtons true }}
+            pill
+            {{- end}}
+        >
             <sl-icon id="profile-icon" name="person-circle"></sl-icon>
             <span id="username-outlet"></span>
         </sl-button>
@@ -10,7 +17,14 @@
         </sl-menu>
     </sl-dropdown>
 
-    <sl-button id="unauthed-menu" href="/login" variant="default" pill>
+    <sl-button
+        id="unauthed-menu"
+        href="/login"
+        variant="default"
+        {{- if eq site.Params.Style.RoundedButtons true }}
+        pill
+        {{- end}}
+    >
         <sl-icon id="profile-icon" name="person-add"></sl-icon>
         Login
     </sl-button>
