@@ -25,7 +25,7 @@ Sign up or log in </a> to start verifying calls.
 
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card>}}
 
 <--->
@@ -36,7 +36,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card >}}
 
 <--->
@@ -46,7 +46,7 @@ Some quick example text to build on the card title and make up the bulk of the c
 
 Some quick example text to build on the card title and make up the bulk of the card's content.
 
-<sl-button href="/">Link to a page</sl-button>
+<sl-button href="/" pill>Link to a page</sl-button>
 {{< /card >}}
 
 {{< /section/cards >}}

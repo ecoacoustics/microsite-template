@@ -20,9 +20,9 @@
 
       see: https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css#L28-L30
     */
-    --micro-theme-hue: {{ .Site.Params.style.ThemeColor.hue }} !important;
-    --micro-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }} !important;
-    --micro-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }} !important;
+    --micro-theme-hue: {{ .Site.Params.style.ThemeColor.hue }};
+    --micro-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }};
+    --micro-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }};
 
     --micro-theme-color: hsl(
       var(--micro-theme-hue),

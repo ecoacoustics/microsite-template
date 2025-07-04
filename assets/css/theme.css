@@ -8,11 +8,13 @@
 */
 :root {
     /* Fonts */
-    --micro-font-family: "Inter", sans-serif;
+    --micro-heading-font: "Inter", sans-serif;
+    --micro-body-font: "Inter", sans-serif;
     --micro-font-color: #000;
     --micro-font-color-light: #fff;
     --micro-font-color-toned: #707070;
     --micro-inverse-color: #000;
+    --micro-heading-color: #000;
 
     /* Backgrounds */
     --micro-background-light: #fff;
