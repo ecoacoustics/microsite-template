@@ -26,12 +26,21 @@ a:active {
     }
 }
 
+a {
+    color: var(--oe-font-color);
+
+    &:active {
+        color: var(--oe-font-color);
+    }
+}
+
 .oe-theme-emphasis {
     color: var(--micro-theme-color);
 }
 
-a.o-theme-emphasis {
-    text-decoration: none; /*links with theme emphasis no underline */
+    a {
+        text-decoration: none;
+    }
 }
 
 .container {
