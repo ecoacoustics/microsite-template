@@ -4,6 +4,7 @@
 @import "footer";
 @import "navigation";
 @import "theme";
+@import "webcomponents-theme";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
@@ -19,13 +20,13 @@
 
       see: https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css#L28-L30
     */
-    --oe-theme-hue: {{ .Site.Params.style.ThemeColor.hue }} !important;
-    --oe-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }} !important;
-    --oe-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }} !important;
+    --micro-theme-hue: {{ .Site.Params.style.ThemeColor.hue }} !important;
+    --micro-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }} !important;
+    --micro-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }} !important;
 
-    --oe-theme-color: hsl(
-      var(--oe-theme-hue),
-      var(--oe-theme-saturation),
-      var(--oe-theme-lightness),
+    --micro-theme-color: hsl(
+      var(--micro-theme-hue),
+      var(--micro-theme-saturation),
+      var(--micro-theme-lightness),
     );
 }

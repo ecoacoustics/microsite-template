@@ -1,0 +1,20 @@
+/*
+    We need to use !important because of an upstream css specificity bug with
+    the web components.
+    see: https://github.com/ecoacoustics/web-components/issues/373
+
+    If you want to customize the base "theme color" use the hugo.yaml file's
+    params.style.ThemeColor
+
+    You can see the list of possible theming variables in the web components
+    repository.
+    https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css
+*/
+:root {
+    --oe-theme-hue: var(--micro-theme-hue) !important;
+    --oe-theme-saturation: var(--micro-theme-saturation) !important;
+    --oe-theme-lightness: var(--micro-theme-lightness) !important;
+
+    --oe-font-color: var(--micro-font-color) !important;
+    --oe-background-color: var(--micro-background-light) !important;
+}

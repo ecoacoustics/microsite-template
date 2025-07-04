@@ -4,7 +4,7 @@ body {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    font-family: var(--oe-font-family);
+    font-family: var(--micro-font-family);
     margin: 0;
     justify-content: space-between;
 }
@@ -15,19 +15,19 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: var(--oe-font-family);
+    font-family: var(--micro-font-family);
 }
 
 a:active {
-    color: var(--oe-font-color);
+    color: var(--micro-font-color);
     
     &:active {
-        color: var(--oe-font-color);
+        color: var(--micro-font-color);
     }
 }
 
 .oe-theme-emphasis {
-    color: var(--oe-theme-color);
+    color: var(--micro-theme-color);
 }
 
 a.o-theme-emphasis {

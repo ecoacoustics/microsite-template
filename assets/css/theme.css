@@ -1,52 +1,43 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 
 /*
-    We need the oe-verification-grid selector because of an upstream css
-    specificity bug with the web components.
-    see: https://github.com/ecoacoustics/web-components/issues/373
-
-    If you want to customize the base "theme color" use the hugo.yaml file's
-    params.style.ThemeColor
-
-    When creating new theming variables, keep in mind that both shoelace and the
-    web components are trying to match the styling.
-    So if possible, re-use the same theming variable names from the web
-    components repo for transparent passthrough.
-    https://github.com/ecoacoustics/web-components/blob/main/src/helpers/themes/theming.css
+    This theme.css file is to configure the theming of the microsite, not the
+    web components.
+    If you want to customize the web component's theming, modify
+    webcomponents-theme.css
 */
-:root, oe-verification-grid {
+:root {
     /* Fonts */
-    --oe-font-family: 'Inter', sans-serif;
-    --oe-font-color: #000;
-    --oe-font-color-light: #fff;
-    --oe-font-color-toned: #707070;
-    --oe-inverse-color: #000;
+    --micro-font-family: "Inter", sans-serif;
+    --micro-font-color: #000;
+    --micro-font-color-light: #fff;
+    --micro-font-color-toned: #707070;
+    --micro-inverse-color: #000;
 
     /* Backgrounds */
-    --oe-background-light: #fff;
-    --oe-background-color: #fff;
-    --oe-background-dark: #000;
-    --oe-panel-color: #fcfcfc;
+    --micro-background-light: #fff;
+    --micro-background-dark: #000;
+    --micro-panel-color: #fcfcfc;
 
     /* Font Sizes */
-    --oe-font-size-xsmall: 0.8rem;
-    --oe-font-size-small: 1rem;
-    --oe-font-size-medium: 1.5rem;
-    --oe-font-size-larger: 2.25rem;
-    --oe-font-size-xlarge: 4.5rem;
+    --micro-font-size-xsmall: 0.8rem;
+    --micro-font-size-small: 1rem;
+    --micro-font-size-medium: 1.5rem;
+    --micro-font-size-larger: 2.25rem;
+    --micro-font-size-xlarge: 4.5rem;
 
     /* Paddings */
-    --oe-padding-small: 0.5rem;
-    --oe-padding-medium: 1rem;
-    --oe-padding-large: 2rem;
-    --oe-padding-xlarge: 2.5rem;
+    --micro-padding-small: 0.5rem;
+    --micro-padding-medium: 1rem;
+    --micro-padding-large: 2rem;
+    --micro-padding-xlarge: 2.5rem;
 
     /* Other */
-    --oe-navbar-height: 4rem;
-    --oe-panel-opacity: 0.8;
-    --oe-transition-duration: 0.3s;
-    --oe-transition-timing: ease-in-out;
-    --oe-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    --oe-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --oe-border-radius: 0.25rem;
+    --micro-navbar-height: 4rem;
+    --micro-panel-opacity: 0.8;
+    --micro-transition-duration: 0.3s;
+    --micro-transition-timing: ease-in-out;
+    --micro-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --micro-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --micro-border-radius: 0.25rem;
 }

@@ -7,31 +7,31 @@
     top: 0;
     z-index: 1;
 
-    background-color: var(--oe-background-dark);
-    font-family: var(--oe-font-family);
-    font-size: var(--oe-font-size-small);
-    color: var(--oe-font-color-light);
+    background-color: var(--micro-background-dark);
+    font-family: var(--micro-font-family);
+    font-size: var(--micro-font-size-small);
+    color: var(--micro-font-color-light);
 
     /*
         We set a gap here so that there is a minimum spacing between the left
         and right navigation blocks.
     */
-    gap: var(--oe-padding-medium);
-    padding: var(--oe-padding-medium);
+    gap: var(--micro-padding-medium);
+    padding: var(--micro-padding-medium);
 
     & > * {
         display: flex;
         align-items: center;
-        gap: var(--oe-padding-medium);
+        gap: var(--micro-padding-medium);
     }
 
     .oe-brand {
-        font-family: var(--oe-font-family);
-        font-size: var(--oe-font-size-medium);
+        font-family: var(--micro-font-family);
+        font-size: var(--micro-font-size-medium);
     }
 
     a {
-        color: var(--oe-font-color-light);
+        color: var(--micro-font-color-light);
         text-decoration: none;
     }
 }

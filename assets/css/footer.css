@@ -1,22 +1,22 @@
 .oe-footer {
     background: var(--sl-color-primary-950);
-    padding: var(--oe-padding-medium) 0px;
-    color: var(--oe-font-color-light);
+    padding: var(--micro-padding-medium) 0px;
+    color: var(--micro-font-color-light);
     text-align: center;
-    margin-top: var(--oe-padding-medium);
+    margin-top: var(--micro-padding-medium);
 
     .oe-footer-row {
-        margin: var(--oe-padding-small);
-        font-size: var(--oe-font-size-xsmall);
+        margin: var(--micro-padding-small);
+        font-size: var(--micro-font-size-xsmall);
         display: flex;
         justify-content: center;
 
         a {
             text-decoration: none;
-            color: var(--oe-font-color-light);
+            color: var(--micro-font-color-light);
 
             &:hover {
-                color: var(--oe-font-color-toned);
+                color: var(--micro-font-color-toned);
             }
         }
 
@@ -26,13 +26,13 @@
 
             > li {
                 display: inline-block;
-                margin: 0px var(--oe-padding-medium);
+                margin: 0px var(--micro-padding-medium);
             }
         }
 
         sl-icon {
-            font-size: var(--oe-font-size-medium);
-            margin: var(--oe-padding-small);
+            font-size: var(--micro-font-size-medium);
+            margin: var(--micro-padding-small);
         }
     }
 }
