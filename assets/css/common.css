@@ -37,11 +37,7 @@ a {
 
 .oe-theme-emphasis {
     color: var(--micro-theme-color);
-}
-
-    a {
-        text-decoration: none;
-    }
+    text-decoration: none;
 }
 
 .container {
