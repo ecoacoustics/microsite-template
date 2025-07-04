@@ -1,12 +1,15 @@
 body {
-    color: var(--micro-font-color);
-    background-color: var(--micro-background-light);
-    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    font-family: var(--micro-body-font);
-    margin: 0;
     justify-content: space-between;
+
+    min-height: 100dvh;
+    margin: 0;
+
+    color: var(--micro-font-color);
+    background-color: var(--micro-background-light);
+
+    font-family: var(--micro-body-font);
 }
 
 h1,
@@ -15,15 +18,38 @@ h3,
 h4,
 h5,
 h6 {
+    margin-bottom: var(--micro-padding-small);
+
     color: var(--micro-heading-color);
     font-family: var(--micro-heading-font);
+    font-size: var(--micro-font-size-larger);
 }
 
-a:active {
-    color: var(--micro-font-color);
+p {
+    margin-bottom: var(--micro-padding-small);
 
-    &:active {
-        color: var(--micro-font-color);
+    /*
+        If a link is inside of a paragraph, we want to use an underline to
+        hint that it is clickable.
+    */
+    a {
+        text-decoration: underline;
+    }
+}
+
+ol,
+ul {
+    /*
+        We indent by 2em so that:
+            - There is 1 character of indentation for the list item icon
+            - There is 1 character width of spacing to visually separate the list
+    */
+    padding-left: 1em;
+    margin-left: 1em;
+
+    li {
+        list-style: disc;
+        list-style-position: outside;
     }
 }
 

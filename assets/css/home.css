@@ -82,6 +82,10 @@ body section {
         minmax(250px, 1fr)
     ); /* Creates responsive columns */
     gap: var(--micro-padding-small); /* Space between grid items */
+
+    h3 {
+        font-size: var(--micro-font-size-medium);
+    }
 }
 
 /*----- Image Column  -----*/
