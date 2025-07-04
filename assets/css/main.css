@@ -5,6 +5,8 @@
 @import "theme";
 @import "webcomponents-theme";
 
+@import "home.css";
+
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
 :root {
