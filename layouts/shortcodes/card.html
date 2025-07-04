@@ -5,7 +5,7 @@
     {{- $image := resources.Get . -}}
     src="{{ $image.RelPermalink }}"
     {{- end -}}
-    {{- with .Get "alt" -}}alt="{{ . }}"{{- end -}}
+    alt='{{ .Get "alt" }}'
   />
-  {{.Inner }}
+  {{ .Inner }}
 </sl-card>

@@ -6,26 +6,31 @@ body section {
 
 /*----- Hero -----*/
 .oe-hero {
+    position: relative;
     width: 100lvw;
     height: auto;
-    position: relative;
     top: 0;
     left: 50%;
     right: 50%;
     transform: translateX(-50%);
+
     background-size: cover;
     background-repeat: no-repeat;
     aspect-ratio: 24 / 9;
 
-
-    .container {
-        align-content: center;
-        align-items: center;
+    .hero-content {
+        display: flex block;
+        justify-content: space-between;
         flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-start;
-        align-self: center;
+
         height: 100%;
+        max-width: calc(min(80rem, 90%));
+        margin: 0 auto;
+
+        & > * {
+            align-self: center;
+            flex: 0 0 30%;
+        }
     }
 }
 
@@ -38,8 +43,7 @@ body section {
     text-shadow: 4px 2px 3px black;
 
     font-size: var(--micro-font-size-xlarge);
-    max-width: 30%;
-    align-self: center;
+    overflow-wrap: break-word;
 }
 
 .oe-hero-caption {
@@ -53,6 +57,17 @@ body section {
     font-size: var(--micro-font-size-xsmall);
 }
 
+.progress-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3rem;
+
+    & > * {
+        flex: 1 1;
+        min-width: 400px;
+    }
+}
+
 /*----- Call to Action  -----*/
 .oe-call-to-action {
     font-size: var(--micro-font-size-medium);
@@ -62,31 +77,35 @@ body section {
 /*----- Grid  -----*/
 .oe-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(250px, 1fr)
+    ); /* Creates responsive columns */
     gap: var(--micro-padding-small); /* Space between grid items */
 }
 
 /*----- Image Column  -----*/
 .oe-image-column {
-  display: flex;
-  align-items: center;
-  gap: var(--micro-padding-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--micro-padding-medium);
 
-  figure {
-    margin: 0;
-  }
+    figure {
+        margin: 0;
+    }
 
-  img {
-    max-width: 100%;
-  }
+    img {
+        max-width: 100%;
+    }
 
-  > div, > figure {
-    flex: 1 1 0;
-  }
+    > div,
+    > figure {
+        flex: 1 1 0;
+    }
 
-  &.oe-image-right {
-    flex-direction: row-reverse;
-  }
+    &.oe-image-right {
+        flex-direction: row-reverse;
+    }
 }
 
 /*----- Spectrogram Cards -----*/
@@ -105,16 +124,18 @@ body section {
 
 @media (max-width: 768px) {
     .oe-hero-title {
-        max-width: 95%;
+        max-width: 40%;
     }
+
     .oe-call-to-action {
         font-size: var(--micro-font-size-small);
     }
+
     .oe-image-column {
         flex-direction: column;
 
         & > * {
-          padding: 0;
+            padding: 0;
         }
     }
 }
@@ -131,11 +152,11 @@ body section {
     .oe-hero-caption {
         /* overriding caption styles to look better on mobile*/
         color: var(--micro-font-color-toned);
-        bottom: calc(var(--micro-padding-large)* -1);
+        bottom: calc(var(--micro-padding-large) * -1);
         left: 0;
         right: auto;
         background: none;
         opacity: 1;
-        padding:0;
+        padding: 0;
     }
 }

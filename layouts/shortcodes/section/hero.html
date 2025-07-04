@@ -4,10 +4,13 @@
   {{ with resources.Get $image }}
     style="background-image: url('{{ .RelPermalink }}');"
   {{- end -}}
-  {{- with .Get "class" -}}class="{{ . }}"{{- end -}}
+  class='{{ .Get "class" }}'
 >
-  <div class="container">
-        <h1 class="oe-hero-title">{{.Inner  | $.Page.RenderString }}</h1>
-        {{ with .Get "caption"  -}}<span class="oe-hero-caption">{{ . }}</span>{{- end -}}
+  <div class="hero-content">
+    <h1 class="oe-hero-title">
+      {{ .Get "title" }}
+    </h1>
+    {{ .Inner }}
   </div>
+  <span class="oe-hero-caption">{{ .Get "caption" }}</span>
 </section>

@@ -5,8 +5,8 @@ draft = false
 +++
 
 {{< section/hero
-caption=" Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons">}}
-Can you hear a <br><span class="oe-theme-emphasis">Plains Wanderer</span>?
+caption=" Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
+title="Can you hear a Plains Wanderer?">}}
 {{< /section/hero >}}
 
 {{< section/call-to-action >}}
