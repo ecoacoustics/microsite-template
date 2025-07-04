@@ -1,5 +1,15 @@
 {{ define "main" }}
-{{ partial "stylesheet.html" (dict "href" "css/home.css") }}
+{{ $css := resources.Get "css/home.css" }}
+{{- $css = $css | resources.ExecuteAsTemplate "css/home.css" . | css.Sass }}
+{{- with  $css }}
+  {{- if eq hugo.Environment "development" }}
+    <link rel="stylesheet" href="{{ .RelPermalink }}">
+  {{- else }}
+    {{- with . | minify | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+    {{- end }}
+  {{- end }}
+{{- end }}
 
 <div class="oe-home">
   {{ .Content }}
