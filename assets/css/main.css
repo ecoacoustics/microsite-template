@@ -1,8 +1,11 @@
+@import "resets";
 @import "common";
 @import "footer";
 @import "navigation";
 @import "theme";
 @import "webcomponents-theme";
+
+@import "home";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */

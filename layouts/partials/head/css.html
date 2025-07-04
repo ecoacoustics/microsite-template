@@ -1,6 +1,9 @@
+{{/*
+  For some reason, importing css through a partial disables hugo pre-processing
+  Therefore, I am just using the verbose css import syntax.
+*/}}
 {{ $css := resources.Get "css/main.css" }}
 {{- $css = $css | resources.ExecuteAsTemplate "css/main.css" . | css.Sass }}
-<!-- Using Sass to import .css files as Hugo doesn't support direct CSS imports from assets folder. All files remain CSS. -->
 
 {{- with  $css }}
   {{- if eq hugo.Environment "development" }}
