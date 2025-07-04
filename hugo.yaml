@@ -47,6 +47,7 @@ params:
     smallBreakPoint: 768px
     mediumBreakPoint: 1024px
     largeBreakPoint: 1200px
+    roundedButtons: false
     # Theme colors are defined using "hsl" (hue, saturation, lightness).
     # To create your own hsl theme color, you can use the following website.
     # https://hslpicker.com/#ca7d2f

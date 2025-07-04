@@ -20,7 +20,16 @@ Renders a menu for the given menu ID.
       {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
     {{- end }}
     {{- partial "auth-menu.html" }}
-    <sl-button href="/verify" variant="primary" pill>Validate Calls</sl-button>
+
+    <sl-button
+      href="/verify"
+      variant="primary"
+      {{- if eq site.Params.Style.RoundedButtons true }}
+      pill
+      {{- end}}
+    >
+      Validate Calls
+    </sl-button>
   </span>
 </nav>
 
