@@ -1,10 +1,10 @@
 body {
-    color: var(--oe-font-color);
-    background-color: var(--oe-background-light);
+    color: var(--micro-font-color);
+    background-color: var(--micro-background-light);
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    font-family: var(--oe-body-font);
+    font-family: var(--micro-body-font);
     margin: 0;
     justify-content: space-between;
 }
@@ -15,23 +15,29 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: var(--oe-heading-font);
+    color: var(--micro-heading-color);
+    font-family: var(--micro-heading-font);
+}
+
+a:active {
+    color: var(--micro-font-color);
+
+    &:active {
+        color: var(--micro-font-color);
+    }
 }
 
 a {
-    color: var(--oe-font-color);
+    color: var(--micro-font-color);
 
     &:active {
-        color: var(--oe-font-color);
+        color: var(--micro-font-color);
     }
 }
 
 .oe-theme-emphasis {
-    color: var(--oe-theme-color);
-
-    a {
-        text-decoration: none;
-    }
+    color: var(--micro-theme-color);
+    text-decoration: none;
 }
 
 .container {
@@ -46,8 +52,8 @@ a {
 
 /* Image captions */
 .oe-image-caption {
-    color: var(--oe-font-color-toned);
-    font-size: var(--oe-font-size-xsmall);
+    color: var(--micro-font-color-toned);
+    font-size: var(--micro-font-size-xsmall);
 }
 
 @media screen and (max-width: 500px) {

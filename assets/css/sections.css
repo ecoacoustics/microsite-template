@@ -1,7 +1,7 @@
 /*----- Sections -----*/
 body section {
-    padding-top: var(--oe-padding-large);
-    padding-bottom: var(--oe-padding-large);
+    padding-top: var(--micro-padding-large);
+    padding-bottom: var(--micro-padding-large);
 }
 
 /*----- Hero -----*/
@@ -37,40 +37,40 @@ body section {
     color: white;
     text-shadow: 4px 2px 3px black;
 
-    font-size: var(--oe-font-size-xlarge);
+    font-size: var(--micro-font-size-xlarge);
     max-width: 30%;
     align-self: center;
 }
 
 .oe-hero-caption {
-    color: var(--oe-font-color-bright);
+    color: var(--micro-font-color-light);
     position: absolute;
     bottom: 0;
     right: 0;
-    background-color: var(--oe-background-dark);
+    background-color: var(--micro-background-dark);
     opacity: 0.8;
-    padding: var(--oe-padding-small);
-    font-size: var(--oe-font-size-xsmall);
+    padding: var(--micro-padding-small);
+    font-size: var(--micro-font-size-xsmall);
 }
 
 /*----- Call to Action  -----*/
 .oe-call-to-action {
-    font-size: var(--oe-font-size-medium);
-    padding: var(--oe-padding-large) 0;
+    font-size: var(--micro-font-size-medium);
+    padding: var(--micro-padding-large) 0;
 }
 
 /*----- Grid  -----*/
 .oe-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Creates responsive columns */
-    gap: var(--oe-padding-small); /* Space between grid items */
+    gap: var(--micro-padding-small); /* Space between grid items */
 }
 
 /*----- Image Column  -----*/
 .oe-image-column {
   display: flex;
   align-items: center;
-  gap: var(--oe-padding-medium);
+  gap: var(--micro-padding-medium);
 
   figure {
     margin: 0;
@@ -91,15 +91,15 @@ body section {
 
 /*----- Spectrogram Cards -----*/
 .oe-spectrogram-card-text {
-    padding-top: var(--oe-padding-small);
+    padding-top: var(--micro-padding-small);
 }
 
 /*----- Smaller screen styles -----*/
 @media (max-width: 1024px) {
     .oe-hero-title {
-        font-size: var(--oe-font-size-large);
+        font-size: var(--micro-font-size-larger);
         max-width: 50%;
-        padding: var(--oe-padding-small);
+        padding: var(--micro-padding-small);
     }
 }
 
@@ -108,7 +108,7 @@ body section {
         max-width: 95%;
     }
     .oe-call-to-action {
-        font-size: var(--oe-font-size-small);
+        font-size: var(--micro-font-size-small);
     }
     .oe-image-column {
         flex-direction: column;
@@ -121,7 +121,7 @@ body section {
 
 @media (max-width: 425px) {
     .oe-hero-title {
-        font-size: var(--oe-font-size-medium);
+        font-size: var(--micro-font-size-medium);
     }
 
     .oe-hero .container {
@@ -130,8 +130,8 @@ body section {
 
     .oe-hero-caption {
         /* overriding caption styles to look better on mobile*/
-        color: var(--oe-font-color-toned);
-        bottom: calc(var(--oe-padding-large)* -1);
+        color: var(--micro-font-color-toned);
+        bottom: calc(var(--micro-padding-large)* -1);
         left: 0;
         right: auto;
         background: none;

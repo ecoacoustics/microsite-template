@@ -7,35 +7,31 @@
     top: 0;
     z-index: 1;
 
-    background-color: var(--oe-background-dark);
-    font-family: var(--oe-body-font);
-    font-size: var(--oe-font-size-small);
+    background-color: var(--micro-background-dark);
+    font-family: var(--micro-body-font);
+    font-size: var(--micro-font-size-small);
+    color: var(--micro-font-color-light);
 
     /*
         We set a gap here so that there is a minimum spacing between the left
         and right navigation blocks.
     */
-    gap: var(--oe-padding-medium);
-    padding: var(--oe-padding-medium);
+    gap: var(--micro-padding-medium);
+    padding: var(--micro-padding-medium);
 
     & > * {
         display: flex;
         align-items: center;
-        gap: var(--oe-padding-medium);
+        gap: var(--micro-padding-medium);
     }
 
     .oe-brand {
-        font-family: var(--oe-header-font);
-        font-size: var(--oe-font-size-medium);
-        color: var(--oe-font-color-bright);
+        font-family: var(--micro-body-font);
+        font-size: var(--micro-font-size-medium);
     }
 
     a {
-        color: var(--oe-font-color);
+        color: var(--micro-font-color-light);
         text-decoration: none;
-
-        &.active {
-            color: var(--oe-theme-color);
-        }
     }
 }

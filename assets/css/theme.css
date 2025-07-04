@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+
+/*
+    This theme.css file is to configure the theming of the microsite, not the
+    web components.
+    If you want to customize the web component's theming, modify
+    webcomponents-theme.css
+*/
+:root {
+    /* Fonts */
+    --micro-heading-font: "Inter", sans-serif;
+    --micro-body-font: "Inter", sans-serif;
+    --micro-font-color: #000;
+    --micro-font-color-light: #fff;
+    --micro-font-color-toned: #707070;
+    --micro-inverse-color: #000;
+    --micro-heading-color: #000;
+
+    /* Backgrounds */
+    --micro-background-light: #fff;
+    --micro-background-dark: #000;
+    --micro-panel-color: #fcfcfc;
+
+    /* Font Sizes */
+    --micro-font-size-xsmall: 0.8rem;
+    --micro-font-size-small: 1rem;
+    --micro-font-size-medium: 1.5rem;
+    --micro-font-size-larger: 2.25rem;
+    --micro-font-size-xlarge: 4.5rem;
+
+    /* Paddings */
+    --micro-padding-small: 0.5rem;
+    --micro-padding-medium: 1rem;
+    --micro-padding-large: 2rem;
+    --micro-padding-xlarge: 2.5rem;
+
+    /* Other */
+    --micro-navbar-height: 4rem;
+    --micro-panel-opacity: 0.8;
+    --micro-transition-duration: 0.3s;
+    --micro-transition-timing: ease-in-out;
+    --micro-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --micro-box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --micro-border-radius: 0.25rem;
+}
