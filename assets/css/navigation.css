@@ -25,6 +25,11 @@
         gap: var(--micro-padding-medium);
     }
 
+    #right-navigation-block {
+        justify-content: end;
+        flex-wrap: wrap;
+    }
+
     .oe-brand {
         font-family: var(--micro-body-font);
         font-size: var(--micro-font-size-medium);
