@@ -7,10 +7,10 @@
   class='{{ .Get "class" }}'
 >
   <div class="hero-content">
-    <h1 class="oe-hero-title">
-      {{ .Get "title" }}
-    </h1>
-    {{ .Inner }}
+    <h1 class="oe-hero-title">{{ .Get "title" }}</h1>
+    <div class="slotted-hero-content">
+      {{ .Inner }}
+    </div>
   </div>
   <span class="oe-hero-caption">{{ .Get "caption" }}</span>
 </section>
