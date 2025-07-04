@@ -27,10 +27,6 @@ body section {
         max-width: calc(min(80rem, 90%));
         margin: 0 auto;
 
-        .slotted-hero-content {
-            display: contents;
-        }
-
         & > * {
             align-self: center;
             flex: 0 0 30%;
