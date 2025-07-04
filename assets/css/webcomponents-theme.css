@@ -17,4 +17,11 @@
 
     --oe-font-color: var(--micro-font-color) !important;
     --oe-background-color: var(--micro-background-light) !important;
+
+    /*
+        TODO: Remove this panel color override once new web components styling
+        is merged
+        https://github.com/ecoacoustics/web-components/pull/376
+    */
+    --oe-panel-color: var(--micro-background-light) !important;
 }
