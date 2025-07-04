@@ -8,7 +8,7 @@
     z-index: 1;
 
     background-color: var(--micro-background-dark);
-    font-family: var(--micro-font-family);
+    font-family: var(--micro-body-font);
     font-size: var(--micro-font-size-small);
     color: var(--micro-font-color-light);
 
@@ -26,7 +26,7 @@
     }
 
     .oe-brand {
-        font-family: var(--micro-font-family);
+        font-family: var(--micro-body-fony);
         font-size: var(--micro-font-size-medium);
     }
 
