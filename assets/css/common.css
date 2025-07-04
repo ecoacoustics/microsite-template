@@ -1,6 +1,6 @@
 body {
-    color: var(--oe-font-color);
-    background-color: var(--oe-background-light);
+    color: var(--micro-font-color);
+    background-color: var(--micro-background-light);
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -28,10 +28,10 @@ a:active {
 }
 
 a {
-    color: var(--oe-font-color);
+    color: var(--micro-font-color);
 
     &:active {
-        color: var(--oe-font-color);
+        color: var(--micro-font-color);
     }
 }
 
@@ -52,8 +52,8 @@ a {
 
 /* Image captions */
 .oe-image-caption {
-    color: var(--oe-font-color-toned);
-    font-size: var(--oe-font-size-xsmall);
+    color: var(--micro-font-color-toned);
+    font-size: var(--micro-font-size-xsmall);
 }
 
 @media screen and (max-width: 500px) {
