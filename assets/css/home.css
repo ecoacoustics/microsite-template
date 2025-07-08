@@ -17,6 +17,9 @@ body:has(#home-page) {
 
     /*----- Hero -----*/
     .oe-hero {
+        display: flex;
+        align-content: center;
+
         position: relative;
         width: 100lvw;
         height: auto;
@@ -30,11 +33,11 @@ body:has(#home-page) {
         aspect-ratio: 24 / 9;
 
         .hero-content {
-            display: flex block;
+            display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
 
-            height: 100%;
+            height: fit-content;
             max-width: calc(min(80rem, 90%));
             margin: 0 auto;
 
@@ -71,6 +74,7 @@ body:has(#home-page) {
     /*----- Call to Action  -----*/
     .oe-call-to-action {
         font-size: var(--micro-font-size-medium);
+        padding: 0;
     }
 
     /*----- Grid  -----*/

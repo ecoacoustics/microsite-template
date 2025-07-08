@@ -70,7 +70,13 @@
         .login-container {
             display: flex;
             gap: 12em;
-        
+
+            /*
+                TODO: The fact that there is margin here is a smell that the
+                padding for the common .container is incorrect.
+            */
+            margin-top: 1rem;
+
             & > * {
                 flex-shrink: 1;
                 min-width: 0;
