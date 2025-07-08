@@ -1,6 +1,5 @@
 +++
 title = "Can you hear a Plains Wanderer?"
-draft = false
 +++
 
 <script
