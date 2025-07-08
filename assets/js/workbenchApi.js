@@ -13,7 +13,8 @@ const bawApiDecisionMapping = {
 /**
  * A callback that can be used to get the current global WorkbenchApi instance
  */
-globalThis.workbenchApi ??= () => WorkbenchApi.instance(globalThis.siteParams.apihost);
+globalThis.workbenchApi ??= () =>
+    WorkbenchApi.instance(globalThis.siteParams.apihost);
 
 /**
  * A service to interact with the baw-api
@@ -161,6 +162,10 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>}
      */
     async loginUser(username, password) {
+        // We log the user out before logging them in so that stale tokens and
+        // authentication states get reset.
+        await this.logoutUser();
+
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
