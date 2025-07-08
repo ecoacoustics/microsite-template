@@ -72,7 +72,6 @@
     /*----- Call to Action  -----*/
     .oe-call-to-action {
         font-size: var(--micro-font-size-medium);
-        padding: var(--micro-padding-large) 0;
     }
 
     /*----- Grid  -----*/
@@ -98,6 +97,7 @@
 
         img {
             max-width: 100%;
+            border-radius: var(--micro-border-radius);
         }
 
         > div,

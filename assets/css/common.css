@@ -12,6 +12,10 @@ body {
     font-family: var(--micro-body-font);
 }
 
+section {
+    margin-bottom: var(--micro-padding-xlarge);
+}
+
 h1,
 h2,
 h3,
@@ -83,19 +87,10 @@ sl-card {
     }
 }
 
-.oe-theme-emphasis {
-    color: var(--micro-theme-color);
-    text-decoration: none;
-}
-
 .container {
     width: 100%;
     max-width: calc(min(80rem, 90%));
     margin: 0 auto;
-}
-
-.flex {
-    display: flex;
 }
 
 /* Image captions */

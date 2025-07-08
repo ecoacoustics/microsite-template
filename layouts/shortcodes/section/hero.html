@@ -1,6 +1,6 @@
 {{ $image := site.Params.HeroImage }}
 
-<section class="oe-section oe-hero"
+<section class="oe-hero"
   {{ with resources.Get $image }}
     style="background-image: url('{{ .RelPermalink }}');"
   {{- end -}}
