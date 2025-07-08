@@ -113,19 +113,6 @@
         }
     }
 
-    sl-card {
-        &::part(image) {
-            margin: 0;
-        }
-
-        &::part(base) {
-            height: 100%;
-
-            border: none;
-            box-shadow: 1px 1px 2px black;
-        }
-    }
-
     /*----- Spectrogram Cards -----*/
     .oe-spectrogram-card-text {
         padding-top: var(--micro-padding-small);
