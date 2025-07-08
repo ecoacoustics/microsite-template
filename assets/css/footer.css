@@ -1,5 +1,5 @@
 .oe-footer {
-    background: var(--sl-color-primary-950);
+    background: var(--micro-footer-color);
     padding: var(--micro-padding-medium) 0px;
     color: var(--micro-font-color-light);
     text-align: center;

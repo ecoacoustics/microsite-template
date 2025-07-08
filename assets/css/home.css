@@ -1,6 +1,16 @@
+body:has(#home-page) {
+    /*
+        This hack was done because the hero image overflows on Chrome.
+
+        TODO: Remove this once we migrate to a subgrid layout
+        https://development.ecosounds.org:1313/
+    */
+    overflow-x: hidden;
+}
+
 #home-page {
     /*----- Sections -----*/
-    body section {
+    section {
         padding-top: var(--micro-padding-large);
         padding-bottom: var(--micro-padding-large);
     }
@@ -53,8 +63,8 @@
         gap: 3rem;
 
         & > * {
-            flex: 1 1;
-            min-width: 400px;
+            flex: 1 1 400px;
+            min-width: 0;
         }
     }
 
@@ -71,6 +81,28 @@
 
         h3 {
             font-size: var(--micro-font-size-medium);
+        }
+    }
+
+    sl-card {
+        &::part(base) {
+            display: flex;
+            height: 100%;
+
+            border: none;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        &::part(image) {
+            margin: 0;
+        }
+
+        &::part(body) {
+            flex: 1 1;
+        }
+
+        &::part(footer) {
+            border-top: none;
         }
     }
 
@@ -110,16 +142,19 @@
 
     /*----- Smaller screen styles -----*/
     @media (max-width: 1024px) {
+        .hero-content {
+            gap: 0%;
+        }
+
         .oe-hero-title {
             font-size: var(--micro-font-size-larger);
-            max-width: 50%;
             padding: var(--micro-padding-small);
         }
     }
 
     @media (max-width: 768px) {
-        .oe-hero-title {
-            max-width: 40%;
+        .hero-content {
+            gap: 10%;
         }
 
         .oe-call-to-action {

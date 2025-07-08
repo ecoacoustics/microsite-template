@@ -65,28 +65,6 @@ a {
     }
 }
 
-sl-card {
-    &::part(base) {
-        display: flex;
-        height: 100%;
-
-        border: none;
-        box-shadow: 1px 1px 2px black;
-    }
-
-    &::part(image) {
-        margin: 0;
-    }
-
-    &::part(body) {
-        flex: 1 1;
-    }
-
-    &::part(footer) {
-        border-top: none;
-    }
-}
-
 .container {
     width: 100%;
     max-width: calc(min(80rem, 90%));
@@ -102,8 +80,6 @@ figure {
     bottom: 0;
     right: 0;
 
-    padding: var(--micro-padding-small);
-
     color: var(--micro-font-color-light);
     background-color: var(--micro-background-dark);
     font-size: var(--micro-font-size-xsmall);
@@ -114,23 +90,23 @@ figure {
         are adding a caption to.
     */
     border-bottom-right-radius: inherit;
+
+    /*
+        We only want to add padding to the figure caption if there is text
+        content so that the caption can collapse to a zero width element if
+        there is nothing to show.
+
+        If we did not have this condition, there would always be a box the size
+        of the padding.
+    */
+    &:has(::content) {
+        padding: var(--micro-padding-small);
+    }
 }
 
 @media screen and (max-width: 500px) {
     .container {
         max-width: 100%;
-    }
-}
-
-@media (max-width: 425px) {
-    .oe-image-caption {
-        /* overriding caption styles to look better on mobile*/
-        color: var(--micro-font-color-toned);
-        bottom: calc(var(--micro-padding-large) * -1);
-        left: 0;
-        right: auto;
-        background: none;
-        opacity: 1;
-        padding: 0;
+        padding: 0.75rem;
     }
 }
