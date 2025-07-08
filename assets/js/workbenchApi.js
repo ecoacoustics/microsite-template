@@ -161,12 +161,16 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>}
      */
     async loginUser(username, password) {
+        // We don't send "Authentication" headers during login because we might
+        // be refreshing the authentication token if the user is trying to log
+        // in to a stale session.
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
             signInEndpoint,
             null,
             { Accept: "text/html" },
+            false,
         );
 
         if (!authTokenRequest.ok) {
@@ -189,6 +193,7 @@ export class WorkbenchApi {
             signInEndpoint,
             requestBody,
             { Accept: "text/html" },
+            false,
         );
 
         return signInResponse.ok;
