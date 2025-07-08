@@ -12,6 +12,10 @@ body {
     font-family: var(--micro-body-font);
 }
 
+section {
+    margin-bottom: var(--micro-padding-xlarge);
+}
+
 h1,
 h2,
 h3,
@@ -61,29 +65,49 @@ a {
     }
 }
 
-.oe-theme-emphasis {
-    color: var(--micro-theme-color);
-    text-decoration: none;
-}
-
 .container {
     width: 100%;
     max-width: calc(min(80rem, 90%));
     margin: 0 auto;
 }
 
-.flex {
-    display: flex;
+figure {
+    position: relative;
 }
 
-/* Image captions */
 .oe-image-caption {
-    color: var(--micro-font-color-toned);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    color: var(--micro-font-color-light);
+    background-color: var(--micro-background-dark);
     font-size: var(--micro-font-size-xsmall);
+    opacity: 0.8;
+
+    /*
+        By using "inherit" here, we will inherit the rounding of the image we
+        are adding a caption to.
+    */
+    border-bottom-right-radius: inherit;
+
+    /*
+        We only want to add padding to the figure caption if there is text
+        content so that the caption can collapse to a zero width element if
+        there is nothing to show.
+
+        If we did not have this condition, there would always be a box the size
+        of the padding.
+    */
+    &:has(::content) {
+        padding: var(--micro-padding-small);
+    }
 }
 
 @media screen and (max-width: 500px) {
     .container {
         max-width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
 }

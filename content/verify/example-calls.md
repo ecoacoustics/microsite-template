@@ -1,6 +1,5 @@
 +++
 title = "How does a Plains Wanderer sound like?"
-draft = false
 +++
 
 {{< section/cards >}}

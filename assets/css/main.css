@@ -25,9 +25,5 @@
     --micro-theme-saturation: {{ .Site.Params.style.ThemeColor.saturation }};
     --micro-theme-lightness: {{ .Site.Params.style.ThemeColor.lightness }};
 
-    --micro-theme-color: hsl(
-      var(--micro-theme-hue),
-      var(--micro-theme-saturation),
-      var(--micro-theme-lightness),
-    );
+    --micro-theme-color: hsl(var(--micro-theme-hue), var(--micro-theme-saturation), var(--micro-theme-lightness));
 }

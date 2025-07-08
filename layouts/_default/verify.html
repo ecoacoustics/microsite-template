@@ -19,10 +19,16 @@
                 close to the minimum size before the controls start wrapping.
             */
             max-width: 50rem;
+            max-height: 50rem;
             padding: var(--micro-padding-small);
             margin: auto;
         }
     </style>
+
+    <script
+        type="module"
+        src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components@3/dist/components.js"
+    ></script>
 
     {{- with resources.Get "js/bootstrapVerificationGrid.js" }}
     {{- if eq hugo.Environment "development" }}

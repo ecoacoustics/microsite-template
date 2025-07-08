@@ -1,12 +1,25 @@
+body:has(#home-page) {
+    /*
+        This hack was done because the hero image overflows on Chrome.
+
+        TODO: Remove this once we migrate to a subgrid layout
+        https://development.ecosounds.org:1313/
+    */
+    overflow-x: hidden;
+}
+
 #home-page {
     /*----- Sections -----*/
-    body section {
+    section {
         padding-top: var(--micro-padding-large);
         padding-bottom: var(--micro-padding-large);
     }
 
     /*----- Hero -----*/
     .oe-hero {
+        display: flex;
+        align-content: center;
+
         position: relative;
         width: 100lvw;
         height: auto;
@@ -20,11 +33,11 @@
         aspect-ratio: 24 / 9;
 
         .hero-content {
-            display: flex block;
+            display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
 
-            height: 100%;
+            height: fit-content;
             max-width: calc(min(80rem, 90%));
             margin: 0 auto;
 
@@ -47,60 +60,70 @@
         overflow-wrap: break-word;
     }
 
-    .oe-hero-caption {
-        color: var(--micro-font-color-light);
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background-color: var(--micro-background-dark);
-        opacity: 0.8;
-        padding: var(--micro-padding-small);
-        font-size: var(--micro-font-size-xsmall);
-    }
-
     .progress-container {
         display: flex;
         flex-wrap: wrap;
         gap: 3rem;
 
         & > * {
-            flex: 1 1;
-            min-width: 400px;
+            flex: 1 1 400px;
+            min-width: 0;
         }
     }
 
     /*----- Call to Action  -----*/
     .oe-call-to-action {
         font-size: var(--micro-font-size-medium);
-        padding: var(--micro-padding-large) 0;
+        padding: 0;
     }
 
     /*----- Grid  -----*/
     .oe-cards {
         display: grid;
-        grid-template-columns: repeat(
-            auto-fit,
-            minmax(250px, 1fr)
-        ); /* Creates responsive columns */
-        gap: var(--micro-padding-small); /* Space between grid items */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--micro-padding-medium);
 
         h3 {
             font-size: var(--micro-font-size-medium);
         }
     }
 
+    sl-card {
+        &::part(base) {
+            display: flex;
+            height: 100%;
+
+            border: none;
+            box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        &::part(image) {
+            margin: 0;
+        }
+
+        &::part(body) {
+            flex: 1 1;
+        }
+
+        &::part(footer) {
+            border-top: none;
+        }
+    }
+
     /*----- Image Column  -----*/
     .oe-image-column {
         display: flex;
-        align-items: center;
+        align-items: space-between;
         gap: var(--micro-padding-medium);
 
         figure {
             margin: 0;
+            border-radius: var(--micro-border-radius);
         }
 
         img {
             max-width: 100%;
+            border-radius: var(--micro-border-radius);
         }
 
         > div,
@@ -108,8 +131,11 @@
             flex: 1 1 0;
         }
 
-        &.oe-image-right {
-            flex-direction: row-reverse;
+        .oe-image-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: var(--micro-padding-medium);
         }
     }
 
@@ -120,16 +146,19 @@
 
     /*----- Smaller screen styles -----*/
     @media (max-width: 1024px) {
+        .hero-content {
+            gap: 0%;
+        }
+
         .oe-hero-title {
             font-size: var(--micro-font-size-larger);
-            max-width: 50%;
             padding: var(--micro-padding-small);
         }
     }
 
     @media (max-width: 768px) {
-        .oe-hero-title {
-            max-width: 40%;
+        .hero-content {
+            gap: 10%;
         }
 
         .oe-call-to-action {
@@ -154,15 +183,5 @@
             height: auto;
         }
 
-        .oe-hero-caption {
-            /* overriding caption styles to look better on mobile*/
-            color: var(--micro-font-color-toned);
-            bottom: calc(var(--micro-padding-large) * -1);
-            left: 0;
-            right: auto;
-            background: none;
-            opacity: 1;
-            padding: 0;
-        }
     }
 }

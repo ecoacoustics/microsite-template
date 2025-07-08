@@ -161,12 +161,16 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>}
      */
     async loginUser(username, password) {
+        // We don't send "Authentication" headers during login because we might
+        // be refreshing the authentication token if the user is trying to log
+        // in to a stale session.
         const signInEndpoint = this.#createUrl("/my_account/sign_in");
         const authTokenRequest = await this.#fetch(
             "GET",
             signInEndpoint,
             null,
             { Accept: "text/html" },
+            false,
         );
 
         if (!authTokenRequest.ok) {
@@ -189,6 +193,7 @@ export class WorkbenchApi {
             signInEndpoint,
             requestBody,
             { Accept: "text/html" },
+            false,
         );
 
         return signInResponse.ok;
@@ -272,7 +277,7 @@ export class WorkbenchApi {
      * @param {string} tag
      * @returns {() => Promise<AudioEvent[]>}
      */
-    async getVerificationCallback(filterBody) {
+    getVerificationCallback(filterBody) {
         const url = this.#createUrl("/audio_events/filter");
 
         // we wrap the "page" variable in a closure so that only this callback
@@ -286,6 +291,11 @@ export class WorkbenchApi {
                 items: 25,
                 page,
             };
+
+            // Increment the page number before making the audio_events filter
+            // request so that if the callback is invoked while the request is
+            // pending, there will not be a double-fetch.
+            page = page + 1;
 
             const payload = {
                 paging: pagingBody,

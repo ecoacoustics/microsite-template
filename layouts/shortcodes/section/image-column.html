@@ -1,4 +1,4 @@
-<section class="oe-section oe-image-column {{ with .Get "imagePosition" }}oe-image-{{ . }}{{ end }}" {{ with .Get "backgroundColor" }} style="background-color: {{ .  | safeCSS }};" {{ end }}>
+<section class='oe-image-column oe-image-{{ .Get "imagePosition" }}'>
   <figure>
     <img
       {{ with .Get "image" }}
@@ -9,7 +9,8 @@
     >
     <figcaption class="oe-image-caption">{{ .Get "caption" }}</figcaption>
   </figure>
-  <div class="oe-image-column-text">
+
+  <div class="oe-image-content">
     {{ .Inner }}
   </div>
 </section>

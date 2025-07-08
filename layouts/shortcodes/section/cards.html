@@ -1,4 +1,4 @@
-<section class="oe-section oe-cards">
+<section class="oe-cards">
   {{ range split .Inner "<--->" }}
       {{ . | $.Page.RenderString }}
   {{ end }}

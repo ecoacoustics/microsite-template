@@ -1,18 +1,16 @@
 +++
 title = "Home"
 date = 2023-01-01T08:00:00-07:00
-draft = false
 +++
 
 {{< section/hero
-caption=" Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
+caption="Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
 title="Can you hear a Plains Wanderer?">}}
 {{< /section/hero >}}
 
 {{< section/call-to-action >}}
 The Plains Wanderer is critically endangered due to habitat loss, predation, and climate change. We're on a mission to train our AI to recognise their calls, and we need your help! By checking the tags our system has put on bird calls, you can help ensure they're correct. This helps us monitor their populations and habitats more effectively, contributing to conservation efforts.
-<a class="oe-theme-emphasis" href="/verify">
-Sign up or log in </a> to start verifying calls.
+<a href="/verify">Sign up or log in</a> to start verifying calls.
 {{< /section/call-to-action >}}
 
 ## About the group
@@ -60,7 +58,8 @@ imagePosition="left" >}}
 ## Plains Wanderer Status
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-<a class="microsite-btn microsite-btn-primary"> Read more </a>
+[Read More](/)
+
 {{< /section/image-column >}}
 
 <div class="progress-container">
