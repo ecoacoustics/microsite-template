@@ -93,14 +93,44 @@ sl-card {
     margin: 0 auto;
 }
 
-/* Image captions */
+figure {
+    position: relative;
+}
+
 .oe-image-caption {
-    color: var(--micro-font-color-toned);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    padding: var(--micro-padding-small);
+
+    color: var(--micro-font-color-light);
+    background-color: var(--micro-background-dark);
     font-size: var(--micro-font-size-xsmall);
+    opacity: 0.8;
+
+    /*
+        By using "inherit" here, we will inherit the rounding of the image we
+        are adding a caption to.
+    */
+    border-bottom-right-radius: inherit;
 }
 
 @media screen and (max-width: 500px) {
     .container {
         max-width: 100%;
+    }
+}
+
+@media (max-width: 425px) {
+    .oe-image-caption {
+        /* overriding caption styles to look better on mobile*/
+        color: var(--micro-font-color-toned);
+        bottom: calc(var(--micro-padding-large) * -1);
+        left: 0;
+        right: auto;
+        background: none;
+        opacity: 1;
+        padding: 0;
     }
 }

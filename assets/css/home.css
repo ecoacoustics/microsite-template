@@ -47,17 +47,6 @@
         overflow-wrap: break-word;
     }
 
-    .oe-hero-caption {
-        color: var(--micro-font-color-light);
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background-color: var(--micro-background-dark);
-        opacity: 0.8;
-        padding: var(--micro-padding-small);
-        font-size: var(--micro-font-size-xsmall);
-    }
-
     .progress-container {
         display: flex;
         flex-wrap: wrap;
@@ -93,6 +82,7 @@
 
         figure {
             margin: 0;
+            border-radius: var(--micro-border-radius);
         }
 
         img {
@@ -154,15 +144,5 @@
             height: auto;
         }
 
-        .oe-hero-caption {
-            /* overriding caption styles to look better on mobile*/
-            color: var(--micro-font-color-toned);
-            bottom: calc(var(--micro-padding-large) * -1);
-            left: 0;
-            right: auto;
-            background: none;
-            opacity: 1;
-            padding: 0;
-        }
     }
 }
