@@ -135,7 +135,7 @@
         Note that most browsers default to a font size of 16px.
         Therefore, the calculation is 16 * rem to find the default pixel value.
     */
-    @media (max-width: 64rem /* 1024px */) {
+    @media (max-width: 64em /* 1024px */) {
         .hero-content {
             gap: 0%;
         }
@@ -146,7 +146,7 @@
         }
     }
 
-    @media (max-width: 48rem /* 768px */) {
+    @media (max-width: 48em /* 768px */) {
         .hero-content {
             gap: 10%;
         }
@@ -164,7 +164,7 @@
         }
     }
 
-    @media (max-width: 31.25rem /* 420px */) {
+    @media (max-width: 31.25em /* 420px */) {
         .oe-hero-title {
             font-size: var(--micro-font-size-medium);
         }
