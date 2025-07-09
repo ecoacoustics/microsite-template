@@ -1,11 +1,11 @@
 <sl-card>
-  <img
-    slot="image"
-    {{ with .Get "image"  -}}
-    {{- $image := resources.Get . -}}
-    src="{{ $image.RelPermalink }}"
-    {{- end -}}
-    alt='{{ .Get "alt" }}'
-  />
+  {{ with .Get "image"  -}}
+  {{- $image := resources.Get . -}}
+    <img
+      slot="image"
+      src="{{ $image.RelPermalink }}"
+      alt='{{ $.Get "alt" }}'
+    />
+  {{- end -}}
   {{ .Inner }}
 </sl-card>

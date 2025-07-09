@@ -19,6 +19,10 @@ markup:
   goldmark:
     renderer:
       unsafe: true
+services:
+  # https://gohugo.io/templates/embedded/#configuration-google-analytics
+  googleAnalytics:
+    id: G-MEASUREMENT_ID
 menus:
 #   main:
 #     - name: Credits
