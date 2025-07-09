@@ -62,7 +62,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 {{< /section/image-column >}}
 
-<div class="progress-container">
+<section class="progress-container">
     {{< section/project-progress >}}
     {{< /section/project-progress >}}
     <div>
@@ -80,4 +80,4 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
             </li>
         </ul>
     </div>
-</div>
+</section>

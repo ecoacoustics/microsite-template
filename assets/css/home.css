@@ -1,32 +1,15 @@
-body:has(#home-page) {
-    /*
-        This hack was done because the hero image overflows on Chrome.
-
-        TODO: Remove this once we migrate to a subgrid layout
-        https://development.ecosounds.org:1313/
-    */
-    overflow-x: hidden;
-}
-
 #home-page {
-    /*----- Sections -----*/
-    section {
-        padding-top: var(--micro-padding-large);
-        padding-bottom: var(--micro-padding-large);
-    }
-
     /*----- Hero -----*/
     .oe-hero {
         display: flex;
         align-items: center;
+        justify-content: space-evenly;
 
+        /*
+            We need position: relative so that the image caption and citation is
+            positioned relative to the hero container.
+        */
         position: relative;
-        width: 100lvw;
-        height: auto;
-        top: 0;
-        left: 50%;
-        right: 50%;
-        transform: translateX(-50%);
 
         background-size: cover;
         background-repeat: no-repeat;
@@ -145,7 +128,14 @@ body:has(#home-page) {
     }
 
     /*----- Smaller screen styles -----*/
-    @media (max-width: 1024px) {
+    /*
+        We use rem units for media queries so that if the user changes the font
+        size in the browser settings, the site will automatically adjust.
+
+        Note that most browsers default to a font size of 16px.
+        Therefore, the calculation is 16 * rem to find the default pixel value.
+    */
+    @media (max-width: 64rem /* 1024px */) {
         .hero-content {
             gap: 0%;
         }
@@ -156,7 +146,7 @@ body:has(#home-page) {
         }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 48rem /* 768px */) {
         .hero-content {
             gap: 10%;
         }
@@ -174,14 +164,9 @@ body:has(#home-page) {
         }
     }
 
-    @media (max-width: 425px) {
+    @media (max-width: 31.25rem /* 420px */) {
         .oe-hero-title {
             font-size: var(--micro-font-size-medium);
         }
-
-        .oe-hero .container {
-            height: auto;
-        }
-
     }
 }
