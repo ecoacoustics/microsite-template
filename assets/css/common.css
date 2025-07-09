@@ -16,9 +16,12 @@ body {
         menu), it will tax the main content container for the space.
     */
     grid-template-columns:
-        [fullbleed-start] minmax(var(--micro-gutter-size), auto)
-        [main-start] calc(min(80rem, 90%))
-        [main-end] minmax(var(--micro-gutter-size), auto)
+        [fullbleed-start]
+        minmax(var(--micro-gutter-size), auto)
+        [main-start]
+        calc(min(80rem, 90%))
+        [main-end]
+        minmax(var(--micro-gutter-size), auto)
         [fullbleed-end]
     ;
 
@@ -28,9 +31,13 @@ body {
         content is larger.
     */
     grid-template-rows:
-      [header] minmax(4rem, auto)
-      [main] minmax(4rem, auto)
-      [footer] 4rem
+      [header]
+      minmax(4rem, auto)
+      [header-end main-start]
+      minmax(4rem, auto)
+      [main-end footer-start]
+      4rem
+      [footer-end]
     ;
 
     min-height: 100dvh;
