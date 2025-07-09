@@ -3,7 +3,6 @@
     .oe-hero {
         display: flex;
         align-items: center;
-        justify-content: space-evenly;
 
         /*
             We need position: relative so that the image caption and citation is
