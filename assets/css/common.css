@@ -31,7 +31,7 @@ body {
         content is larger.
     */
     grid-template-rows:
-      [header]
+      [header-start]
       minmax(4rem, auto)
       [header-end main-start]
       minmax(4rem, auto)
