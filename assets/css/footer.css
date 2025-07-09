@@ -3,7 +3,6 @@
     padding: var(--micro-padding-medium) 0px;
     color: var(--micro-font-color-light);
     text-align: center;
-    margin-top: var(--micro-padding-medium);
 
     .oe-footer-row {
         margin: var(--micro-padding-small);

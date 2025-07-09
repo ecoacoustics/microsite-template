@@ -105,7 +105,7 @@
 
     function updateCard(unverified, verified) {
         const totalCount = verified + unverified;
-        const textMessage = `${verified} of ${unverified} audio clips reviewed`;
+        const textMessage = `${verified} of ${totalCount} audio clips reviewed`;
 
         // I floor the number so that when we approach 100% verification, users
         // don't see a 100% verified state and stop verifying.

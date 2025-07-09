@@ -1,18 +1,97 @@
 body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: grid;
+
+    /*
+        By using the [name-start] and [name-end] grid area syntax, we are able
+        to use a subgrid area by simply using the "name".
+
+        E.g. If you want an element to fullbleed (extend to the edges of the
+        page) you can simply do
+        grid-area: fullbleed
+
+        ---
+
+        Additionally, note that the gutters have a minimum size of the inner
+        content meaning that if you add content to the gutters (e.g. a sidebar
+        menu), it will tax the main content container for the space.
+    */
+    grid-template-columns:
+        [fullbleed-start]
+        minmax(var(--micro-gutter-size), auto)
+        [main-start]
+        calc(min(80rem, 90%))
+        [main-end]
+        minmax(var(--micro-gutter-size), auto)
+        [fullbleed-end]
+    ;
+
+    /*
+        By using the max between 4rem and auto, we can ensure that the header
+        and footer will be at least 4rem in height, but can expand if the
+        content is larger.
+    */
+    grid-template-rows:
+      [header-start]
+      minmax(4rem, auto)
+      [header-end main-start]
+      minmax(4rem, auto)
+      [main-end footer-start]
+      4rem
+      [footer-end]
+    ;
 
     min-height: 100dvh;
-    margin: 0;
 
-    color: var(--micro-font-color);
+    /*
+        We set the background color on the body element because some browsers
+        such as mobile and Microsoft Edge support overscroll where the full page
+        content is moved.
+        When in an overscroll state, the bodys background color will be used to
+        fill. If we did not set the background color here, the overscroll would
+        default to a white/black (depending on color scheme) color.
+    */
     background-color: var(--micro-background-light);
 
+    color: var(--micro-font-color);
     font-family: var(--micro-body-font);
+
+    & > header {
+        grid-row: header;
+        grid-column: fullbleed;
+    }
+
+    & > main {
+        /*
+            Restrict page content to using the column-subgrid so that consumers
+            of this theme cannot create out-of-order positioned elements by
+            assigning a content to the a "header" subgrid row.
+        */
+        display: grid;
+        grid-template-columns: subgrid;
+
+        grid-row: main;
+        grid-column: fullbleed;
+
+        .page > * {
+            /*
+                By default, we want the content to be centered.
+                If you want your content to extend to the edge of the page,
+                you can simply use the "fullbleed" class.
+            */
+            grid-column: main;
+        }
+    }
+
+    & > footer {
+        grid-row: footer;
+        grid-column: fullbleed;
+    }
 }
 
 section {
+    padding-top: var(--micro-padding-large);
+    padding-bottom: var(--micro-padding-large);
+
     margin-bottom: var(--micro-padding-xlarge);
 }
 
@@ -65,12 +144,6 @@ a {
     }
 }
 
-.container {
-    width: 100%;
-    max-width: calc(min(80rem, 90%));
-    margin: 0 auto;
-}
-
 figure {
     position: relative;
 }
@@ -104,10 +177,14 @@ figure {
     }
 }
 
-@media screen and (max-width: 500px) {
-    .container {
-        max-width: 100%;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
+/*
+    You can use the .page helper class to create a scope for a certain page
+    while not effecting the page flow.
+*/
+.page {
+    display: contents;
+}
+
+.fullbleed {
+    grid-column: fullbleed !important;
 }

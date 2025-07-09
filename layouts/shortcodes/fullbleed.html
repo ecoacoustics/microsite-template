@@ -1,0 +1,19 @@
+{{/*
+Creates a section that will expand to the full page width.
+
+@context {class} Classes to add to this fullbleed section.
+
+@example:
+    {{< fullbleed >}}
+        <img src="full-width-image.png">
+    {{< /fullbleed >}}
+*/}}
+
+{{/*
+    We do not use a section element here because sections have implicit padding
+    added by the common stylesheet, and this shortcode is intended to only be
+    used in layout positioning.
+*/}}
+<div class='fullbleed {{ .Get "class" }}'>
+    {{ .Inner }}
+</div>

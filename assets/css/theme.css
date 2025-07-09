@@ -35,6 +35,13 @@
     --micro-padding-large: 2rem;
     --micro-padding-xlarge: 2.5rem;
 
+    /*
+        The minimum amount of space either side of the main (non-fullbleed)
+        content.
+        This is the amount of padding around the main content on mobile.
+    */
+    --micro-gutter-size: 0.75rem;
+
     /* Other */
     --micro-navbar-height: 4rem;
     --micro-panel-opacity: 0.8;

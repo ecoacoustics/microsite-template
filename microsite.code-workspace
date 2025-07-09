@@ -52,7 +52,8 @@
             "microsite",
             "taggings",
             "ecosounds",
-            "ecoacoustics"
+            "ecoacoustics",
+            "fullbleed"
         ]
     },
     "extensions": {
