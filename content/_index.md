@@ -66,7 +66,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
     {{< section/project-progress >}}
     {{< /section/project-progress >}}
     <div>
-        <h2>Why it matters</h3>
+        <h2>Why it matters</h2>
         <p>
             By helping identify bird calls, you're contributing to a growing
             library of acoustic data that:

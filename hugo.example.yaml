@@ -1,5 +1,9 @@
 title: "Call Detective"
 theme: "microsite-template"
+services:
+  # https://gohugo.io/templates/embedded/#configuration-google-analytics
+  # googleAnalytics:
+  #   id: G-MEASUREMENT_ID
 menus:
 #   main:
 #     - name: Credits

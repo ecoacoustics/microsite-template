@@ -1,10 +1,9 @@
 {{ $image := site.Params.HeroImage }}
 
-<section class="oe-hero fullbleed"
+<section class='oe-hero fullbleed {{ .Get "class" }}'
   {{ with resources.Get $image }}
     style="background-image: url('{{ .RelPermalink }}');"
   {{- end -}}
-  class='{{ .Get "class" }}'
 >
   <div class="hero-content">
     <h1 class="oe-hero-title">{{ .Get "title" }}</h1>
