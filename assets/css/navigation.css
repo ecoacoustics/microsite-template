@@ -1,3 +1,12 @@
+header {
+    position: fixed;
+    width: 100%;
+
+    box-shadow: var(--micro-box-shadow);
+
+    z-index: 1;
+}
+
 .oe-navigation {
     display: flex;
     justify-content: space-between;
@@ -5,9 +14,8 @@
 
     position: relative;
     top: 0;
-    z-index: 1;
 
-    background-color: var(--micro-background-dark);
+    background-color: var(--micro-background-light);
     font-family: var(--micro-body-font);
     font-size: var(--micro-font-size-small);
     color: var(--micro-font-color-light);

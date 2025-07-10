@@ -22,8 +22,7 @@ body {
         calc(min(80rem, 90%))
         [main-end]
         minmax(var(--micro-gutter-size), auto)
-        [fullbleed-end]
-    ;
+        [fullbleed-end];
 
     /*
         By using the max between 4rem and auto, we can ensure that the header
@@ -31,14 +30,13 @@ body {
         content is larger.
     */
     grid-template-rows:
-      [header-start]
-      minmax(4rem, auto)
-      [header-end main-start]
-      minmax(4rem, auto)
-      [main-end footer-start]
-      4rem
-      [footer-end]
-    ;
+        [header-start]
+        minmax(4rem, auto)
+        [header-end main-start]
+        minmax(4rem, auto)
+        [main-end footer-start]
+        4rem
+        [footer-end];
 
     min-height: 100dvh;
 
@@ -95,6 +93,21 @@ section {
     margin-bottom: var(--micro-padding-xlarge);
 }
 
+section.page-section {
+    display: grid;
+    grid-template-columns: subgrid;
+
+    position: relative;
+    margin: 0;
+    padding: 0;
+
+    grid-column: fullbleed !important;
+
+    & > .page-section-content {
+        grid-column: main;
+    }
+}
+
 h1,
 h2,
 h3,
@@ -103,9 +116,12 @@ h5,
 h6 {
     margin-bottom: var(--micro-padding-small);
 
-    color: var(--micro-heading-color);
     font-family: var(--micro-heading-font);
     font-size: var(--micro-font-size-larger);
+}
+
+h2 {
+    color: var(--micro-heading-color);
 }
 
 p {

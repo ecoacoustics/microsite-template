@@ -9,6 +9,7 @@
             positioned relative to the hero container.
         */
         position: relative;
+        margin: 0;
 
         background-size: cover;
         background-repeat: no-repeat;
@@ -56,7 +57,7 @@
     /*----- Call to Action  -----*/
     .oe-call-to-action {
         font-size: var(--micro-font-size-medium);
-        padding: 0;
+        padding-bottom: 0;
     }
 
     /*----- Grid  -----*/
@@ -74,6 +75,8 @@
         &::part(base) {
             display: flex;
             height: 100%;
+
+            background-color: var(--micro-panel-color);
 
             border: none;
             box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.8);
@@ -95,12 +98,13 @@
     /*----- Image Column  -----*/
     .oe-image-column {
         display: flex;
-        align-items: space-between;
+        justify-content: space-between;
         gap: var(--micro-padding-medium);
 
         figure {
             margin: 0;
             border-radius: var(--micro-border-radius);
+            max-width: fit-content;
         }
 
         img {
