@@ -103,8 +103,10 @@
 
         figure {
             margin: 0;
-            border-radius: var(--micro-border-radius);
             max-width: fit-content;
+            height: fit-content;
+
+            border-radius: var(--micro-border-radius);
         }
 
         img {

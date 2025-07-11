@@ -4,7 +4,7 @@ header {
 
     box-shadow: var(--micro-box-shadow);
 
-    z-index: 1;
+    z-index: 4;
 }
 
 .oe-navigation {
