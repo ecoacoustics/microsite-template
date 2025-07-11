@@ -1,7 +1,7 @@
 .oe-footer {
-    background: var(--micro-footer-color);
+    background: var(--micro-footer-background-color);
     padding: var(--micro-padding-medium) 0px;
-    color: var(--micro-font-color-light);
+    color: var(--micro-footer-font-color);
     text-align: center;
 
     .oe-footer-row {
@@ -12,7 +12,7 @@
 
         a {
             text-decoration: none;
-            color: var(--micro-font-color-light);
+            color: var(--micro-footer-font-color);
 
             &:hover {
                 color: var(--micro-font-color-toned);
