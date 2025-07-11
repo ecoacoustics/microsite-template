@@ -22,6 +22,7 @@ Renders a menu for the given menu ID.
     {{- partial "auth-menu.html" }}
 
     <sl-button
+      id="verification-cta-button"
       href="/verify"
       variant="primary"
       {{- if eq site.Params.Style.RoundedButtons true }}

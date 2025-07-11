@@ -1,15 +1,17 @@
 {{ $image := site.Params.HeroImage }}
 
-<section class='oe-hero fullbleed {{ .Get "class" }}'
+<section class='oe-hero page-section fullbleed {{ .Get "class" }}'
   {{ with resources.Get $image }}
     style="background-image: url('{{ .RelPermalink }}');"
   {{- end -}}
 >
-  <div class="hero-content">
-    <h1 class="oe-hero-title">{{ .Get "title" }}</h1>
-    <div class="slotted-hero-content">
-      {{ .Inner }}
+  <div class="page-section-content hero-content-container">
+    <div class="hero-content">
+      <h1 class="oe-hero-title">{{ .Get "title" }}</h1>
+      <div class="slotted-hero-content">
+        {{ .Inner }}
+      </div>
     </div>
+    <span class="oe-image-caption oe-hero-caption">{{ .Get "caption" }}</span>
   </div>
-  <span class="oe-image-caption oe-hero-caption">{{ .Get "caption" }}</span>
 </section>

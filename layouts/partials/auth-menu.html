@@ -80,6 +80,20 @@
         const userModel = await api.getUserProfile();
         if (!userModel) {
             console.log("User is not logged in");
+
+            // If the user is not logged in, the "verify calls" button will
+            // redirect them to the login page when they attempt to navigate.
+            // Instead of navigating to the verification page, then instantly
+            // redirecting, we can take the user straight to the login page with
+            // a success redirect to the login page.
+            //
+            // TODO: This is technically not a part of the authentication menu
+            // so we should move it to a global state store.
+            // In the meantime, I have added it here so that we can re-use the
+            // same auth state to enable/disable this auth button.
+            const ctaButton = document.getElementById("verification-cta-button");
+            ctaButton.href = "/login?redirect=/verify";
+
             return;
         }
 

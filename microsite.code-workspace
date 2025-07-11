@@ -60,11 +60,14 @@
         "recommendations": [
             "kaellarkin.hugo-shortcode-syntax",
             "budparr.language-hugo-vscode",
+            "jock.svg",
             "bierner.lit-html",
             "esbenp.prettier-vscode",
             "streetsidesoftware.code-spell-checker",
             "tamasfe.even-better-toml",
-            "dbaeumer.vscode-eslint"
+            "dbaeumer.vscode-eslint",
+            "stylelint.vscode-stylelint",
+            "aaron-bond.better-comments",
         ]
     }
 }

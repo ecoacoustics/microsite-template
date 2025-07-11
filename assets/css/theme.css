@@ -15,7 +15,9 @@
     --micro-font-color-toned: #707070;
     --micro-inverse-color: #000;
     --micro-heading-color: #000;
-    --micro-footer-color: var(--sl-color-primary-950);
+
+    --micro-footer-background-color: var(--sl-color-primary-950);
+    --micro-footer-text-color: var(--micro-font-color-light);
 
     /* Backgrounds */
     --micro-background-light: #fff;

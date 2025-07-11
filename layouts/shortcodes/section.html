@@ -1,0 +1,25 @@
+{{/*
+Creates a section that will expand to the full page width but content will still
+be centered.
+
+This means that you can target this section for styles
+
+If you want to make your content a full page width, use this shortcode in
+conjunction with the {{< fullbleed >}} shortcode
+
+@context {class} Classes to add to this section.
+@context {styles} Styles to add to this section.
+
+@example:
+    {{< section >}}
+        {{< fullbleed >}}
+            <img src="full-width-image.png">
+        {{< /fullbleed >}}
+    {{< /section >}}
+*/}}
+
+<section class='page-section fullbleed {{ .Get "class" }}' styles='{{ .Get "style" }}'>
+    <div class="page-section-content">
+        {{ .Inner }}
+    </div>
+</section>
