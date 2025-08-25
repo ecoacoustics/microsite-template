@@ -3,13 +3,16 @@
     {{ .Content }}
 
     <style>
+        oe-verification-grid {
+            display: block;
+            padding: var(--micro-padding-small);
+        }
+
         /*
             TODO: remove this once upstream max tile sizes have been implemented
             see: https://github.com/ecoacoustics/web-components/issues/391
         */
         oe-verification-grid[grid-size="1"] {
-            display: block;
-            
             /*
                 50rem is 800px on a default browser with font size 16.
                 We use rem units instead of px so that if the user zooms in, or
@@ -21,7 +24,7 @@
             */
             max-width: 50rem;
             max-height: 50rem;
-            padding: var(--micro-padding-small);
+
             margin: auto;
         }
     </style>
