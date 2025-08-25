@@ -3,6 +3,11 @@
     {{ .Content }}
 
     <style>
+        oe-verification-grid {
+            display: block;
+            padding: var(--micro-padding-small);
+        }
+
         /*
             TODO: remove this once upstream max tile sizes have been implemented
             see: https://github.com/ecoacoustics/web-components/issues/391
@@ -21,11 +26,6 @@
             max-height: 50rem;
 
             margin: auto;
-        }
-
-        oe-verification-grid {
-            display: block;
-            padding: var(--micro-padding-small);
         }
     </style>
 
