@@ -3,10 +3,20 @@ title = "Home"
 date = 2023-01-01T08:00:00-07:00
 +++
 
+<script
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components/dist/components.js"
+></script>
+
 {{< section/hero
 caption="Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
 title="Can you hear a Plains Wanderer?">}}
 {{< /section/hero >}}
+
+{{< event-card
+audioEventUrl="https://api.staging.ecosounds.org/audio_recordings/704106/media.flac?start_offset=567&end_offset=570"
+>}}
+{{< /event-card >}}
 
 {{< section/call-to-action >}}
 The Plains Wanderer is critically endangered due to habitat loss, predation, and climate change. We're on a mission to train our AI to recognise their calls, and we need your help! By checking the tags our system has put on bird calls, you can help ensure they're correct. This helps us monitor their populations and habitats more effectively, contributing to conservation efforts.

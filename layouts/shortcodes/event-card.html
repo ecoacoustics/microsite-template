@@ -1,0 +1,31 @@
+{{ $id := printf "spectrogram-card-%03d" $.Ordinal }}
+
+{{ $audio_event_url := .Get "audioEventUrl" }}
+
+<div>
+    <sl-card class="spectrogram-card">
+        <h3 class="card-heading">{{ .Get "title" }}</h3>
+        <p class="progress-text">{{ .Get "description" }}</p>
+
+        <oe-annotate>
+            <oe-indicator>
+                <oe-spectrogram id="{{ $id }}"></oe-spectrogram>
+            </oe-indicator>
+        </oe-annotate>
+        <oe-media-controls for="{{ $id }}"></oe-media-controls>
+
+        {{ .Inner }}
+    </sl-card>
+</div>
+
+<script type="module">
+    const spectrogramElement = document.getElementById("{{ $id }}");
+
+    const audioEventUrl = "{{ $audio_event_url }}";
+</script>
+
+<style>
+    .spectrogram-card {
+        display: block;
+    }
+</style>

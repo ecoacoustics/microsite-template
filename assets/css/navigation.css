@@ -14,11 +14,12 @@ header {
 
     position: relative;
     top: 0;
+    min-height: 72px;
 
-    background-color: var(--micro-background-light);
+    background-color: var(--micro-nav-background-color);
     font-family: var(--micro-body-font);
     font-size: var(--micro-font-size-small);
-    color: var(--micro-font-color-light);
+    color: var(--micro-nav-font-color);
 
     /*
         We set a gap here so that there is a minimum spacing between the left
@@ -44,7 +45,7 @@ header {
     }
 
     a {
-        color: var(--micro-font-color-light);
+        color: var(--micro-nav-font-color);
         text-decoration: none;
     }
 }
