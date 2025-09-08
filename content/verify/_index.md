@@ -18,8 +18,22 @@ title = "Can you hear a Plains Wanderer?"
     ></oe-data-source>
 </oe-verification-grid>
 
-{{< event-card audioRecordingId="352803" audioEventId="269965" label="Plains Wander (female)" >}}
-{{< /event-card >}}
+<div class="example-calls">
+    {{< event-card audioRecordingId="352803" audioEventId="269965" label="Plains Wander (female)" >}}
+    {{< /event-card >}}
+    {{< event-card audioRecordingId="352803" audioEventId="269937" label="Plains Wander (male)" >}}
+    {{< /event-card >}}
+</div>
 
-{{< event-card audioRecordingId="352803" audioEventId="269937" label="Plains Wander (male)" >}}
-{{< /event-card >}}
+<style>
+.example-calls {
+    display: flex;
+    gap: var(--micro-padding-medium);
+
+    margin-top: var(--micro-padding-large);
+
+    > * {
+        flex: 1 1;
+    }
+}
+</style>
