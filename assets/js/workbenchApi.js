@@ -230,7 +230,8 @@ export class WorkbenchApi {
     }
 
     /**
-     * Fetches an audio event from the API using an audio event id.
+     * Fetches an audio event from the API using an audio recording and audio
+     * event id.
      *
      * @param {number} audioRecordingId
      * @param {number} audioEventId 
@@ -238,6 +239,21 @@ export class WorkbenchApi {
      */
     async getAudioEvent(audioRecordingId, audioEventId) {
         const url = this.#createUrl(`/audio_recordings/${audioRecordingId}/audio_events/${audioEventId}`);
+
+        const response = await this.#fetch("GET", url);
+        const responseBody = await response.json();
+
+        return responseBody.data;
+    }
+
+    /**
+     * Fetches an audio recording model from the API using an audio recording id
+     *
+     * @param {number} audioRecordingId
+     * @returns {Promise<AudioEvent>}
+     */
+    async getAudioRecording(audioRecordingId) {
+        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
 
         const response = await this.#fetch("GET", url);
         const responseBody = await response.json();
@@ -506,7 +522,8 @@ export class WorkbenchApi {
 
         // We use a URL object so that if the url already has query parameter,
         // it will be added using a "&" instead of a "?".
-        // It also handles encoding the query parameter correctly.
+        // Using a URL object also automatically handles encoding the query
+        // parameter.
         //
         // Note: This will throw an error if the url is not valid.
         const urlObj = new URL(url);

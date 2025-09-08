@@ -3,11 +3,6 @@ title = "Home"
 date = 2023-01-01T08:00:00-07:00
 +++
 
-<script
-    type="module"
-    src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components/dist/components.js"
-></script>
-
 {{< section/hero
 caption="Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
 title="Can you hear a Plains Wanderer?">}}
