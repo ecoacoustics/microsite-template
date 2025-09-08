@@ -250,7 +250,7 @@ export class WorkbenchApi {
      * Fetches an audio recording model from the API using an audio recording id
      *
      * @param {number} audioRecordingId
-     * @returns {Promise<AudioEvent>}
+     * @returns {Promise<AudioRecording>}
      */
     async getAudioRecording(audioRecordingId) {
         const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
