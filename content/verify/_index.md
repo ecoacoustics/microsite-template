@@ -17,3 +17,9 @@ title = "Can you hear a Plains Wanderer?"
         allow-downloads="false"
     ></oe-data-source>
 </oe-verification-grid>
+
+{{< event-card audioRecordingId="352803" audioEventId="269965" label="Plains Wander (female)" >}}
+{{< /event-card >}}
+
+{{< event-card audioRecordingId="352803" audioEventId="269937" label="Plains Wander (male)" >}}
+{{< /event-card >}}

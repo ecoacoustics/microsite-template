@@ -230,6 +230,22 @@ export class WorkbenchApi {
     }
 
     /**
+     * Fetches an audio event from the API using an audio event id.
+     *
+     * @param {number} audioRecordingId
+     * @param {number} audioEventId 
+     * @returns {Promise<AudioEvent>}
+     */
+    async getAudioEvent(audioRecordingId, audioEventId) {
+        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}/audio_events/${audioEventId}`);
+
+        const response = await this.#fetch("GET", url);
+        const responseBody = await response.json();
+
+        return responseBody.data;
+    }
+
+    /**
      * Uses a verification model id to fetch the verification object from the
      * baw-api.
      * If there is no verification object with the given id, this method will
@@ -370,7 +386,7 @@ export class WorkbenchApi {
     /**
      * @description
      * Creates a callback that can be used by the oe-verification-grid
-     * components `urlTransformer` .
+     * components `urlTransformer`.
      * This URL converts a subject model (AudioEvent) into a baw-api endpoint
      * to download the segment of audio referenced by the audio event.
      *
@@ -383,19 +399,33 @@ export class WorkbenchApi {
         // the "url" is not used in this callback because the original subject
         // model (AudioEvent model) does not have any of the "url" fields
         // supported by the web components.
+
+        /**
+         * @param {string} _url
+         * @param {AudioEvent} subject
+         * @returns {string}
+         */
         return (_url, subject) => {
-            const recordingId = subject.audio_recording_id;
-            const start = subject.start_time_seconds;
-            const end = subject.end_time_seconds;
-            const authToken = this.#authToken;
-
-            const urlBase = this.#createUrl(
-                `/audio_recordings/${recordingId}/media.flac`,
-            );
-            const params = `?start_offset=${start}&end_offset=${end}&user_token=${authToken}`;
-
-            return urlBase + params;
+            return this.audioEventUrl(subject);
         };
+    }
+
+    /**
+     * @param {AudioEvent} audioEvent
+     * @returns {string}
+     */
+    audioEventUrl(audioEvent) {
+        const recordingId = audioEvent.audio_recording_id;
+        const start = audioEvent.start_time_seconds;
+        const end = audioEvent.end_time_seconds;
+
+        const urlBase = this.#createUrl(
+            `/audio_recordings/${recordingId}/media.flac`,
+        );
+        const params = `?start_offset=${start}&end_offset=${end}`;
+        const url = urlBase + params;
+
+        return this.#withUserToken(url);
     }
 
     /**
@@ -461,6 +491,27 @@ export class WorkbenchApi {
         // by the URL constructor.
         const url = new URL(path, this.#host);
         return url.href;
+    }
+
+    /**
+     * Adds a user authentication token to a url as a query parameter.
+     *
+     * @param {string} url 
+     * @returns {string}
+     */
+    #withUserToken(url) {
+        if (!this.#authToken) {
+            return url;
+        }
+
+        // We use a URL object so that if the url already has query parameter,
+        // it will be added using a "&" instead of a "?".
+        // It also handles encoding the query parameter correctly.
+        //
+        // Note: This will throw an error if the url is not valid.
+        const urlObj = new URL(url);
+        urlObj.searchParams.append("user_token", this.#authToken);
+        return urlObj.href;
     }
 
     /**

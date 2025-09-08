@@ -1,30 +1,108 @@
-{{ $id := printf "spectrogram-card-%03d" $.Ordinal }}
+{{ $audio_recording_id := .Get "audioRecordingId" }}
+{{ $audio_event_id := .Get "audioEventId" }}
+{{ $label := .Get "label" }}
 
-{{ $audio_event_url := .Get "audioEventUrl" }}
+{{- if not $audio_recording_id -}}
+    {{ errorf "Missing audioRecordingId for event card with label %s" $label }}
+{{- end -}}
 
-<div>
+{{- if not $audio_event_id -}}
+    {{ errorf "Missing audioEventId for event card with label %s" $label }}
+{{- end -}}
+
+{{ $id := printf "event-card-%03d" $.Ordinal }}
+
+<div id="{{ $id }}" class="card-host">
     <sl-card class="spectrogram-card">
-        <h3 class="card-heading">{{ .Get "title" }}</h3>
-        <p class="progress-text">{{ .Get "description" }}</p>
+        <div class="card-header" slot="header">
+            <h3 class="event-label">{{ $label }}</h3>
+            <oe-media-controls for="{{ $id }}-spectrogram"></oe-media-controls>
+        </div>
 
-        <oe-annotate>
-            <oe-indicator>
-                <oe-spectrogram id="{{ $id }}"></oe-spectrogram>
-            </oe-indicator>
-        </oe-annotate>
-        <oe-media-controls for="{{ $id }}"></oe-media-controls>
+        <div class="card-body">
+            <oe-annotate id="{{ $id }}-annotations">
+                <oe-axes>
+                    <oe-indicator>
+                        <oe-spectrogram
+                            id="{{ $id }}-spectrogram"
+                            class="event-spectrogram"
+                        ></oe-spectrogram>
+                    </oe-indicator>
+                </oe-axes>
+            </oe-annotate>
+        </div>
 
         {{ .Inner }}
     </sl-card>
 </div>
 
 <script type="module">
-    const spectrogramElement = document.getElementById("{{ $id }}");
+    // TODO: Refactor this once we support object annotations
+    // see: https://github.com/ecoacoustics/web-components/issues/501
+    function createAnnotation(audioEvent, label, contextPadding, annotateOutlet) {
+        const eventDuration = audioEvent.end_time_seconds - audioEvent.start_time_seconds;
 
-    const audioEventUrl = "{{ $audio_event_url }}";
+        const annotationElement = document.createElement("oe-annotation");
+        annotationElement.setAttribute("start-time", contextPadding);
+        annotationElement.setAttribute("end-time", eventDuration + contextPadding);
+        annotationElement.setAttribute("low-frequency", audioEvent.low_frequency_hertz);
+        annotationElement.setAttribute("high-frequency", audioEvent.high_frequency_hertz);
+        annotationElement.setAttribute("tags", label);
+
+        annotateOutlet.appendChild(annotationElement);
+    }
+
+    const api = await workbenchApi();
+
+    const targetSpectrogram = document.getElementById("{{ $id }}-spectrogram");
+    const targetAnnotations = document.getElementById("{{ $id }}-annotations");
+
+    const audioRecordingId = {{ $audio_recording_id }};
+    const audioEventId = {{ $audio_event_id }};
+    const label = "{{ $label }}";
+
+    const audioEvent = await api.getAudioEvent(audioRecordingId, audioEventId);
+
+    const eventDuration = audioEvent.end_time_seconds - audioEvent.start_time_seconds;
+
+    // A padding around the event in seconds to give the user some context
+    // If the event is very short (e.g. less than 4 seconds), we we want to use
+    // some smaller padding so that the event is the center of attention.
+    // But if the event is longer than 4 seconds, we just pad by a fixed 2
+    // seconds.
+    const contextPadding = Math.min(2, eventDuration / 4);
+    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPadding, 0);
+    const contextEndTime = audioEvent.end_time_seconds + contextPadding;
+
+
+    const contextEvent = {
+        ...audioEvent,
+        start_time_seconds: contextStartTime,
+        end_time_seconds: contextEndTime,
+    };
+    targetSpectrogram.src = api.audioEventUrl(contextEvent);
+
+    createAnnotation(audioEvent, label, contextPadding, targetAnnotations);
 </script>
 
 <style>
+    #{{ $id }}.card-host {
+        display: block;
+        position: relative;
+
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+
+        .event-label {
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+    }
+
     .spectrogram-card {
         display: block;
     }
