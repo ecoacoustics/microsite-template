@@ -37,23 +37,12 @@
 </div>
 
 <script type="module">
+    {{- with resources.Get "js/annotations.js" }}
+        import { createAnnotation } from "{{ .RelPermalink }}";
+    {{- end }}
+
     const spectrogramTarget = document.getElementById("{{ $id }}-spectrogram");
     const annotationTarget = document.getElementById("{{ $id }}-annotations");
-
-    // TODO: Refactor this function once we support object annotations
-    // see: https://github.com/ecoacoustics/web-components/issues/501
-    function createAnnotation(audioEvent, label, contextPaddingStart) {
-        const eventDuration = audioEvent.end_time_seconds - audioEvent.start_time_seconds;
-
-        const annotationElement = document.createElement("oe-annotation");
-        annotationElement.setAttribute("start-time", contextPaddingStart);
-        annotationElement.setAttribute("end-time", eventDuration + contextPaddingStart);
-        annotationElement.setAttribute("low-frequency", audioEvent.low_frequency_hertz);
-        annotationElement.setAttribute("high-frequency", audioEvent.high_frequency_hertz);
-        annotationElement.setAttribute("tags", label);
-
-        annotationTarget.appendChild(annotationElement);
-    }
 
     const api = await workbenchApi();
 
@@ -83,9 +72,15 @@
     //
     // Additionally, we clamp to the start and end of the recording so that we
     // don't try to fetch audio that is outside the bounds of the recording.
-    const contextPadding = Math.min(2, eventDuration / 4);
-    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPadding, 0);
-    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPadding, audioRecordingDuration);
+    const minimumEventDurationSeconds = 4;
+    const defaultPaddingSeconds = 1;
+
+    const contextPaddingSeconds = eventDuration < minimumEventDurationSeconds
+        ? eventDuration / 2
+        : defaultPaddingSeconds;
+
+    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPaddingSeconds, 0);
+    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPaddingSeconds, audioRecordingDuration);
 
     // How much padding we added to the start of the event. Because this can be
     // clamped to the start of the recording, we need to calculate this after
@@ -104,7 +99,7 @@
     // from the start of the spectrogram the event starts at.
     // We cannot use the contextPadding in case the context start time was
     // clamped to the start of the recording.
-    createAnnotation(audioEvent, label, contextPaddingStart);
+    createAnnotation(annotationTarget, audioEvent, label, contextPaddingStart);
 </script>
 
 <style>

@@ -13,7 +13,8 @@ const bawApiDecisionMapping = {
 /**
  * A callback that can be used to get the current global WorkbenchApi instance
  */
-globalThis.workbenchApi ??= () => WorkbenchApi.instance(globalThis.siteParams.apihost);
+globalThis.workbenchApi ??= () =>
+    WorkbenchApi.instance(globalThis.siteParams.apihost);
 
 /**
  * A service to interact with the baw-api
@@ -234,11 +235,13 @@ export class WorkbenchApi {
      * event id.
      *
      * @param {number} audioRecordingId
-     * @param {number} audioEventId 
+     * @param {number} audioEventId
      * @returns {Promise<AudioEvent>}
      */
     async getAudioEvent(audioRecordingId, audioEventId) {
-        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}/audio_events/${audioEventId}`);
+        const url = this.#createUrl(
+            `/audio_recordings/${audioRecordingId}/audio_events/${audioEventId}`,
+        );
 
         const response = await this.#fetch("GET", url);
         const responseBody = await response.json();
@@ -512,7 +515,7 @@ export class WorkbenchApi {
     /**
      * Adds a user authentication token to a url as a query parameter.
      *
-     * @param {string} url 
+     * @param {string} url
      * @returns {string}
      */
     #withUserToken(url) {
