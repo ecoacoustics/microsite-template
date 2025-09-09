@@ -18,17 +18,26 @@ async function bootstrapVerificationGrid(target, filterBody) {
 
   target.addEventListener("decision-made", (event) => {
     const decisions = event.detail;
-    for (const decision of decisions) {
-      // Each call to "upsertVerification" is an async fire and forget
-      // call to the api.
-      // Each request is an un-awaited async method call so that it
-      // doesn't lock up the main thread and freeze the website when an
-      // api call is made.
-      //
-      // If an upsert request errors or fails to be applied, there is no
-      // retry logic, and the verification will fail to commit to the
-      // database.
-      api.upsertVerification(decision);
+    for (const [subject, receipt] of decisions) {
+      const change = receipt.change;
+      const verificationChange = change.verification;
+
+      // If the verification change is null, it indicates that the user has
+      // deleted a previously applied verification.
+      if (verificationChange === null) {
+        api.deleteVerification(subject);
+      } else {
+        // Each call to "upsertVerification" is an async fire and forget
+        // call to the api.
+        // Each request is an un-awaited async method call so that it
+        // doesn't lock up the main thread and freeze the website when an
+        // api call is made.
+        //
+        // If an upsert request errors or fails to be applied, there is no
+        // retry logic, and the verification will fail to commit to the
+        // database.
+        api.upsertVerification(subject);
+      }
     }
   });
 }

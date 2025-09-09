@@ -1,0 +1,125 @@
+{{ $audio_recording_id := .Get "audioRecordingId" }}
+{{ $audio_event_id := .Get "audioEventId" }}
+{{ $label := .Get "label" }}
+
+{{- if not $audio_recording_id -}}
+    {{ errorf "Missing audioRecordingId for event card with label %s" $label }}
+{{- end -}}
+
+{{- if not $audio_event_id -}}
+    {{ errorf "Missing audioEventId for event card with label %s" $label }}
+{{- end -}}
+
+{{ $id := printf "event-card-%03d" $.Ordinal }}
+
+<div id="{{ $id }}" class="card-host">
+    <sl-card class="spectrogram-card">
+        <div class="card-header" slot="header">
+            <h3 class="event-label">{{ $label }}</h3>
+            <oe-media-controls for="{{ $id }}-spectrogram"></oe-media-controls>
+        </div>
+
+        <div class="card-body">
+            <oe-annotate id="{{ $id }}-annotations">
+                <oe-axes>
+                    <oe-indicator>
+                        <oe-spectrogram
+                            id="{{ $id }}-spectrogram"
+                            class="event-spectrogram"
+                        ></oe-spectrogram>
+                    </oe-indicator>
+                </oe-axes>
+            </oe-annotate>
+        </div>
+
+        {{ .Inner }}
+    </sl-card>
+</div>
+
+<script type="module">
+    {{- with resources.Get "js/annotations.js" }}
+        import { createAnnotation } from "{{ .RelPermalink }}";
+    {{- end }}
+
+    const spectrogramTarget = document.getElementById("{{ $id }}-spectrogram");
+    const annotationTarget = document.getElementById("{{ $id }}-annotations");
+
+    const api = await workbenchApi();
+
+    const audioRecordingId = {{ $audio_recording_id }};
+    const audioEventId = {{ $audio_event_id }};
+    const label = "{{ $label }}";
+
+    // We use promise.all here so that we can fetch both the audio event and the
+    // audio recording in parallel.
+    // We also use .all instead of .allSettled so that if one of the requests
+    // fails, we can immediately show an error to the user instead of waiting
+    // for all requests to finish.
+    const [audioRecording, audioEvent] = await Promise.all([
+        api.getAudioRecording(audioRecordingId),
+        api.getAudioEvent(audioRecordingId, audioEventId),
+    ]);
+
+    const eventDuration = audioEvent.end_time_seconds - audioEvent.start_time_seconds;
+    const audioRecordingDuration = audioRecording.duration_seconds;
+
+    // A padding around the event in seconds to give the user some context
+    const minimumEventDurationSeconds = 4;
+    const defaultPaddingSeconds = 1;
+
+    // If the recording is less than 4 seconds, we add extra padding so that it
+    // is at least 4 seconds long.
+    // Additionally, we always add a default padding of 1 second so there is
+    // always some context around the event.
+    const contextPaddingSeconds = eventDuration < minimumEventDurationSeconds
+        ? ((minimumEventDurationSeconds - eventDuration) / 2) + defaultPaddingSeconds
+        : defaultPaddingSeconds;
+
+    // We clamp to the start and end of the recording so that we don't try to
+    // fetch audio that is outside the bounds of the recording.
+    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPaddingSeconds, 0).toFixed(2);
+    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPaddingSeconds, audioRecordingDuration).toFixed(2);
+
+    // How much padding we added to the start of the event. Because this can be
+    // clamped to the start of the recording, we need to calculate this after
+    // we calculate the context start time.
+    const contextPaddingStart = audioEvent.start_time_seconds - contextStartTime;
+
+    const eventWithContext = {
+        ...audioEvent,
+        start_time_seconds: contextStartTime,
+        end_time_seconds: contextEndTime,
+    };
+    spectrogramTarget.src = api.audioEventUrl(eventWithContext);
+
+    // Draws a bounding box around the original event.
+    // We need the contextPaddingStart because we need to know how many seconds
+    // from the start of the spectrogram the event starts at.
+    // We cannot use the contextPadding in case the context start time was
+    // clamped to the start of the recording.
+    createAnnotation(annotationTarget, audioEvent, label, contextPaddingStart);
+</script>
+
+<style>
+    #{{ $id }}.card-host {
+        display: block;
+        position: relative;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .event-label {
+            margin: 0;
+
+            font-size: var(--micro-font-size-small);
+            letter-spacing: 0.25px;
+        }
+    }
+
+    .spectrogram-card {
+        display: block;
+    }
+</style>

@@ -67,7 +67,7 @@
             "tamasfe.even-better-toml",
             "dbaeumer.vscode-eslint",
             "stylelint.vscode-stylelint",
-            "aaron-bond.better-comments",
+            "aaron-bond.better-comments"
         ]
     }
 }

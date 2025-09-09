@@ -16,8 +16,11 @@
     --micro-inverse-color: #000;
     --micro-heading-color: #000;
 
+    --micro-nav-background-color: var(--micro-background-light);
+    --micro-nav-font-color: var(--micro-font-color);
+
     --micro-footer-background-color: var(--sl-color-primary-950);
-    --micro-footer-text-color: var(--micro-font-color-light);
+    --micro-footer-font-color: var(--micro-font-color-light);
 
     /* Backgrounds */
     --micro-background-light: #fff;

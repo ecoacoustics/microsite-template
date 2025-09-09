@@ -13,7 +13,8 @@ const bawApiDecisionMapping = {
 /**
  * A callback that can be used to get the current global WorkbenchApi instance
  */
-globalThis.workbenchApi ??= () => WorkbenchApi.instance(globalThis.siteParams.apihost);
+globalThis.workbenchApi ??= () =>
+    WorkbenchApi.instance(globalThis.siteParams.apihost);
 
 /**
  * A service to interact with the baw-api
@@ -230,6 +231,40 @@ export class WorkbenchApi {
     }
 
     /**
+     * Fetches an audio event from the API using an audio recording and audio
+     * event id.
+     *
+     * @param {number} audioRecordingId
+     * @param {number} audioEventId
+     * @returns {Promise<AudioEvent>}
+     */
+    async getAudioEvent(audioRecordingId, audioEventId) {
+        const url = this.#createUrl(
+            `/audio_recordings/${audioRecordingId}/audio_events/${audioEventId}`,
+        );
+
+        const response = await this.#fetch("GET", url);
+        const responseBody = await response.json();
+
+        return responseBody.data;
+    }
+
+    /**
+     * Fetches an audio recording model from the API using an audio recording id
+     *
+     * @param {number} audioRecordingId
+     * @returns {Promise<AudioRecording>}
+     */
+    async getAudioRecording(audioRecordingId) {
+        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
+
+        const response = await this.#fetch("GET", url);
+        const responseBody = await response.json();
+
+        return responseBody.data;
+    }
+
+    /**
      * Uses a verification model id to fetch the verification object from the
      * baw-api.
      * If there is no verification object with the given id, this method will
@@ -268,6 +303,50 @@ export class WorkbenchApi {
         const url = this.#createUrl("/verifications");
         const response = await this.#fetch("PUT", url, payload);
 
+        return response.ok;
+    }
+
+    /**
+     * Deletes a verification object from the server using the audio event id
+     * (subject id) + tag id as a unique identifier.
+     *
+     * @param {SubjectWrapper} model - The verification object to delete
+     * @returns {Promise<boolean>} - A boolean value indicating whether the verification was deleted successfully
+     */
+    async deleteVerification(model) {
+        const audioEventId = model.subject.id;
+        const tagId = model.tag.id;
+        const currentUserId = (await this.getUserProfile())?.data?.id;
+
+        const filterEndpoint = this.#createUrl(`/verifications/filter`);
+        const getVerification = await this.#fetch("POST", filterEndpoint, {
+            filter: {
+                audio_event_id: { eq: audioEventId },
+                tag_id: { eq: tagId },
+                creator_id: { eq: currentUserId },
+            },
+            paging: {
+                items: 1,
+            },
+        });
+
+        if (!getVerification.ok) {
+            throw new Error("Failed to fetch verification to delete");
+        }
+
+        const responseBody = await getVerification.json();
+        const verification = responseBody.data[0];
+
+        if (!verification) {
+            throw new Error("Failed to find verification to delete");
+        }
+
+        const verificationId = verification.id;
+        const deleteEndpoint = this.#createUrl(
+            `/verifications/${verificationId}`,
+        );
+
+        const response = await this.#fetch("DELETE", deleteEndpoint);
         return response.ok;
     }
 
@@ -370,7 +449,7 @@ export class WorkbenchApi {
     /**
      * @description
      * Creates a callback that can be used by the oe-verification-grid
-     * components `urlTransformer` .
+     * components `urlTransformer`.
      * This URL converts a subject model (AudioEvent) into a baw-api endpoint
      * to download the segment of audio referenced by the audio event.
      *
@@ -383,19 +462,33 @@ export class WorkbenchApi {
         // the "url" is not used in this callback because the original subject
         // model (AudioEvent model) does not have any of the "url" fields
         // supported by the web components.
+
+        /**
+         * @param {string} _url
+         * @param {AudioEvent} subject
+         * @returns {string}
+         */
         return (_url, subject) => {
-            const recordingId = subject.audio_recording_id;
-            const start = subject.start_time_seconds;
-            const end = subject.end_time_seconds;
-            const authToken = this.#authToken;
-
-            const urlBase = this.#createUrl(
-                `/audio_recordings/${recordingId}/media.flac`,
-            );
-            const params = `?start_offset=${start}&end_offset=${end}&user_token=${authToken}`;
-
-            return urlBase + params;
+            return this.audioEventUrl(subject);
         };
+    }
+
+    /**
+     * @param {AudioEvent} audioEvent
+     * @returns {string}
+     */
+    audioEventUrl(audioEvent) {
+        const recordingId = audioEvent.audio_recording_id;
+        const start = audioEvent.start_time_seconds;
+        const end = audioEvent.end_time_seconds;
+
+        const urlBase = this.#createUrl(
+            `/audio_recordings/${recordingId}/media.flac`,
+        );
+        const params = `?start_offset=${start}&end_offset=${end}`;
+        const url = urlBase + params;
+
+        return this.#withUserToken(url);
     }
 
     /**
@@ -461,6 +554,28 @@ export class WorkbenchApi {
         // by the URL constructor.
         const url = new URL(path, this.#host);
         return url.href;
+    }
+
+    /**
+     * Adds a user authentication token to a url as a query parameter.
+     *
+     * @param {string} url
+     * @returns {string}
+     */
+    #withUserToken(url) {
+        if (!this.#authToken) {
+            return url;
+        }
+
+        // We use a URL object so that if the url already has query parameter,
+        // it will be added using a "&" instead of a "?".
+        // Using a URL object also automatically handles encoding the query
+        // parameter.
+        //
+        // Note: This will throw an error if the url is not valid.
+        const urlObj = new URL(url);
+        urlObj.searchParams.append("user_token", this.#authToken);
+        return urlObj.href;
     }
 
     /**

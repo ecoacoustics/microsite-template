@@ -190,7 +190,7 @@ figure {
         If we did not have this condition, there would always be a box the size
         of the padding.
     */
-    &:has(::content) {
+    &:not(:empty) {
         padding: var(--micro-padding-small);
     }
 }

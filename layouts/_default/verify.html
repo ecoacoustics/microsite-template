@@ -14,24 +14,25 @@
         */
         oe-verification-grid[grid-size="1"] {
             /*
-                50rem is 800px on a default browser with font size 16.
+                56rem is 896px on a default browser with font size 16.
                 We use rem units instead of px so that if the user zooms in, or
                 is on a high dpi screen, the verification grid can fill up a
                 relatively larger portion of the screen.
 
-                I have also chosen 800px for the maximum size because it is
+                I have also chosen 896px for the maximum size because it is
                 close to the minimum size before the controls start wrapping.
             */
-            max-width: 50rem;
-            max-height: 50rem;
-
+            width: 100%;
+            max-width: 56rem;
+            max-height: 56rem;
+            padding: var(--micro-padding-small);
             margin: auto;
         }
     </style>
 
     <script
         type="module"
-        src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components@3/dist/components.js"
+        src="https://cdn.jsdelivr.net/npm/@ecoacoustics/web-components@5/dist/components.js"
     ></script>
 
     {{- with resources.Get "js/bootstrapVerificationGrid.js" }}
