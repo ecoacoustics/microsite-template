@@ -310,8 +310,8 @@ export class WorkbenchApi {
      * Deletes a verification object from the server using the audio event id
      * (subject id) + tag id as a unique identifier.
      *
-     * @param {SubjectWrapper} model - The verification object to create
-     * @returns {Promise<boolean>} - A boolean value indicating whether the verification was created successfully
+     * @param {SubjectWrapper} model - The verification object to delete
+     * @returns {Promise<boolean>} - A boolean value indicating whether the verification was deleted successfully
      */
     async deleteVerification(model) {
         const audioEventId = model.subject.id;
