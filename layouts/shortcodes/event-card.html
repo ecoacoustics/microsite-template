@@ -64,23 +64,21 @@
     const audioRecordingDuration = audioRecording.duration_seconds;
 
     // A padding around the event in seconds to give the user some context
-    // If the event is very short (e.g. less than 8 seconds), we we want to use
-    // some smaller context padding so that the event is the center of the users
-    // attention.
-    // But if we have a longer event, we want to fix the context padding to a
-    // maximum of 2 seconds in order to conserve visual space.
-    //
-    // Additionally, we clamp to the start and end of the recording so that we
-    // don't try to fetch audio that is outside the bounds of the recording.
     const minimumEventDurationSeconds = 4;
     const defaultPaddingSeconds = 1;
 
+    // If the recording is less than 4 seconds, we add extra padding so that it
+    // is at least 4 seconds long.
+    // Additionally, we always add a default padding of 1 second so there is
+    // always some context around the event.
     const contextPaddingSeconds = eventDuration < minimumEventDurationSeconds
-        ? eventDuration / 2
+        ? ((minimumEventDurationSeconds - eventDuration) / 2) + defaultPaddingSeconds
         : defaultPaddingSeconds;
 
-    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPaddingSeconds, 0);
-    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPaddingSeconds, audioRecordingDuration);
+    // We clamp to the start and end of the recording so that we don't try to
+    // fetch audio that is outside the bounds of the recording.
+    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPaddingSeconds, 0).toFixed(2);
+    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPaddingSeconds, audioRecordingDuration).toFixed(2);
 
     // How much padding we added to the start of the event. Because this can be
     // clamped to the start of the recording, we need to calculate this after

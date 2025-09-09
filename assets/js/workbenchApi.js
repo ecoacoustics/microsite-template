@@ -307,6 +307,50 @@ export class WorkbenchApi {
     }
 
     /**
+     * Deletes a verification object from the server using the audio event id
+     * (subject id) + tag id as a unique identifier.
+     *
+     * @param {SubjectWrapper} model - The verification object to create
+     * @returns {Promise<boolean>} - A boolean value indicating whether the verification was created successfully
+     */
+    async deleteVerification(model) {
+        const audioEventId = model.subject.id;
+        const tagId = model.tag.id;
+        const currentUserId = (await this.getUserProfile())?.data?.id;
+
+        const filterEndpoint = this.#createUrl(`/verifications/filter`);
+        const getVerification = await this.#fetch("POST", filterEndpoint, {
+            filter: {
+                audio_event_id: { eq: audioEventId },
+                tag_id: { eq: tagId },
+                creator_id: { eq: currentUserId },
+            },
+            paging: {
+                items: 1,
+            },
+        });
+
+        if (!getVerification.ok) {
+            throw new Error("Failed to fetch verification to delete");
+        }
+
+        const responseBody = await getVerification.json();
+        const verification = responseBody.data[0];
+
+        if (!verification) {
+            throw new Error("Failed to find verification to delete");
+        }
+
+        const verificationId = verification.id;
+        const deleteEndpoint = this.#createUrl(
+            `/verifications/${verificationId}`,
+        );
+
+        const response = await this.#fetch("DELETE", deleteEndpoint);
+        return response.ok;
+    }
+
+    /**
      * Fetches a verification object from the API
      *
      * @param {string} tag
