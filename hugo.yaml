@@ -24,13 +24,13 @@ services:
   # googleAnalytics:
   #   id: G-MEASUREMENT_ID
 menus:
-#   main:
-#     - name: Credits
-#       pageRef: https://ecosounds.org/about/credits
-#       weight: 10
-#   footer:
-#     - name: Ecosounds Project
-#       pageRef: https://www.ecosounds.org/projects/1131
+  # main:
+  #   - name: Credits
+  #     pageRef: https://ecosounds.org/about/credits
+  #     weight: 10
+  # footer:
+  #   - name: Ecosounds Project
+  #     pageRef: https://www.ecosounds.org/projects/1131
 params:
   apiHost: https://api.staging.ecosounds.org
   workbenchHost: https://staging.ecosounds.org
