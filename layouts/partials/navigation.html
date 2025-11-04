@@ -21,16 +21,18 @@ Renders a menu for the given menu ID.
     {{- end }}
     {{- partial "auth-menu.html" }}
 
-    <sl-button
-      id="verification-cta-button"
-      href="/verify"
-      variant="primary"
-      {{- if eq site.Params.Style.RoundedButtons true }}
-      pill
-      {{- end}}
-    >
-      Verify Calls
-    </sl-button>
+    {{- if ne site.Params.tasks.verification false }}
+      <sl-button
+        id="verification-cta-button"
+        href="/verify"
+        variant="primary"
+        {{- if eq site.Params.Style.RoundedButtons true }}
+        pill
+        {{- end}}
+      >
+        Verify Calls
+      </sl-button>
+    {{- end }}
   </span>
 </nav>
 
