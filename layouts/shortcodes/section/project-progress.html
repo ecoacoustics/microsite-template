@@ -7,16 +7,18 @@
         <strong class="progress-percentage"></strong>
         <p class="progress-text"></p>
 
-        <sl-button
-            variant="primary"
-            size="large"
-            href="/verify"
-            {{- if eq site.Params.Style.RoundedButtons true }}
-            pill
-            {{- end}}
-        >
-            Contribute your verifications
-        </sl-button>
+        {{- if ne site.Params.tasks.verification false }}
+            <sl-button
+                variant="primary"
+                size="large"
+                href="/verify"
+                {{- if eq site.Params.Style.RoundedButtons true }}
+                pill
+                {{- end}}
+            >
+                Contribute your verifications
+            </sl-button>
+        {{- end }}
     </sl-card>
     {{ .Inner }}
 </div>

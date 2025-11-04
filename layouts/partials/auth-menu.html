@@ -92,7 +92,14 @@
             // In the meantime, I have added it here so that we can re-use the
             // same auth state to enable/disable this auth button.
             const ctaButton = document.getElementById("verification-cta-button");
-            ctaButton.href = "/login?redirect=/verify";
+            if (ctaButton) {
+                ctaButton.href = "/login?redirect=/verify";
+            } else {
+                console.debug(
+                    "Could not find 'verify' button. " +
+                    "This can safely be ignored if 'tasks.verification' is disabled."
+                );
+            }
 
             return;
         }
