@@ -15,7 +15,6 @@ Most of the steps described can be found in the hugo
 3. Install [git lfs](https://git-lfs.com/) hooks into the repository by running `git lfs install`
 4. Add the microsite template as a theme
     - `git submodule add https://github.com/ecoacoustics/microsite-template.git themes/microsite-template`
-    - `echo "theme: "microsite-template" >> hugo.yaml`
 5. Initialize the websites content from the microsite template
     - `cp -r ./themes/microsite-template/content/* ./content/`
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
