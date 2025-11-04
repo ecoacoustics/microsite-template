@@ -36,7 +36,7 @@ params:
   workbenchHost: https://staging.ecosounds.org
   heroImage: images/Plains_wanderer_female.jpg
   tasks:
-    verification: false # default: true
+    verification: true # default: true
   campaigns:
     - name: "Powerful Owl"
       filters:
