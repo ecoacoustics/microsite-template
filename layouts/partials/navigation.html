@@ -26,7 +26,7 @@ Renders a menu for the given menu ID.
         We attempt to use the hugo.yaml navbar.text if it exists, otherwise we
         fall back to site.Title.
       */}}
-      <span>
+      <span class="oe-navbar-logo-text">
         {{- with site.Params.navbar.logo.text }}
           {{- . }}
         {{- else }}
