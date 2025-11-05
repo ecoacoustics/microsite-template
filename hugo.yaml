@@ -39,8 +39,8 @@ params:
     logo:
       image: images/OpenEcoacoustics_horizontal_rgb.svg # default: none
       text: Call Detective # default: {{ .site.Title }}
-    tasks:
-      verification: true # default: true
+  tasks:
+    verification: true # default: true
   campaigns:
     - name: "Powerful Owl"
       filters:
