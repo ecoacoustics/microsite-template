@@ -19,7 +19,15 @@ Renders a menu for the given menu ID.
       */}}
       {{- with site.Params.navbar.logo.image -}}
       {{- $logoImage := resources.Get . -}}
-        <img class="oe-navbar-logo-image" src="{{ $logoImage.RelPermalink }}" />
+        {{- if not $logoImage -}}
+          {{- errorf "Navbar logo image '%s' not found" . -}}
+        {{- end -}}
+
+        <img
+          class="oe-navbar-logo-image"
+          src="{{ $logoImage.RelPermalink }}"
+          alt="{{- site.Title -}} Logo"
+        />
       {{- end -}}
 
       {{/*
