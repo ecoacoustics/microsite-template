@@ -13,6 +13,10 @@ params:
   apiHost: https://api.staging.ecosounds.org
   workbenchHost: https://staging.ecosounds.org
   heroImage: images/Plains_wanderer_female.jpg
+  # navbar:
+  #   logo:
+  #     image: images/OpenEcoacoustics_horizontal_rgb.svg # default: none
+  #     text: Call Detective # default: {{ .site.Title }}
   tasks:
     verification: true # default: true
   campaigns:
