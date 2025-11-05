@@ -12,7 +12,28 @@ Renders a menu for the given menu ID.
 
 <nav class="oe-navigation">
   <span id="left-navigation-block">
-    <a href="/" class="oe-brand">{{ site.Title }}</a>
+    <a href="/" class="oe-brand">
+      {{/*
+        The navbar logo image always comes first if it exists.
+        If there is no image, we fall back to text only.
+      */}}
+      {{- with site.Params.navbar.logo.image -}}
+      {{- $logoImage := resources.Get . -}}
+        <img class="oe-navbar-logo-image" src="{{ $logoImage.RelPermalink }}" />
+      {{- end -}}
+
+      {{/*
+        We attempt to use the hugo.yaml navbar.text if it exists, otherwise we
+        fall back to site.Title.
+      */}}
+      <span>
+        {{- with site.Params.navbar.logo.text }}
+          {{- . }}
+        {{- else }}
+          {{- site.Title }}
+        {{- end }}
+      </span>
+    </a>
   </span>
 
   <span id="right-navigation-block">

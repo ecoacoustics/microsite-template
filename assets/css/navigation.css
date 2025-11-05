@@ -14,7 +14,7 @@ header {
 
     position: relative;
     top: 0;
-    min-height: 72px;
+    height: var(--micro-navbar-height);
 
     background-color: var(--micro-nav-background-color);
     font-family: var(--micro-body-font);
@@ -25,13 +25,15 @@ header {
         We set a gap here so that there is a minimum spacing between the left
         and right navigation blocks.
     */
-    gap: var(--micro-padding-medium);
-    padding: var(--micro-padding-medium);
+    gap: var(--micro-navbar-padding);
+    padding: var(--micro-navbar-padding);
 
     & > * {
         display: flex;
         align-items: center;
-        gap: var(--micro-padding-medium);
+        gap: var(--micro-navbar-padding);
+
+        width: 100%;
     }
 
     #right-navigation-block {
@@ -40,8 +42,19 @@ header {
     }
 
     .oe-brand {
+        display: flex;
+        align-items: center;
+        width: 100%;
+
         font-family: var(--micro-body-font);
         font-size: var(--micro-font-size-medium);
+
+        .oe-navbar-logo-image {
+            /* TODO: Find a better way to do this */
+            max-height: calc(
+                var(--micro-navbar-height) - 2 * var(--micro-navbar-padding)
+            );
+        }
     }
 
     a {
