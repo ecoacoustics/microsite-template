@@ -1,4 +1,4 @@
-<sl-card>
+<sl-card class='{{ .Get "class" }}'>
   {{ with .Get "image"  -}}
   {{- $image := resources.Get . -}}
     <img
