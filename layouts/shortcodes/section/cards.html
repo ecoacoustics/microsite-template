@@ -1,4 +1,4 @@
-<section class='oe-cards {{. Get "class" }}'>
+<section class='oe-cards {{ .Get "class" }}'>
   {{ range split .Inner "<--->" }}
       {{ . | $.Page.RenderString }}
   {{ end }}
