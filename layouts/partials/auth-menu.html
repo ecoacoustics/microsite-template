@@ -1,4 +1,4 @@
-<span id="menu-container">
+<span id="auth-menu-container">
     <sl-dropdown id="authed-menu">
         <sl-button
             slot="trigger"
@@ -48,13 +48,25 @@
             display: none;
         }
     }
+
+    {{/*
+        We hide the auth menu on mobile views because it takes up a lot of
+        valuable space in the navigation bar, and we will prompt the user to
+        log in / sign up if they navigate to a protected page like the
+        verification page.
+    */}}
+    @media (max-width: 48em /* 768px */) {
+        #auth-menu-container {
+            display: none;
+        }
+    }
 </style>
 
 <script type="module">
     const api = await workbenchApi();
 
     const usernameOutlet = document.getElementById("username-outlet");
-    const menuContainer = document.getElementById("menu-container");
+    const menuContainer = document.getElementById("auth-menu-container");
 
     const logOutMenuItem = document.getElementById("log-out-menu-item");
     logOutMenuItem.addEventListener("click", async () => {
