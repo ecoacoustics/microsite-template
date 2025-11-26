@@ -75,12 +75,12 @@ header {
 
     /* Responsive behavior: hide desktop menu and show hamburger on mobile/tablet */
     @media (max-width: 768px) {
-        #desktop-menu-items {
-            display: none !important;
+        #right-navigation-block #desktop-menu-items {
+            display: none;
         }
 
-        #mobile-menu-dropdown {
-            display: flex !important;
+        #right-navigation-block #mobile-menu-dropdown {
+            display: flex;
         }
     }
 }
