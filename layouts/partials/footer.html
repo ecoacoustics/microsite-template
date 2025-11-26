@@ -35,7 +35,7 @@
             {{- if $logoResource }}
               {{- $altText := .alt | default "Stakeholder Logo" }}
               {{- if .url }}
-                <a href="{{ .url }}" target="_blank">
+                <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
                   <img
                     src="{{ $logoResource.RelPermalink }}"
                     alt="{{ $altText }}"
