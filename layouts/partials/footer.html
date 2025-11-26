@@ -17,15 +17,41 @@
     <div>
       <p>Created by</p>
 
-      <a href="https://openecoacoustics.org/" target="_blank">
-        {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
-        <img
-          src="{{ .RelPermalink }}"
-          alt="OpenEcoacoustics Logo"
-          class="sponsor-logo"
-        >
-        {{- end -}}
-      </a>
+      <div class="sponsor-logos">
+        <a href="https://openecoacoustics.org/" target="_blank">
+          {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
+          <img
+            src="{{ .RelPermalink }}"
+            alt="OpenEcoacoustics Logo"
+            class="sponsor-logo"
+          >
+          {{- end -}}
+        </a>
+
+        {{- with .Site.Params.footer.logo }}
+          {{- range . }}
+            {{- $logoPath := .image }}
+            {{- $logoResource := resources.Get $logoPath }}
+            {{- if $logoResource }}
+              {{- if .url }}
+                <a href="{{ .url }}" target="_blank">
+                  <img
+                    src="{{ $logoResource.RelPermalink }}"
+                    alt="{{ .alt }}"
+                    class="sponsor-logo"
+                  >
+                </a>
+              {{- else }}
+                <img
+                  src="{{ $logoResource.RelPermalink }}"
+                  alt="{{ .alt }}"
+                  class="sponsor-logo"
+                >
+              {{- end }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      </div>
 
       <p>
         In collaboration with the
@@ -37,6 +63,14 @@
 </div>
 
 <style>
+  .sponsor-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
   .sponsor-logo {
     min-height: 4rem;
     margin-top: 1rem;
