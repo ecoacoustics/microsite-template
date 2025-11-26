@@ -40,11 +40,11 @@ params:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none
   #     text: "Call Detective" # default: {{ .site.Title }}
   # To add stakeholder logos to the footer, uncomment and configure below:
-  footer:
-    logo:
-      - image: "images/test-stakeholder-logo.svg" # Path to stakeholder logo in assets or static folder
-        alt: "Test Stakeholder" # Alt text for the logo
-        url: "https://example.org/" # Optional: Link URL for the logo
+  # footer:
+  #   logo:
+  #     - image: "images/stakeholder-logo.svg" # Path to stakeholder logo in assets or static folder
+  #       alt: "Stakeholder Name" # Alt text for the logo
+  #       url: "https://stakeholder.org/" # Optional: Link URL for the logo
   tasks:
     verification: true # default: true
   campaigns:
