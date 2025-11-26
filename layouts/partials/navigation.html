@@ -45,23 +45,54 @@ Renders a menu for the given menu ID.
   </span>
 
   <span id="right-navigation-block">
-    {{- with index site.Menus $menuID }}
-      {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
-    {{- end }}
-    {{- partial "auth-menu.html" }}
+    <span id="desktop-menu-items" class="desktop-nav-items">
+      {{- with index site.Menus $menuID }}
+        {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
+      {{- end }}
+      {{- partial "auth-menu.html" }}
 
-    {{- if ne site.Params.tasks.verification false }}
-      <sl-button
-        id="verification-cta-button"
-        href="/verify"
-        variant="primary"
+      {{- if ne site.Params.tasks.verification false }}
+        <sl-button
+          id="verification-cta-button"
+          href="/verify"
+          variant="primary"
+          {{- if eq site.Params.Style.RoundedButtons true }}
+          pill
+          {{- end}}
+        >
+          Verify Calls
+        </sl-button>
+      {{- end }}
+    </span>
+
+    {{/* Mobile/tablet hamburger menu */}}
+    <sl-dropdown id="mobile-menu-dropdown" class="mobile-nav-menu">
+      <sl-icon-button 
+        slot="trigger" 
+        name="list" 
+        label="Menu"
         {{- if eq site.Params.Style.RoundedButtons true }}
-        pill
+        class="rounded"
         {{- end}}
-      >
-        Verify Calls
-      </sl-button>
-    {{- end }}
+      ></sl-icon-button>
+      <sl-menu>
+        {{- with index site.Menus $menuID }}
+          {{- range . }}
+            {{- $name := .Name }}
+            {{- with .Identifier }}
+              {{- with T . }}
+                {{- $name = . }}
+              {{- end }}
+            {{- end }}
+            <sl-menu-item href="{{ .PageRef }}">{{ $name }}</sl-menu-item>
+          {{- end }}
+        {{- end }}
+        {{- if ne site.Params.tasks.verification false }}
+          <sl-divider></sl-divider>
+          <sl-menu-item href="/verify">Verify Calls</sl-menu-item>
+        {{- end }}
+      </sl-menu>
+    </sl-dropdown>
   </span>
 </nav>
 
