@@ -33,18 +33,19 @@
             {{- $logoPath := .image }}
             {{- $logoResource := resources.Get $logoPath }}
             {{- if $logoResource }}
+              {{- $altText := .alt | default "Stakeholder Logo" }}
               {{- if .url }}
                 <a href="{{ .url }}" target="_blank">
                   <img
                     src="{{ $logoResource.RelPermalink }}"
-                    alt="{{ .alt }}"
+                    alt="{{ $altText }}"
                     class="sponsor-logo"
                   >
                 </a>
               {{- else }}
                 <img
                   src="{{ $logoResource.RelPermalink }}"
-                  alt="{{ .alt }}"
+                  alt="{{ $altText }}"
                   class="sponsor-logo"
                 >
               {{- end }}
