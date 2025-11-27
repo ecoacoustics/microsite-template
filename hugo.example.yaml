@@ -17,6 +17,11 @@ params:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none
   #     text: "Call Detective" # default: {{ .site.Title }}
+  # footer:
+  #   logos:
+  #     - image: "images/OpenEcoacoustics_horizontal_rgb.svg"
+  #       alt: "Open Ecoacoustics Logo"
+  #       url: "https://stakeholder.org/"
   tasks:
     verification: true # default: true
   campaigns:
