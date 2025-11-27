@@ -29,7 +29,7 @@
           {{- end -}}
         </a>
 
-        {{- with .Site.Params.footer.logo -}}
+        {{- with .Site.Params.footer.logos -}}
           {{- range . -}}
             {{- $logoPath := .image -}}
             {{- $logoResource := resources.Get $logoPath -}}

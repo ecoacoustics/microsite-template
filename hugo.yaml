@@ -41,7 +41,7 @@ params:
   #     text: "Call Detective" # default: {{ .site.Title }}
   # To add stakeholder logos to the footer, uncomment and configure below:
   # footer:
-  #   logo:
+  #   logos:
   #     - image: "images/OpenEcoacoustics_horizontal_rgb.svg"
   #       alt: "Open Ecoacoustics Logo"
   #       url: "https://stakeholder.org/"
