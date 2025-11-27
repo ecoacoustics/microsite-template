@@ -84,7 +84,7 @@ Renders a menu for the given menu ID.
                 {{- $name = . }}
               {{- end }}
             {{- end }}
-            <sl-menu-item href="{{ .URL }}">{{ $name }}</sl-menu-item>
+            <sl-menu-item href="{{ .PageRef }}">{{ $name }}</sl-menu-item>
           {{- end }}
         {{- end }}
         {{- if ne site.Params.tasks.verification false }}

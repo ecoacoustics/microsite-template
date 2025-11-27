@@ -60,27 +60,27 @@ header {
         color: var(--micro-nav-font-color);
         text-decoration: none;
     }
+}
 
-    /* Mobile menu is hidden by default */
-    #mobile-menu-dropdown {
-        display: none;
-    }
+/* Mobile menu is hidden by default */
+#mobile-menu-dropdown {
+    display: none;
+}
 
-    /* Desktop menu items visible by default */
+/* Desktop menu items visible by default */
+#desktop-menu-items {
+    display: flex;
+    align-items: center;
+    gap: var(--micro-navbar-padding);
+}
+
+/* Responsive behavior: hide desktop menu and show hamburger on mobile/tablet */
+@media (max-width: 768px) {
     #desktop-menu-items {
-        display: flex;
-        align-items: center;
-        gap: var(--micro-navbar-padding);
+        display: none !important;
     }
 
-    /* Responsive behavior: hide desktop menu and show hamburger on mobile/tablet */
-    @media (max-width: 768px) {
-        #right-navigation-block #desktop-menu-items {
-            display: none;
-        }
-
-        #right-navigation-block #mobile-menu-dropdown {
-            display: flex;
-        }
+    #mobile-menu-dropdown {
+        display: flex !important;
     }
 }
