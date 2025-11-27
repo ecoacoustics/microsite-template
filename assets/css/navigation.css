@@ -39,7 +39,7 @@ header {
 
     #right-navigation-block {
         justify-content: end;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
     }
 
     .oe-brand {
