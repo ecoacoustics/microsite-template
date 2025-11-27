@@ -65,6 +65,26 @@ header {
 /* Mobile menu is hidden by default */
 #mobile-menu-dropdown {
     display: none;
+    height: 100%;
+    width: auto;
+}
+
+#mobile-menu-dropdown::part(trigger) {
+    height: 100%;
+    width: auto;
+    font-size: inherit;
+}
+
+#mobile-menu-dropdown sl-icon-button {
+    height: 100%;
+    width: auto;
+    font-size: inherit;
+}
+
+#mobile-menu-dropdown sl-icon-button::part(base) {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1;
 }
 
 /* Desktop menu items visible by default */
