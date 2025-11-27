@@ -50,20 +50,20 @@ Renders a menu for the given menu ID.
         {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
       {{- end }}
       {{- partial "auth-menu.html" }}
-
-      {{- if ne site.Params.tasks.verification false }}
-        <sl-button
-          id="verification-cta-button"
-          href="/verify"
-          variant="primary"
-          {{- if eq site.Params.Style.RoundedButtons true }}
-          pill
-          {{- end}}
-        >
-          Verify Calls
-        </sl-button>
-      {{- end }}
     </span>
+
+    {{- if ne site.Params.tasks.verification false }}
+      <sl-button
+        id="verification-cta-button"
+        href="/verify"
+        variant="primary"
+        {{- if eq site.Params.Style.RoundedButtons true }}
+        pill
+        {{- end}}
+      >
+        Verify Calls
+      </sl-button>
+    {{- end }}
 
     {{/* Mobile/tablet hamburger menu */}}
     <sl-dropdown id="mobile-menu-dropdown" class="mobile-nav-menu">
@@ -86,10 +86,6 @@ Renders a menu for the given menu ID.
             {{- end }}
             <sl-menu-item href="{{ .PageRef }}">{{ $name }}</sl-menu-item>
           {{- end }}
-        {{- end }}
-        {{- if ne site.Params.tasks.verification false }}
-          <sl-divider></sl-divider>
-          <sl-menu-item href="/verify">Verify Calls</sl-menu-item>
         {{- end }}
       </sl-menu>
     </sl-dropdown>
