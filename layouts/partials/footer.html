@@ -19,39 +19,40 @@
 
       <div class="sponsor-logos">
         <a href="https://openecoacoustics.org/" target="_blank" rel="noopener noreferrer">
-          {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
+          {{- with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
           <img
             src="{{ .RelPermalink }}"
             alt="OpenEcoacoustics Logo"
             class="sponsor-logo"
+            loading="lazy"
           >
           {{- end -}}
         </a>
 
-        {{- with .Site.Params.footer.logo }}
-          {{- range . }}
-            {{- $logoPath := .image }}
-            {{- $logoResource := resources.Get $logoPath }}
-            {{- if $logoResource }}
-              {{- $altText := .alt | default "Stakeholder Logo" }}
-              {{- if .url }}
-                <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
-                  <img
-                    src="{{ $logoResource.RelPermalink }}"
-                    alt="{{ $altText }}"
-                    class="sponsor-logo"
-                  >
-                </a>
-              {{- else }}
+        {{- with .Site.Params.footer.logo -}}
+          {{- range . -}}
+            {{- $logoPath := .image -}}
+            {{- $logoResource := resources.Get $logoPath -}}
+            {{- if $logoResource -}}
+              {{- if not .alt -}}
+                {{- errorf "Footer logo %q is missing an alt attribute" $logoPath -}}
+              {{- end -}}
+
+              {{- if not .url -}}
+                {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
+              {{- end -}}
+
+              <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
                 <img
                   src="{{ $logoResource.RelPermalink }}"
-                  alt="{{ $altText }}"
+                  alt="{{ .alt }}"
                   class="sponsor-logo"
+                  loading="lazy"
                 >
-              {{- end }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
+              </a>
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
       </div>
 
       <p>
