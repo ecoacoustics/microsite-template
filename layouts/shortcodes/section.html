@@ -20,6 +20,6 @@ conjunction with the {{< fullbleed >}} shortcode
 
 <section class='page-section fullbleed {{ .Get "class" }}' styles='{{ .Get "style" }}'>
     <div class="page-section-content">
-        {{ .Inner }}
+        {{ .Inner | .Page.RenderString }}
     </div>
 </section>
