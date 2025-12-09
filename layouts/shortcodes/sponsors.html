@@ -6,7 +6,12 @@
     <div class="sponsor-row page-section-content">
         <div>
             <div class="logo-row">
-                <a href="https://openecoacoustics.org/" target="_blank">
+                <a
+                    href="https://openecoacoustics.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="sponsor-link"
+                >
                     {{ with resources.Get
                     "images/OpenEcoacoustics_horizontal_rgb.svg" -}}
                     <img
@@ -17,17 +22,35 @@
                     {{- end -}}
                 </a>
 
-                <a href="https://doi.org/10.3565/ts8c-ee10" target="_blank">
+                <a
+                    href="https://doi.org/10.3565/ts8c-ee10"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="sponsor-link"
+                >
                     {{ with resources.Get "images/ARDC_logo.svg" -}}
                     <img
                         src="{{ .RelPermalink }}"
                         alt="ARDC Logo"
                         class="sponsor-logo"
+                        style="
+                            --ardc-a-width: 2rem; /* 32px */
+                            --ardc-a-height: 3.375rem; /* 54px */
+
+                            --sponsor-logo-margin-left: calc(var(--ardc-a-width) * 2);
+                            --sponsor-logo-margin-right: calc(var(--ardc-a-width) * 1.5);
+                            --sponsor-logo-margin-bottom: var(--ardc-a-height);
+                        "
                     />
                     {{- end -}}
                 </a>
 
-                <a href="https://www.education.gov.au/ncris" target="_blank">
+                <a
+                    href="https://www.education.gov.au/ncris"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="sponsor-link"
+                >
                     {{ with resources.Get "images/NCRIS_logo.svg" -}}
                     <img
                         src="{{ .RelPermalink }}"
@@ -54,7 +77,12 @@
                             {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
                         {{- end -}}
 
-                        <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
+                        <a
+                            href="{{ .url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="sponsor-link"
+                        >
                             <img
                             src="{{ $logoResource.RelPermalink }}"
                             alt="{{ .alt }}"
@@ -89,18 +117,37 @@
         padding: 2rem;
 
         .logo-row {
-            --sponsor-logo-padding: var(--micro-padding-medium);
-
             display: flex;
-            flex-wrap: wrap;
-            gap: 3rem;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
+
+            .sponsor-link {
+                display: contents;
+            }
 
             .sponsor-logo {
-                min-height: 4rem;
-                margin-top: 1rem;
-                margin-bottom: var(--sponsor-logo-padding);
+                {{/*
+                    Remember that margins have a special property where if two
+                    margins placed next to each other can overlap.
+
+                    Therefore, because we use margins instead of padding, you can
+                    simply worry about each logo instead of needing to subtract the
+                    margin of the logo next to it.
+
+                    Note that on mobile devices, the horizontal margins will be
+                    removed so that each logo is vertically aligned.
+                */}}
+                --sponsor-logo-margin-left: 3rem;
+                --sponsor-logo-margin-right: 3rem;
+                --sponsor-logo-margin-top: 1rem;
+                --sponsor-logo-margin-bottom: var(--micro-padding-medium);
+
+                height: 104px;
+
+                margin-left: var(--sponsor-logo-margin-left);
+                margin-right: var(--sponsor-logo-margin-right);
+                margin-top: var(--sponsor-logo-margin-top);
+                margin-bottom: var(--sponsor-logo-margin-bottom);
             }
 
             {{/*
@@ -116,7 +163,6 @@
                 --logo-block-padding: 0.75rem;
 
                 margin-top: 0;
-                height: 104px;
                 margin-bottom: calc(var(--sponsor-logo-padding) - var(--logo-block-padding));
                 margin-left: calc(var(--logo-inner-padding) * -1);
             }
