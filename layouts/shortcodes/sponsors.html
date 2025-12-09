@@ -3,119 +3,144 @@
     https://ardc.edu.au/resource/acknowledging-the-ardc/
 */}}
 <section class="page-section">
-    <div class="sponsor-row page-section-content">
-        <div>
-            <div class="logo-row">
-                <a
-                    href="https://openecoacoustics.org/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="sponsor-link"
-                >
-                    {{ with resources.Get
-                    "images/OpenEcoacoustics_horizontal_rgb.svg" -}}
-                    <img
-                        src="{{ .RelPermalink }}"
-                        alt="OpenEcoacoustics Logo"
+    <div class="sponsors-block page-section-content">
+        <div class="common-sponsors-row">
+            <a
+                href="https://openecoacoustics.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-oe"
+            >
+                {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="OpenEcoacoustics Logo"
+                    class="sponsor-logo"
+                />
+                {{- end -}}
+            </a>
+
+            <a
+                href="https://doi.org/10.3565/ts8c-ee10"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-ardc"
+            >
+                {{ with resources.Get "images/ARDC_logo.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="ARDC Logo"
+                    class="sponsor-logo"
+                />
+                {{- end -}}
+            </a>
+
+            <a
+                href="https://www.education.gov.au/ncris"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-ncris"
+            >
+                {{ with resources.Get "images/NCRIS_logo.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="Australian Government & NCRIS Logo"
+                    class="sponsor-logo oe-logo-with-padding"
+                />
+                {{- end -}}
+            </a>
+        </div>
+
+        <div class="logo-row">
+            {{- with .Site.Params.sponsors.logos -}}
+                {{- range . -}}
+                    {{- $logoPath := .image -}}
+                    {{- $logoResource := resources.Get $logoPath -}}
+                    {{- if $logoResource -}}
+                    {{- if not .alt -}}
+                        {{- errorf "Footer logo %q is missing an alt attribute" $logoPath -}}
+                    {{- end -}}
+
+                    {{- if not .url -}}
+                        {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
+                    {{- end -}}
+
+                    <a
+                        href="{{ .url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="sponsor-link"
+                    >
+                        <img
+                        src="{{ $logoResource.RelPermalink }}"
+                        alt="{{ .alt }}"
                         class="sponsor-logo"
-                    />
-                    {{- end -}}
-                </a>
-
-                <a
-                    href="https://doi.org/10.3565/ts8c-ee10"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="sponsor-link"
-                >
-                    {{ with resources.Get "images/ARDC_logo.svg" -}}
-                    <img
-                        src="{{ .RelPermalink }}"
-                        alt="ARDC Logo"
-                        class="sponsor-logo"
-                        style="
-                            --ardc-a-width: 2rem; /* 32px */
-
-                            --sponsor-logo-margin-left: calc(var(--ardc-a-width) * 2);
-                            --sponsor-logo-margin-right: calc(var(--ardc-a-width) * 1.5);
-                        "
-                    />
-                    {{- end -}}
-                </a>
-
-                <a
-                    href="https://www.education.gov.au/ncris"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="sponsor-link"
-                >
-                    {{ with resources.Get "images/NCRIS_logo.svg" -}}
-                    <img
-                        src="{{ .RelPermalink }}"
-                        alt="Australian Government & NCRIS Logo"
-                        class="sponsor-logo oe-logo-with-padding"
-                        style="
-                            --logo-inner-padding: 1rem;
-                            --logo-block-padding: 0.8rem;
-                        "
-                    />
-                    {{- end -}}
-                </a>
-
-                {{- with .Site.Params.sponsors.logos -}}
-                    {{- range . -}}
-                        {{- $logoPath := .image -}}
-                        {{- $logoResource := resources.Get $logoPath -}}
-                        {{- if $logoResource -}}
-                        {{- if not .alt -}}
-                            {{- errorf "Footer logo %q is missing an alt attribute" $logoPath -}}
-                        {{- end -}}
-
-                        {{- if not .url -}}
-                            {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
-                        {{- end -}}
-
-                        <a
-                            href="{{ .url }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="sponsor-link"
+                        loading="lazy"
                         >
-                            <img
-                            src="{{ $logoResource.RelPermalink }}"
-                            alt="{{ .alt }}"
-                            class="sponsor-logo"
-                            loading="lazy"
-                            >
-                        </a>
-                        {{- end -}}
+                    </a>
                     {{- end -}}
                 {{- end -}}
+            {{- end -}}
 
-                {{ .Inner }}
-            </div>
+            {{ .Inner }}
+        </div>
 
-            <div class="sponsor-text-row">
-                <p>
-                    Open Ecoacoustics is supported through a co-investment
-                    partnership with the Australian Research Data Commons (ARDC)
-                    (<a href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
-                    through the Planet Research Data Commons. The ARDC is
-                    enabled by the Australian Government’s National
-                    Collaborative Research Infrastructure Strategy (NCRIS).
-                </p>
-            </div>
+        <div class="sponsor-text-row">
+            <p>
+                Open Ecoacoustics is supported through a co-investment
+                partnership with the Australian Research Data Commons (ARDC)
+                (<a href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
+                through the Planet Research Data Commons. The ARDC is
+                enabled by the Australian Government’s National
+                Collaborative Research Infrastructure Strategy (NCRIS).
+            </p>
         </div>
     </div>
 </section>
 
 <style>
-    .sponsor-row {
+    .sponsors-block {
+        
+
         margin: auto;
         padding: 2rem;
 
-        .logo-row {
+        /*
+            We use display: contents; here so that the margins from the
+            sponsor logos can combine correctly, meaning that if two margins
+            overlap, the largest one can be used.
+        */
+        .sponsor-link {
+            display: contents;
+        }
+
+        .common-sponsors-row {
+            --ardc-a-width: 2rem; /* 32px */
             --ardc-a-height: 3.375rem; /* 54px */
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+
+            margin-bottom: var(--micro-padding-large);
+        }
+
+        .sponsor-oe {}
+        .sponsor-ardc img {
+            width: 
+
+            --sponsor-logo-margin-left: calc(var(--ardc-a-width) * 2);
+            --sponsor-logo-margin-right: calc(var(--ardc-a-width) * 1.5);
+        }
+        .sponsor-ncris {
+            --logo-inner-padding: 1rem;
+            --logo-block-padding: 0.8rem;
+        }
+
+        .logo-row {
+
 
             display: flex;
             flex-direction: row;
@@ -125,17 +150,10 @@
 
             margin-bottom: var(--ardc-a-height);
 
-            {{/*
-                We use display: contents; here so that the margins from the
-                sponsor logos can combine correctly, meaning that if two margins
-                overlap, the largest one can be used.
-            */}}
-            .sponsor-link {
-                display: contents;
-            }
+ 
 
             .sponsor-logo {
-                {{/*
+                /*
                     Remember that margins have a special property where if two
                     margins placed next to each other can overlap.
 
@@ -145,7 +163,7 @@
 
                     Note that on mobile devices, the horizontal margins will be
                     removed so that each logo is vertically aligned.
-                */}}
+                */
                 --sponsor-logo-margin-left: 3rem;
                 --sponsor-logo-margin-right: 3rem;
                 --sponsor-logo-margin-top: 1rem;
@@ -159,14 +177,14 @@
                 margin-bottom: var(--sponsor-logo-margin-bottom);
             }
 
-            {{/*
+            /*
                 Some logos include padding inside of their content, meaning that
                 if we incorrectly applied margin to them, the logo would appear
                 smaller and double padded.
 
                 If your logo already contains padding, add this class to it to
                 remove the margin added by the template.
-            */}}
+            */
             .oe-logo-with-padding {
                 --logo-inner-padding: 0.75rem;
                 --logo-block-padding: 0.75rem;
