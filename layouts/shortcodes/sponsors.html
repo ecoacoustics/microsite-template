@@ -69,7 +69,7 @@
                 {{ .Inner }}
             </div>
 
-            <div class="text-row">
+            <div class="sponsor-text-row">
                 <p>
                     Open Ecoacoustics is supported through a co-investment
                     partnership with the Australian Research Data Commons (ARDC)
@@ -118,18 +118,21 @@
                 margin-top: 0;
                 height: 104px;
                 margin-bottom: calc(var(--sponsor-logo-padding) - var(--logo-block-padding));
-                /* Reduce the gap before the logo by applying a negative left margin
-                   instead of using transform so it affects layout and flow. */
                 margin-left: calc(var(--logo-inner-padding) * -1);
             }
         }
 
-        .text-row {
+        .sponsor-text-row {
             display: block;
+            margin: auto;
+
             text-align: center;
             font-size: var(--micro-font-size-xsmall);
+        }
+    }
 
-            margin: auto;
+    @media (min-width: 31.25em /* 420px */) {
+        .sponsor-text-row {
             width: 60%;
         }
     }
