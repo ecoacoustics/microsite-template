@@ -35,7 +35,7 @@
                         class="sponsor-logo oe-logo-with-padding"
                         style="
                             --logo-inner-padding: 1rem;
-                            --logo-block-padding: 1.5rem;
+                            --logo-block-padding: 0.8rem;
                         "
                     />
                     {{- end -}}
@@ -117,10 +117,10 @@
 
                 margin-top: 0;
                 height: 104px;
-                margin-bottom: calc(var(--sponsor-logo-padding) - var(--logo-inner-padding));
+                margin-bottom: calc(var(--sponsor-logo-padding) - var(--logo-block-padding));
                 /* Reduce the gap before the logo by applying a negative left margin
                    instead of using transform so it affects layout and flow. */
-                margin-left: calc(var(--logo-block-padding) * -1);
+                margin-left: calc(var(--logo-inner-padding) * -1);
             }
         }
 
