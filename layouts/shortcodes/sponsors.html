@@ -1,0 +1,235 @@
+{{/*
+    Before modifying this file, please read the ARDC branding guidelines:
+    https://ardc.edu.au/resource/acknowledging-the-ardc/
+*/}}
+<section class="page-section">
+    <div class="sponsors-block page-section-content">
+        <div class="common-sponsors-row">
+            <a
+                href="https://openecoacoustics.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-oe"
+            >
+                {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="OpenEcoacoustics Logo"
+                />
+                {{- end -}}
+            </a>
+
+            <a
+                href="https://doi.org/10.3565/ts8c-ee10"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-ardc"
+            >
+                {{ with resources.Get "images/ARDC_logo.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="ARDC Logo"
+                />
+                {{- end -}}
+            </a>
+
+            <a
+                href="https://www.education.gov.au/ncris"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sponsor-link sponsor-ncris"
+            >
+                {{ with resources.Get "images/NCRIS_logo.svg" -}}
+                <img
+                    src="{{ .RelPermalink }}"
+                    alt="Australian Government & NCRIS Logo"
+                />
+                {{- end -}}
+            </a>
+        </div>
+
+        <div class="sponsor-text-row">
+            <p>
+                Open Ecoacoustics is supported through a co-investment
+                partnership with the Australian Research Data Commons (ARDC)
+                (<a rel="noopener" href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
+                through the Planet Research Data Commons. The ARDC is
+                enabled by the Australian Government’s National
+                Collaborative Research Infrastructure Strategy (NCRIS).
+            </p>
+        </div>
+
+        <div class="logo-row">
+            {{- with .Site.Params.sponsors.logos -}}
+                {{- range . -}}
+                    {{- $logoPath := .image -}}
+                    {{- $logoResource := resources.Get $logoPath -}}
+                    {{- if $logoResource -}}
+                    {{- if not .alt -}}
+                        {{- errorf "Footer logo %q is missing an alt attribute" $logoPath -}}
+                    {{- end -}}
+
+                    {{- if not .url -}}
+                        {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
+                    {{- end -}}
+
+                    <a
+                        href="{{ .url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="sponsor-link"
+                    >
+                        <img
+                        src="{{ $logoResource.RelPermalink }}"
+                        alt="{{ .alt }}"
+                        class="sponsor-logo"
+                        loading="lazy"
+                        >
+                    </a>
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+
+            {{ .Inner }}
+        </div>
+    </div>
+</section>
+
+<style>
+    .sponsors-block {
+        --sponsor-logo-gap: 3em;
+
+        margin: auto;
+        padding: 2rem;
+
+        /*
+            We use display: contents; here so that the margins from the
+            sponsor logos can combine correctly, meaning that if two margins
+            overlap, the largest one can be used.
+        */
+        .sponsor-link {
+            display: contents;
+        }
+
+        .common-sponsors-row {
+            /* Everything is scaled wrt the ARDC logo */
+            --ardc-min-width: 200px;
+            /* 7 "A"s wide, 2 "A"s high */
+            --ardc-aspect-ratio: 7/2; 
+            /* the "A" is square */
+            --ardc-a-width: 1em; 
+            --ardc-a-height: var(--ardc-a-width);
+            --ardc-gap-between-partner-logos: calc(var(--ardc-a-width) * 2);
+            --ardc-gap-between-logos: calc(var(--ardc-a-width) * 1.5);
+
+            
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            
+
+            /* All the spacing in this row has to be custom for ARDC branding */
+            gap: 0;
+            
+            /* set container height to ARDC logo height so everything scales off of it */
+            font-size: 300%;
+            line-height: calc(var(--ardc-a-height) * 2);
+            margin-bottom: var(--ardc-a-height);
+
+            .sponsor-link > * {
+                width: calc(max(30%, var(--ardc-min-width)));;
+            }
+        
+            .sponsor-oe {}
+
+            .sponsor-ardc img {
+                aspect-ratio: var(--ardc-aspect-ratio);
+                margin-left: var(--ardc-gap-between-partner-logos);
+                margin-right: var(--ardc-gap-between-logos);
+            }
+
+            .sponsor-ncris img {
+                scale: 1.33;
+            }
+        }
+
+        .sponsor-logo {
+            --sponsor-logo-margin-left: 3rem;
+            --sponsor-logo-margin-right: 3rem;
+            --sponsor-logo-margin-top: 1rem;
+            --sponsor-logo-margin-bottom: var(--micro-padding-medium);
+
+            height: 80px;
+
+            margin-left: var(--sponsor-logo-margin-left);
+            margin-right: var(--sponsor-logo-margin-right);
+            margin-top: var(--sponsor-logo-margin-top);
+            margin-bottom: var(--sponsor-logo-margin-bottom);
+        }
+
+        .logo-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: var(--sponsor-logo-gap);
+
+            margin-bottom: var(--ardc-a-height);
+
+            /*
+                Some logos include padding inside of their content, meaning that
+                if we incorrectly applied margin to them, the logo would appear
+                smaller and double padded.
+
+                If your logo already contains padding, add this class to it to
+                remove the margin added by the template.
+            */
+            .oe-logo-with-padding {
+                --logo-inner-padding: 0.75rem;
+                --logo-block-padding: 0.75rem;
+
+                margin-top: 0;
+                margin-bottom: calc(var(--sponsor-logo-padding) - var(--logo-block-padding));
+                margin-left: calc(var(--logo-inner-padding) * -1);
+            }
+        }
+
+        .sponsor-text-row {
+            display: block;
+            margin: auto;
+
+            text-align: center;
+            font-size: var(--micro-font-size-xsmall);
+        }
+    }
+
+    /*
+        tablet & mobile styles
+    */
+    @media (max-width: 1300px) {
+        .sponsor-logo {
+            height: 60px !important;
+        }
+    }
+
+    @media (max-width: 64em /* 768px */) {
+        .common-sponsors-row {
+            flex-direction: column !important;
+
+            .sponsor-link > * {
+                width: 33vw !important;
+            }
+
+            .sponsor-ardc img {
+                margin-left: auto !important;
+                margin-right: auto !important;
+                margin-top: var(--ardc-gap-between-partner-logos);
+                margin-bottom: var(--ardc-gap-between-logos);
+            }
+
+        }
+    }
+</style>

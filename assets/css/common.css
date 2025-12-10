@@ -93,6 +93,18 @@ section {
     margin-bottom: var(--micro-padding-xlarge);
 }
 
+hr {
+    display: block;
+    width: 80%;
+    height: 0;
+
+    margin: var(--micro-padding-medium) auto;
+
+    border: 1px solid var(--micro-theme-color);
+    border-radius: var(--micro-border-radius);
+    opacity: 0.5;
+}
+
 /*
     The page-section layout is designed so that additional elements such as
     ::before and ::after pseudo elements are appended to the top and bottom of

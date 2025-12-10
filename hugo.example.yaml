@@ -17,7 +17,7 @@ params:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none
   #     text: "Call Detective" # default: {{ .site.Title }}
-  # footer:
+  # sponsors:
   #   logos:
   #     - image: "images/OpenEcoacoustics_horizontal_rgb.svg"
   #       alt: "Open Ecoacoustics Logo"

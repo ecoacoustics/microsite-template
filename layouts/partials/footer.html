@@ -15,67 +15,10 @@
 
   <div class="oe-footer-row">
     <div>
-      <p>Created by</p>
-
-      <div class="sponsor-logos">
-        <a href="https://openecoacoustics.org/" target="_blank" rel="noopener noreferrer">
-          {{- with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg"  -}}
-          <img
-            src="{{ .RelPermalink }}"
-            alt="OpenEcoacoustics Logo"
-            class="sponsor-logo"
-            loading="lazy"
-          >
-          {{- end -}}
-        </a>
-
-        {{- with .Site.Params.footer.logos -}}
-          {{- range . -}}
-            {{- $logoPath := .image -}}
-            {{- $logoResource := resources.Get $logoPath -}}
-            {{- if $logoResource -}}
-              {{- if not .alt -}}
-                {{- errorf "Footer logo %q is missing an alt attribute" $logoPath -}}
-              {{- end -}}
-
-              {{- if not .url -}}
-                {{- errorf "Footer logo %q is missing a url attribute" $logoPath -}}
-              {{- end -}}
-
-              <a href="{{ .url }}" target="_blank" rel="noopener noreferrer">
-                <img
-                  src="{{ $logoResource.RelPermalink }}"
-                  alt="{{ .alt }}"
-                  class="sponsor-logo"
-                  loading="lazy"
-                >
-              </a>
-            {{- end -}}
-          {{- end -}}
-        {{- end -}}
-      </div>
-
       <p>
-        In collaboration with the
+        A
         <a class="inline-link" href="https://calldetective.org/">Call Detective</a>
         project.
       </p>
     </div>
-  </div>
 </div>
-
-<style>
-  .sponsor-logos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--micro-padding-large);
-    flex-wrap: wrap;
-  }
-
-  .sponsor-logo {
-    min-height: 4rem;
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-  }
-</style>
