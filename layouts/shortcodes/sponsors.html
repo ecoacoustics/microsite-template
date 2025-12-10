@@ -48,6 +48,17 @@
             </a>
         </div>
 
+        <div class="sponsor-text-row">
+            <p>
+                Open Ecoacoustics is supported through a co-investment
+                partnership with the Australian Research Data Commons (ARDC)
+                (<a rel="noopener" href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
+                through the Planet Research Data Commons. The ARDC is
+                enabled by the Australian Government’s National
+                Collaborative Research Infrastructure Strategy (NCRIS).
+            </p>
+        </div>
+
         <div class="logo-row">
             {{- with .Site.Params.sponsors.logos -}}
                 {{- range . -}}
@@ -80,17 +91,6 @@
             {{- end -}}
 
             {{ .Inner }}
-        </div>
-
-        <div class="sponsor-text-row">
-            <p>
-                Open Ecoacoustics is supported through a co-investment
-                partnership with the Australian Research Data Commons (ARDC)
-                (<a rel="noopener" href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
-                through the Planet Research Data Commons. The ARDC is
-                enabled by the Australian Government’s National
-                Collaborative Research Infrastructure Strategy (NCRIS).
-            </p>
         </div>
     </div>
 </section>
@@ -154,8 +154,8 @@
 
             .sponsor-ncris img {
                 object-fit: cover;
-                scale: 1.2; /* Zoom in - adjust this value as needed */
-                object-position: center; /* Adjust if you need to shift the crop area */
+                scale: 1.33;
+                object-position: center;
             }
         }
 
