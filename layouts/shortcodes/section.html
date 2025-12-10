@@ -18,8 +18,8 @@ conjunction with the {{< fullbleed >}} shortcode
     {{< /section >}}
 */}}
 
-<section class='page-section fullbleed {{ .Get "class" }}' styles='{{ .Get "style" }}'>
+<section class='page-section fullbleed {{ .Get "class" }}' style='{{ .Get "style" }}'>
     <div class="page-section-content">
-        {{ .Inner | .Page.RenderString }}
+        {{- .Inner -}}
     </div>
 </section>
