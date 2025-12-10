@@ -15,7 +15,6 @@
                 <img
                     src="{{ .RelPermalink }}"
                     alt="OpenEcoacoustics Logo"
-                    class="sponsor-logo"
                 />
                 {{- end -}}
             </a>
@@ -30,7 +29,6 @@
                 <img
                     src="{{ .RelPermalink }}"
                     alt="ARDC Logo"
-                    class="sponsor-logo"
                 />
                 {{- end -}}
             </a>
@@ -45,7 +43,6 @@
                 <img
                     src="{{ .RelPermalink }}"
                     alt="Australian Government & NCRIS Logo"
-                    class="sponsor-logo oe-logo-with-padding"
                 />
                 {{- end -}}
             </a>
@@ -89,7 +86,7 @@
             <p>
                 Open Ecoacoustics is supported through a co-investment
                 partnership with the Australian Research Data Commons (ARDC)
-                (<a href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
+                (<a rel="noopener" href="https://doi.org/10.3565/ts8c-ee10" target="_blank">DOI: 10.3565/ts8c-ee10</a>)
                 through the Planet Research Data Commons. The ARDC is
                 enabled by the Australian Government’s National
                 Collaborative Research Infrastructure Strategy (NCRIS).
@@ -100,7 +97,7 @@
 
 <style>
     .sponsors-block {
-        
+        --sponsor-logo-gap: 3em;
 
         margin: auto;
         padding: 2rem;
@@ -115,67 +112,76 @@
         }
 
         .common-sponsors-row {
-            --ardc-a-width: 2rem; /* 32px */
-            --ardc-a-height: 3.375rem; /* 54px */
+            /* Everything is scaled wrt the ARDC logo */
+            --ardc-min-width: 200px;
+            /* 7 "A"s wide, 2 "A"s high */
+            --ardc-aspect-ratio: 7/2; 
+            /* the "A" is square */
+            --ardc-a-width: 1em; 
+            --ardc-a-height: var(--ardc-a-width);
+            --ardc-gap-between-partner-logos: calc(var(--ardc-a-width) * 2);
+            --ardc-gap-between-logos: calc(var(--ardc-a-width) * 1.5);
 
+            
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: center;
             flex-wrap: nowrap;
+            
 
-            margin-bottom: var(--micro-padding-large);
+            /* All the spacing in this row has to be custom for ARDC branding */
+            gap: 0;
+            
+            /* set container height to ARDC logo height so everything scales off of it */
+            font-size: 300%;
+            line-height: calc(var(--ardc-a-height) * 2);
+            margin-bottom: var(--ardc-a-height);
+
+            .sponsor-link > * {
+                max-width: 100%;
+                width: calc(max(30%, var(--ardc-min-width)));;
+                object-fit: contain;
+            }
+        
+            .sponsor-oe {}
+
+            .sponsor-ardc img {
+                aspect-ratio: var(--ardc-aspect-ratio);
+                margin-left: var(--ardc-gap-between-partner-logos);
+                margin-right: var(--ardc-gap-between-logos);
+            }
+
+            .sponsor-ncris img {
+                object-fit: cover;
+                scale: 1.2; /* Zoom in - adjust this value as needed */
+                object-position: center; /* Adjust if you need to shift the crop area */
+            }
         }
 
-        .sponsor-oe {}
-        .sponsor-ardc img {
-            width: 
+        .sponsor-logo {
+            --sponsor-logo-margin-left: 3rem;
+            --sponsor-logo-margin-right: 3rem;
+            --sponsor-logo-margin-top: 1rem;
+            --sponsor-logo-margin-bottom: var(--micro-padding-medium);
 
-            --sponsor-logo-margin-left: calc(var(--ardc-a-width) * 2);
-            --sponsor-logo-margin-right: calc(var(--ardc-a-width) * 1.5);
-        }
-        .sponsor-ncris {
-            --logo-inner-padding: 1rem;
-            --logo-block-padding: 0.8rem;
+            height: 80px;
+
+            margin-left: var(--sponsor-logo-margin-left);
+            margin-right: var(--sponsor-logo-margin-right);
+            margin-top: var(--sponsor-logo-margin-top);
+            margin-bottom: var(--sponsor-logo-margin-bottom);
         }
 
         .logo-row {
-
-
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
+            gap: var(--sponsor-logo-gap);
 
             margin-bottom: var(--ardc-a-height);
-
- 
-
-            .sponsor-logo {
-                /*
-                    Remember that margins have a special property where if two
-                    margins placed next to each other can overlap.
-
-                    Therefore, because we use margins instead of padding, you can
-                    simply worry about each logo instead of needing to subtract the
-                    margin of the logo next to it.
-
-                    Note that on mobile devices, the horizontal margins will be
-                    removed so that each logo is vertically aligned.
-                */
-                --sponsor-logo-margin-left: 3rem;
-                --sponsor-logo-margin-right: 3rem;
-                --sponsor-logo-margin-top: 1rem;
-                --sponsor-logo-margin-bottom: var(--micro-padding-medium);
-
-                height: 80px;
-
-                margin-left: var(--sponsor-logo-margin-left);
-                margin-right: var(--sponsor-logo-margin-right);
-                margin-top: var(--sponsor-logo-margin-top);
-                margin-bottom: var(--sponsor-logo-margin-bottom);
-            }
 
             /*
                 Some logos include padding inside of their content, meaning that
@@ -204,18 +210,30 @@
         }
     }
 
-    {{/*
+    /*
         tablet & mobile styles
-    */}}
+    */
     @media (max-width: 1300px) {
         .sponsor-logo {
             height: 60px !important;
         }
     }
 
-    @media (max-width: 48em /* 768px */) {
-        .sponsor-row {
+    @media (max-width: 64em /* 768px */) {
+        .common-sponsors-row {
             flex-direction: column !important;
+
+            .sponsor-link > * {
+                width: 33vw !important;
+            }
+
+            .sponsor-ardc img {
+                margin-left: auto !important;
+                margin-right: auto !important;
+                margin-top: var(--ardc-gap-between-partner-logos);
+                margin-bottom: var(--ardc-gap-between-logos);
+            }
+
         }
     }
 </style>
