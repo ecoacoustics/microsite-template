@@ -3,13 +3,13 @@
     https://ardc.edu.au/resource/acknowledging-the-ardc/
 */}}
 <section class="page-section">
-    <div class="sponsors-block page-section-content">
+    <div class="sponsors-container page-section-content">
         <div class="common-sponsors-row">
             <a
                 href="https://openecoacoustics.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="sponsor-link sponsor-oe"
+                class="sponsor-logo-link sponsor-oe"
             >
                 {{ with resources.Get "images/OpenEcoacoustics_horizontal_rgb.svg" -}}
                 <img
@@ -23,7 +23,7 @@
                 href="https://doi.org/10.3565/ts8c-ee10"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="sponsor-link sponsor-ardc"
+                class="sponsor-logo-link sponsor-ardc"
             >
                 {{ with resources.Get "images/ARDC_logo.svg" -}}
                 <img
@@ -37,7 +37,7 @@
                 href="https://www.education.gov.au/ncris"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="sponsor-link sponsor-ncris"
+                class="sponsor-logo-link sponsor-ncris"
             >
                 {{ with resources.Get "images/NCRIS_logo.svg" -}}
                 <img
@@ -77,7 +77,7 @@
                         href="{{ .url }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="sponsor-link"
+                        class="sponsor-logo-link"
                     >
                         <img
                         src="{{ $logoResource.RelPermalink }}"
@@ -96,7 +96,7 @@
 </section>
 
 <style>
-    .sponsors-block {
+    .sponsors-container {
         --sponsor-logo-gap: 3em;
 
         margin: auto;
@@ -107,7 +107,7 @@
             sponsor logos can combine correctly, meaning that if two margins
             overlap, the largest one can be used.
         */
-        .sponsor-link {
+        .sponsor-logo-link {
             display: contents;
         }
 
@@ -138,7 +138,7 @@
             line-height: calc(var(--ardc-a-height) * 2);
             margin-bottom: var(--ardc-a-height);
 
-            .sponsor-link > * {
+            .sponsor-logo-link > * {
                 width: calc(max(30%, var(--ardc-min-width)));;
             }
         
@@ -219,7 +219,7 @@
         .common-sponsors-row {
             flex-direction: column !important;
 
-            .sponsor-link > * {
+            .sponsor-logo-link > * {
                 width: 33vw !important;
             }
 
