@@ -6,6 +6,7 @@
       src="{{ $image.RelPermalink }}"
       {{ end }}
       alt='{{ .Get "alt" }}'
+      loading="lazy"
     >
     <figcaption class="oe-image-caption">{{ .Get "caption" }}</figcaption>
   </figure>
