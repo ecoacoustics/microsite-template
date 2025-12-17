@@ -5,6 +5,7 @@
       slot="image"
       src="{{ $image.RelPermalink }}"
       alt='{{ $.Get "alt" }}'
+      loading="lazy"
     />
   {{- end -}}
   {{ .Inner }}
