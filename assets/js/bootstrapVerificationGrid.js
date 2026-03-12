@@ -42,6 +42,37 @@ async function bootstrapVerificationGrid(target, filterBody) {
   });
 }
 
+/**
+ * @description
+ * Shows the unconfirmed account warning banner and disables the verification
+ * grid. The warning includes a contact link if a workbench host is configured.
+ */
+function showUnconfirmedAccountWarning() {
+  const warning = document.getElementById("unconfirmed-account-warning");
+  if (!warning) {
+    return;
+  }
+
+  const workbenchHost = globalThis.siteParams?.workbenchhost;
+  if (workbenchHost) {
+    const contactLinkContainer = document.getElementById(
+      "unconfirmed-contact-link"
+    );
+    if (contactLinkContainer) {
+      const contactLink = document.createElement("a");
+      contactLink.href = `${workbenchHost}/contact_us`;
+      contactLink.textContent = "contact us";
+
+      const prefix = document.createTextNode(" If you need help, ");
+      const suffix = document.createTextNode(".");
+      contactLinkContainer.append(prefix, contactLink, suffix);
+    }
+  }
+
+  warning.classList.add("visible");
+  warning.open = true;
+}
+
 async function setup() {
   const campaigns = globalThis.siteParams?.campaigns || [];
   // This guard condition is not exhaustive because it doesn't check every
@@ -59,6 +90,13 @@ async function setup() {
   if (targetElements.length > 0) {
     if (!(await api.isLoggedIn())) {
       window.location.href = `/login?redirect=${location.pathname}`;
+      return;
+    }
+
+    const userProfile = await api.getUserProfile();
+    if (userProfile?.data?.is_confirmed === false) {
+      showUnconfirmedAccountWarning();
+      return;
     }
   }
 

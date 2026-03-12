@@ -1,8 +1,25 @@
 {{ define "main" }}
 <div id="verify-page" class="page">
+    <sl-alert id="unconfirmed-account-warning" variant="warning">
+        <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+        <strong>Account confirmation required</strong><br />
+        Your account has not been confirmed yet. Please check your email for a
+        confirmation link before you can verify calls.
+        <span id="unconfirmed-contact-link"></span>
+    </sl-alert>
+
     {{ .Content }}
 
     <style>
+        #unconfirmed-account-warning {
+            display: none;
+            margin-bottom: var(--micro-padding-small);
+        }
+
+        #unconfirmed-account-warning.visible {
+            display: block;
+        }
+
         oe-verification-grid {
             display: block;
             padding: var(--micro-padding-small);
