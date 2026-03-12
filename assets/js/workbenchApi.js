@@ -106,6 +106,16 @@ export class WorkbenchApi {
      */
     #tagCache = new Map();
 
+    /**
+     * A cached promise for the current user's profile.
+     * We store the promise (rather than the resolved value) so that concurrent
+     * calls to getUserProfile() share the same in-flight request rather than
+     * each issuing their own.
+     *
+     * @type {Promise<User | null> | null}
+     */
+    #userProfileCache = null;
+
     /** @returns {Promise<boolean>} */
     async isLoggedIn() {
         await this.#refreshAuthToken();
@@ -119,17 +129,29 @@ export class WorkbenchApi {
      * If no authentication token is set, or the authentication token is
      * invalid, this method will return "null".
      *
+     * Results are cached for the lifetime of the singleton so that multiple
+     * callers on the same page do not issue redundant network requests.
+     *
      * @returns {Promise<User | null>}
      */
     async getUserProfile() {
-        const url = this.#createUrl("/my_account");
-        const response = await this.#fetch("GET", url);
-        if (!response.ok) {
-            return null;
+        if (!this.#userProfileCache) {
+            this.#userProfileCache = (async () => {
+                const url = this.#createUrl("/my_account");
+                const response = await this.#fetch("GET", url);
+                if (!response.ok) {
+                    // Don't cache failures so that transient errors can be
+                    // retried on the next call.
+                    this.#userProfileCache = null;
+                    return null;
+                }
+
+                const responseBody = await response.json();
+                return responseBody;
+            })();
         }
 
-        const responseBody = await response.json();
-        return responseBody;
+        return this.#userProfileCache;
     }
 
     async logoutUser() {
@@ -140,6 +162,7 @@ export class WorkbenchApi {
         }
 
         this.#authToken = null;
+        this.#userProfileCache = null;
 
         const responseBody = await response.json();
         return responseBody;
