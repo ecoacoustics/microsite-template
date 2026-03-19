@@ -33,8 +33,14 @@ params:
     - name: "Australian Brush-turkey"
       filters:
         filter:
-          tags.text:
-            eq: "Australian Brush-turkey"
+          and:
+            - tags.text:
+              eq: "Australian Brush-turkey"
+            - or:
+                - verifications.confirmed:
+                    eq: null
+                - verifications.confirmed:
+                    eq: "skip"
   style:
     roundedButtons: true
     # Theme colors are defined using "hsl" (hue, saturation, lightness).

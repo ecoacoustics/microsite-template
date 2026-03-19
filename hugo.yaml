@@ -56,8 +56,14 @@ params:
     - name: "Australian Brush-turkey"
       filters:
         filter:
-          tags.text:
-            eq: "Australian Brush-turkey"
+          and:
+            - tags.text:
+              eq: "Australian Brush-turkey"
+            - or:
+                - verifications.confirmed:
+                    eq: null
+                - verifications.confirmed:
+                    eq: "skip"
   style:
     xsmallBreakPoint: 425px
     smallBreakPoint: 768px
