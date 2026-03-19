@@ -49,6 +49,8 @@ params:
     verification: true # default: true
   campaigns:
     - name: "Powerful Owl"
+      spectrogramOptions:
+        melScale: true
       filters:
         filter:
           tags.text:

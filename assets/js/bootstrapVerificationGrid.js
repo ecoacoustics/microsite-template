@@ -8,9 +8,23 @@ const api = await workbenchApi();
  * baw-api and perform verification tasks.
  *
  * @param {VerificationGridComponent} target
- * @param {Record<string, unknown>} filterBody
+ * @param {Record<string, unknown>} campaign
  */
-async function bootstrapVerificationGrid(target, filterBody) {
+async function bootstrapVerificationGrid(target, campaign) {
+  const filterBody = campaign?.filters;
+  if (!filterBody) {
+    console.error(`Campaign ${campaign} does not have a filter body`);
+    return;
+  }
+
+  const campaignOptions = campaign?.spectrogramOptions;
+  if (campaignOptions && typeof campaignOptions === "object") {
+    target.spectrogramOptions = {
+      ...target.spectrogramOptions,
+      ...campaignOptions,
+    };
+  }
+
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
   target.getPage = api.getVerificationCallback(filterBody);
@@ -111,15 +125,8 @@ async function setup() {
       continue;
     }
 
-    // Extract the filter settings from the campaign configuration (hugo.yaml)
-    const filterBody = campaign.filters;
-    if (!filterBody) {
-      console.error(`Campaign ${campaign} does not have a filter body`);
-      continue;
-    }
-
     // Initialize the verification grid with the filter settings
-    bootstrapVerificationGrid(element, filterBody);
+    bootstrapVerificationGrid(element, campaign);
   }
 }
 
