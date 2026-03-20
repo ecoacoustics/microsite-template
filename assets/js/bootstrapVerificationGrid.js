@@ -13,7 +13,7 @@ const api = await workbenchApi();
 async function bootstrapVerificationGrid(target, campaign) {
   const campaignFilters = campaign?.filters;
   if (!campaignFilters?.filter) {
-    console.error(`Campaign ${campaign} does not have a filter body`);
+    console.error(`Campaign ${campaign} does not have a filters set`);
     return;
   }
 
@@ -21,7 +21,7 @@ async function bootstrapVerificationGrid(target, campaign) {
   const mergedFilterBody = {
     ...campaignFilters,
     filter: {
-      and: [campaignFilters.filter, { "verifications.id": { eq: null } }],
+      and: [campaignFilters.filter, { "verification_count": { eq: 0 } }],
     },
   };
 
