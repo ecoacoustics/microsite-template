@@ -26,8 +26,6 @@ params:
     verification: true # default: true
   campaigns:
     - name: "Powerful Owl"
-      spectrogramOptions:
-        melScale: true
       filters:
         filter:
           tags.text:
@@ -35,14 +33,9 @@ params:
     - name: "Australian Brush-turkey"
       filters:
         filter:
-          and:
-            - tags.text:
-              eq: "Australian Brush-turkey"
-            - or:
-                - verifications.confirmed:
-                    eq: null
-                - verifications.confirmed:
-                    eq: "skip"
+          tags.text:
+            eq: "Australian Brush-turkey"
+
   style:
     roundedButtons: true
     # Theme colors are defined using "hsl" (hue, saturation, lightness).

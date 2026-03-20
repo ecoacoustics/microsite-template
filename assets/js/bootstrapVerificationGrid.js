@@ -11,23 +11,23 @@ const api = await workbenchApi();
  * @param {Record<string, unknown>} campaign
  */
 async function bootstrapVerificationGrid(target, campaign) {
-  const filterBody = campaign?.filters;
-  if (!filterBody) {
+  const campaignFilters = campaign?.filters;
+  if (!campaignFilters?.filter) {
     console.error(`Campaign ${campaign} does not have a filter body`);
     return;
   }
 
-  const campaignOptions = campaign?.spectrogramOptions;
-  if (campaignOptions && typeof campaignOptions === "object") {
-    target.spectrogramOptions = {
-      ...target.spectrogramOptions,
-      ...campaignOptions,
-    };
-  }
+  // merge filter with unverified only
+  const mergedFilterBody = {
+    ...campaignFilters,
+    filter: {
+      and: [campaignFilters.filter, { "verifications.id": { eq: null } }],
+    },
+  };
 
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
-  target.getPage = api.getVerificationCallback(filterBody);
+  target.getPage = api.getVerificationCallback(mergedFilterBody);
   target.urlTransformer = api.createMediaUrlTransformer();
 
   target.addEventListener("decision-made", (event) => {
