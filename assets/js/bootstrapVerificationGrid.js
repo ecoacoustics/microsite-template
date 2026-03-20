@@ -8,12 +8,26 @@ const api = await workbenchApi();
  * baw-api and perform verification tasks.
  *
  * @param {VerificationGridComponent} target
- * @param {Record<string, unknown>} filterBody
+ * @param {Record<string, unknown>} campaign
  */
-async function bootstrapVerificationGrid(target, filterBody) {
+async function bootstrapVerificationGrid(target, campaign) {
+  const campaignFilters = campaign?.filters;
+  if (!campaignFilters?.filter) {
+    console.error(`Campaign ${campaign} does not have a filters set`);
+    return;
+  }
+
+  // merge filter with unverified only
+  const mergedFilterBody = {
+    ...campaignFilters,
+    filter: {
+      and: [campaignFilters.filter, { "verification_count": { eq: 0 } }],
+    },
+  };
+
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
-  target.getPage = api.getVerificationCallback(filterBody);
+  target.getPage = api.getVerificationCallback(mergedFilterBody);
   target.urlTransformer = api.createMediaUrlTransformer();
 
   target.addEventListener("decision-made", (event) => {
@@ -111,15 +125,8 @@ async function setup() {
       continue;
     }
 
-    // Extract the filter settings from the campaign configuration (hugo.yaml)
-    const filterBody = campaign.filters;
-    if (!filterBody) {
-      console.error(`Campaign ${campaign} does not have a filter body`);
-      continue;
-    }
-
     // Initialize the verification grid with the filter settings
-    bootstrapVerificationGrid(element, filterBody);
+    bootstrapVerificationGrid(element, campaign);
   }
 }
 

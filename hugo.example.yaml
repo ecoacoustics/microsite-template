@@ -35,6 +35,7 @@ params:
         filter:
           tags.text:
             eq: "Australian Brush-turkey"
+
   style:
     roundedButtons: true
     # Theme colors are defined using "hsl" (hue, saturation, lightness).

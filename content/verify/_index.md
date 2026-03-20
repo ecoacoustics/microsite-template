@@ -3,6 +3,22 @@ title = "Can you hear a Plains Wanderer?"
 +++
 
 <oe-verification-grid data-campaign="Powerful Owl" id="verification-grid" grid-size="1">
+    <!-- Insert a template element to give non-default attibutes to the spectrogram, example below. 
+    https://oe-web-components.netlify.app/examples/create-verification-grid/ --> 
+    <!-- <template>
+        <div class="tile-spacing">
+            <oe-subject-tag></oe-subject-tag>
+            <oe-media-controls for="spectrogram"></oe-media-controls>
+        </div>
+        <oe-axes>
+        <oe-indicator>
+            <oe-spectrogram id="spectrogram" mel-scale></oe-spectrogram>
+        </oe-indicator>
+        </oe-axes>
+        <div class="tile-block">
+            <oe-task-meter></oe-task-meter>
+        </div>
+    </template> -->
     <oe-verification verified="true" shortcut="y">Yes</oe-verification>
     <oe-verification verified="false" shortcut="n">No</oe-verification>
     <oe-verification verified="unsure" shortcut="u">Unsure</oe-verification>
