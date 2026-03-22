@@ -24,10 +24,19 @@ services:
   # googleAnalytics:
   #   id: G-MEASUREMENT_ID
 menus:
-  # main:
-  #   - name: Credits
-  #     pageRef: https://ecosounds.org/about/credits
-  #     weight: 10
+  main:
+    - name: About
+      pageRef: /about
+      weight: 10
+    - name: Projects
+      pageRef: /projects
+      weight: 20
+    - name: Resources
+      pageRef: /resources
+      weight: 30
+    - name: Contact
+      pageRef: /contact
+      weight: 40
   # footer:
   #   - name: Ecosounds Project
   #     pageRef: https://www.ecosounds.org/projects/1131
