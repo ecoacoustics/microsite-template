@@ -443,28 +443,26 @@ export class WorkbenchApi {
             const eventModels = responseBody.data;
             const gridContext = {};
 
-            // add a "tag" model to every subject by fetching the tag of
-            // interest, and clamp end_time_seconds to the recording duration
-            // to prevent invalid media requests (422 errors).
+            // Add a "tag" model and "audio_recording" model to every subject
+            // by fetching them in parallel.
+            // The audio recording is associated so that audioEventUrl can clamp
+            // end_time_seconds to the recording duration, preventing invalid
+            // media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
-                const taggings = model.taggings;
-                if (taggings.length >= 1) {
-                    const tagOfInterest = taggings[0];
-                    const tag = await this.getTag(tagOfInterest.tag_id);
+                const tagOfInterest = model.taggings[0];
+                const tagPromise = tagOfInterest
+                    ? this.getTag(tagOfInterest.tag_id)
+                    : Promise.resolve(null);
 
+                const [tag, recording] = await Promise.all([
+                    tagPromise,
+                    this.getAudioRecording(model.audio_recording_id),
+                ]);
+
+                if (tag) {
                     model.tag = tag;
                 }
-
-                // Clamp the event's end time to the recording duration so that
-                // we never request media beyond the end of the recording.
-                // We mutate the model here (consistent with how model.tag is
-                // set above) because the model is a local API response object
-                // that is not referenced anywhere else at this point.
-                const recording = await this.getAudioRecording(model.audio_recording_id);
-                model.end_time_seconds = Math.min(
-                    model.end_time_seconds,
-                    recording.duration_seconds,
-                );
+                model.audio_recording = recording;
             });
 
             await Promise.allSettled(associatedModelPromises);
@@ -537,7 +535,21 @@ export class WorkbenchApi {
     audioEventUrl(audioEvent) {
         const recordingId = audioEvent.audio_recording_id;
         const start = audioEvent.start_time_seconds;
-        const end = audioEvent.end_time_seconds;
+
+        // Clamp the end time to the recording duration to prevent requesting
+        // audio beyond the end of the recording (which results in a 422 error).
+        // The audio_recording is attached to the model by getVerificationCallback.
+        const recordingDuration = audioEvent.audio_recording?.duration_seconds;
+        if (recordingDuration === undefined) {
+            console.warn(
+                "audioEventUrl: audio_recording not associated with event",
+                audioEvent.id,
+                "- end time will not be clamped",
+            );
+        }
+        const end = recordingDuration !== undefined
+            ? Math.min(audioEvent.end_time_seconds, recordingDuration)
+            : audioEvent.end_time_seconds;
 
         const urlBase = this.#createUrl(
             `/audio_recordings/${recordingId}/media.flac`,
