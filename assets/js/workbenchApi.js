@@ -107,6 +107,18 @@ export class WorkbenchApi {
     #tagCache = new Map();
 
     /**
+     * A recording cache that stores audio recording ids and their model
+     * resolvers in a map. We use a promise as the value so that we can store
+     * pending responses in the cache.
+     *
+     * Note that because the recording cache is a map, it is in-memory and not
+     * persistent between sessions or users.
+     *
+     * @type {Map<number, Promise<AudioRecording>>}
+     */
+    #recordingCache = new Map();
+
+    /**
      * A cached promise for the current user's profile.
      * We store the promise (rather than the resolved value) so that concurrent
      * calls to getUserProfile() share the same in-flight request rather than
@@ -273,18 +285,30 @@ export class WorkbenchApi {
     }
 
     /**
-     * Fetches an audio recording model from the API using an audio recording id
+     * Fetches an audio recording model from the API using an audio recording id.
+     * Results are cached so that multiple callers with the same id share a
+     * single in-flight request and do not issue redundant network requests.
      *
      * @param {number} audioRecordingId
      * @returns {Promise<AudioRecording>}
      */
     async getAudioRecording(audioRecordingId) {
-        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
+        const cached = this.#recordingCache.get(audioRecordingId);
+        if (cached) {
+            return await cached;
+        }
 
-        const response = await this.#fetch("GET", url);
-        const responseBody = await response.json();
+        const recordingRequest = async () => {
+            const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
+            const response = await this.#fetch("GET", url);
+            const responseBody = await response.json();
+            return responseBody.data;
+        };
 
-        return responseBody.data;
+        const recordingPromise = recordingRequest();
+        this.#recordingCache.set(audioRecordingId, recordingPromise);
+
+        return await recordingPromise;
     }
 
     /**
@@ -420,17 +444,27 @@ export class WorkbenchApi {
             const gridContext = {};
 
             // add a "tag" model to every subject by fetching the tag of
-            // interest
+            // interest, and clamp end_time_seconds to the recording duration
+            // to prevent invalid media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
                 const taggings = model.taggings;
-                if (taggings.length < 1) {
-                    return;
+                if (taggings.length >= 1) {
+                    const tagOfInterest = taggings[0];
+                    const tag = await this.getTag(tagOfInterest.tag_id);
+
+                    model.tag = tag;
                 }
 
-                const tagOfInterest = taggings[0];
-                const tag = await this.getTag(tagOfInterest.tag_id);
-
-                model.tag = tag;
+                // Clamp the event's end time to the recording duration so that
+                // we never request media beyond the end of the recording.
+                // We mutate the model here (consistent with how model.tag is
+                // set above) because the model is a local API response object
+                // that is not referenced anywhere else at this point.
+                const recording = await this.getAudioRecording(model.audio_recording_id);
+                model.end_time_seconds = Math.min(
+                    model.end_time_seconds,
+                    recording.duration_seconds,
+                );
             });
 
             await Promise.allSettled(associatedModelPromises);
