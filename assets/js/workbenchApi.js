@@ -299,7 +299,9 @@ export class WorkbenchApi {
         }
 
         const recordingRequest = async () => {
-            const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
+            const url = this.#createUrl(
+                `/audio_recordings/${audioRecordingId}`,
+            );
             const response = await this.#fetch("GET", url);
             const responseBody = await response.json();
             return responseBody.data;
@@ -529,27 +531,52 @@ export class WorkbenchApi {
     }
 
     /**
+     * Clamps a time value to be within the bounds of a recording.
+     * Ensures the time is between 0 and the recording duration.
+     *
+     * @param {number} time - The time in seconds to clamp
+     * @param {number} recordingDuration - The duration of the recording in seconds
+     * @returns {number} - The clamped time value
+     */
+    clampTimeToRecording(time, recordingDuration) {
+        return Math.max(Math.min(time, recordingDuration), 0);
+    }
+
+    /**
      * @param {AudioEvent} audioEvent
      * @returns {string}
      */
     audioEventUrl(audioEvent) {
         const recordingId = audioEvent.audio_recording_id;
-        const start = audioEvent.start_time_seconds;
 
-        // Clamp the end time to the recording duration to prevent requesting
-        // audio beyond the end of the recording (which results in a 422 error).
+        // Clamp the start and end times to the recording duration to prevent
+        // requesting audio beyond the bounds of the recording (which results in
+        // 422 errors).
         // The audio_recording is attached to the model by getVerificationCallback.
         const recordingDuration = audioEvent.audio_recording?.duration_seconds;
         if (recordingDuration === undefined) {
             console.warn(
                 "audioEventUrl: audio_recording not associated with event",
                 audioEvent.id,
-                "- end time will not be clamped",
+                "- times will not be clamped",
             );
         }
-        const end = recordingDuration !== undefined
-            ? Math.min(audioEvent.end_time_seconds, recordingDuration)
-            : audioEvent.end_time_seconds;
+
+        const start =
+            recordingDuration !== undefined
+                ? this.clampTimeToRecording(
+                      audioEvent.start_time_seconds,
+                      recordingDuration,
+                  )
+                : audioEvent.start_time_seconds;
+
+        const end =
+            recordingDuration !== undefined
+                ? this.clampTimeToRecording(
+                      audioEvent.end_time_seconds,
+                      recordingDuration,
+                  )
+                : audioEvent.end_time_seconds;
 
         const urlBase = this.#createUrl(
             `/audio_recordings/${recordingId}/media.flac`,

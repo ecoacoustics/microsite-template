@@ -77,8 +77,14 @@
 
     // We clamp to the start and end of the recording so that we don't try to
     // fetch audio that is outside the bounds of the recording.
-    const contextStartTime = Math.max(audioEvent.start_time_seconds - contextPaddingSeconds, 0).toFixed(2);
-    const contextEndTime = Math.min(audioEvent.end_time_seconds + contextPaddingSeconds, audioRecordingDuration).toFixed(2);
+    const contextStartTime = api.clampTimeToRecording(
+        audioEvent.start_time_seconds - contextPaddingSeconds,
+        audioRecordingDuration
+    ).toFixed(2);
+    const contextEndTime = api.clampTimeToRecording(
+        audioEvent.end_time_seconds + contextPaddingSeconds,
+        audioRecordingDuration
+    ).toFixed(2);
 
     // How much padding we added to the start of the event. Because this can be
     // clamped to the start of the recording, we need to calculate this after
