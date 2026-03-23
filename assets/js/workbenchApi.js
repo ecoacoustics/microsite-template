@@ -526,6 +526,7 @@ export class WorkbenchApi {
          * @returns {string}
          */
         return (_url, subject) => {
+            subject = this.eventWithContext(subject);
             return this.audioEventUrl(subject);
         };
     }
@@ -533,13 +534,49 @@ export class WorkbenchApi {
     /**
      * Clamps a time value to be within the bounds of a recording.
      * Ensures the time is between 0 and the recording duration.
+     * Avoids 422 errors when requesting audio segments that are out of bounds.
      *
      * @param {number} time - The time in seconds to clamp
      * @param {number} recordingDuration - The duration of the recording in seconds
      * @returns {number} - The clamped time value
      */
     clampTimeToRecording(time, recordingDuration) {
-        return Math.max(Math.min(time, recordingDuration), 0);
+        return Math.max(Math.min(time, recordingDuration), 0).toFixed(2);
+    }
+
+    /**
+     * Creates a new audio event object with sanitized start and end times
+     * and optional padding.
+     * @param {AudioEvent} audioEvent
+     * @param {number} paddingSeconds
+     * @returns
+     */
+    eventWithContext(audioEvent, paddingSeconds = 0) {
+        let audioStart = audioEvent.start_time_seconds - paddingSeconds;
+        let audioEnd = audioEvent.end_time_seconds + paddingSeconds;
+        if (!audioEvent.audio_recording) {
+            console.warn(
+                "eventWithContext: audio_recording not associated with event",
+                audioEvent.id,
+                "- context will not be clamped to recording duration",
+            );
+        }
+        audioStart = this.clampTimeToRecording(
+            audioStart,
+            audioEvent.audio_recording?.duration_seconds ?? Infinity,
+        );
+        audioEnd = this.clampTimeToRecording(
+            audioEnd,
+            audioEvent.audio_recording?.duration_seconds ?? Infinity,
+        );
+
+        const eventWithContext = {
+            ...audioEvent,
+            audio_start_seconds: audioStart,
+            audio_end_seconds: audioEnd,
+        };
+
+        return eventWithContext;
     }
 
     /**
@@ -549,39 +586,17 @@ export class WorkbenchApi {
     audioEventUrl(audioEvent) {
         const recordingId = audioEvent.audio_recording_id;
 
-        // Clamp the start and end times to the recording duration to prevent
-        // requesting audio beyond the bounds of the recording (which results in
-        // 422 errors).
-        // The audio_recording is attached to the model by getVerificationCallback.
-        const recordingDuration = audioEvent.audio_recording?.duration_seconds;
-        if (recordingDuration === undefined) {
-            console.warn(
-                "audioEventUrl: audio_recording not associated with event",
-                audioEvent.id,
-                "- times will not be clamped",
+        if (audioEvent.audio_start_seconds === undefined) {
+            throw new Error(
+                "audioEventUrl: audio_start_seconds or audio_end_seconds is not set on the event. " +
+                    "Call eventWithContext() before calling audioEventUrl().",
             );
         }
-
-        const start =
-            recordingDuration !== undefined
-                ? this.clampTimeToRecording(
-                      audioEvent.start_time_seconds,
-                      recordingDuration,
-                  )
-                : audioEvent.start_time_seconds;
-
-        const end =
-            recordingDuration !== undefined
-                ? this.clampTimeToRecording(
-                      audioEvent.end_time_seconds,
-                      recordingDuration,
-                  )
-                : audioEvent.end_time_seconds;
 
         const urlBase = this.#createUrl(
             `/audio_recordings/${recordingId}/media.flac`,
         );
-        const params = `?start_offset=${start}&end_offset=${end}`;
+        const params = `?start_offset=${audioEvent.audio_start_seconds}&end_offset=${audioEvent.audio_end_seconds}`;
         const url = urlBase + params;
 
         return this.#withUserToken(url);

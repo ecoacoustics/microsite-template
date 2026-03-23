@@ -60,6 +60,8 @@
         api.getAudioEvent(audioRecordingId, audioEventId),
     ]);
 
+    audioEvent.audio_recording = audioRecording;
+
     const eventDuration = audioEvent.end_time_seconds - audioEvent.start_time_seconds;
     const audioRecordingDuration = audioRecording.duration_seconds;
 
@@ -75,27 +77,8 @@
         ? ((minimumEventDurationSeconds - eventDuration) / 2) + defaultPaddingSeconds
         : defaultPaddingSeconds;
 
-    // We clamp to the start and end of the recording so that we don't try to
-    // fetch audio that is outside the bounds of the recording.
-    const contextStartTime = api.clampTimeToRecording(
-        audioEvent.start_time_seconds - contextPaddingSeconds,
-        audioRecordingDuration
-    ).toFixed(2);
-    const contextEndTime = api.clampTimeToRecording(
-        audioEvent.end_time_seconds + contextPaddingSeconds,
-        audioRecordingDuration
-    ).toFixed(2);
-
-    // How much padding we added to the start of the event. Because this can be
-    // clamped to the start of the recording, we need to calculate this after
-    // we calculate the context start time.
-    const contextPaddingStart = audioEvent.start_time_seconds - contextStartTime;
-
-    const eventWithContext = {
-        ...audioEvent,
-        start_time_seconds: contextStartTime,
-        end_time_seconds: contextEndTime,
-    };
+    const eventWithContext = api.eventWithContext(audioEvent, contextPaddingSeconds);
+    
     spectrogramTarget.src = api.audioEventUrl(eventWithContext);
 
     // Draws a bounding box around the original event.
@@ -103,7 +86,9 @@
     // from the start of the spectrogram the event starts at.
     // We cannot use the contextPadding in case the context start time was
     // clamped to the start of the recording.
+    const contextPaddingStart = audioEvent.start_time_seconds - eventWithContext.audio_start_seconds;
     createAnnotation(annotationTarget, audioEvent, label, contextPaddingStart);
+
 </script>
 
 <style>
