@@ -469,8 +469,23 @@ export class WorkbenchApi {
 
             await Promise.allSettled(associatedModelPromises);
 
+            const filteredEventModels = eventModels.filter((item) => {
+                const recordingDuration =
+                    item.audio_recording?.duration_seconds;
+
+                return (
+                    recordingDuration === undefined ||
+                    !(
+                        (item.start_time_seconds >= recordingDuration - 1 &&
+                            item.end_time_seconds > recordingDuration) ||
+                        (item.start_time_seconds < 0 &&
+                            item.end_time_seconds < 1)
+                    )
+                );
+            });
+
             const callbackResponse = {
-                subjects: eventModels,
+                subjects: filteredEventModels,
                 totalItems: responseMeta.paging.total,
                 context: gridContext,
             };
