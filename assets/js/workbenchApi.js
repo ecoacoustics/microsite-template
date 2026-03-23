@@ -107,6 +107,18 @@ export class WorkbenchApi {
     #tagCache = new Map();
 
     /**
+     * A recording cache that stores audio recording ids and their model
+     * resolvers in a map. We use a promise as the value so that we can store
+     * pending responses in the cache.
+     *
+     * Note that because the recording cache is a map, it is in-memory and not
+     * persistent between sessions or users.
+     *
+     * @type {Map<number, Promise<AudioRecording>>}
+     */
+    #recordingCache = new Map();
+
+    /**
      * A cached promise for the current user's profile.
      * We store the promise (rather than the resolved value) so that concurrent
      * calls to getUserProfile() share the same in-flight request rather than
@@ -273,18 +285,32 @@ export class WorkbenchApi {
     }
 
     /**
-     * Fetches an audio recording model from the API using an audio recording id
+     * Fetches an audio recording model from the API using an audio recording id.
+     * Results are cached so that multiple callers with the same id share a
+     * single in-flight request and do not issue redundant network requests.
      *
      * @param {number} audioRecordingId
      * @returns {Promise<AudioRecording>}
      */
     async getAudioRecording(audioRecordingId) {
-        const url = this.#createUrl(`/audio_recordings/${audioRecordingId}`);
+        const cached = this.#recordingCache.get(audioRecordingId);
+        if (cached) {
+            return await cached;
+        }
 
-        const response = await this.#fetch("GET", url);
-        const responseBody = await response.json();
+        const recordingRequest = async () => {
+            const url = this.#createUrl(
+                `/audio_recordings/${audioRecordingId}`,
+            );
+            const response = await this.#fetch("GET", url);
+            const responseBody = await response.json();
+            return responseBody.data;
+        };
 
-        return responseBody.data;
+        const recordingPromise = recordingRequest();
+        this.#recordingCache.set(audioRecordingId, recordingPromise);
+
+        return await recordingPromise;
     }
 
     /**
@@ -419,24 +445,53 @@ export class WorkbenchApi {
             const eventModels = responseBody.data;
             const gridContext = {};
 
-            // add a "tag" model to every subject by fetching the tag of
-            // interest
+            // Add a "tag" model and "audio_recording" model to every subject
+            // by fetching them in parallel.
+            // The audio recording is associated so that audioEventUrl can clamp
+            // end_time_seconds to the recording duration, preventing invalid
+            // media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
-                const taggings = model.taggings;
-                if (taggings.length < 1) {
-                    return;
+                const tagOfInterest = model.taggings[0];
+                const tagPromise = tagOfInterest
+                    ? this.getTag(tagOfInterest.tag_id)
+                    : Promise.resolve(null);
+
+                const [tag, recording] = await Promise.all([
+                    tagPromise,
+                    this.getAudioRecording(model.audio_recording_id),
+                ]);
+
+                if (tag) {
+                    model.tag = tag;
                 }
-
-                const tagOfInterest = taggings[0];
-                const tag = await this.getTag(tagOfInterest.tag_id);
-
-                model.tag = tag;
+                model.audio_recording = recording;
             });
 
             await Promise.allSettled(associatedModelPromises);
 
+            const filteredEventModels = eventModels.filter((item) => {
+                const recordingDuration =
+                    item.audio_recording?.duration_seconds;
+
+                if (recordingDuration === undefined) {
+                    // keep it if the recording was not attached and we can't verify it's not a weird edge case
+                    return true;
+                }
+
+                const too_close_to_end =
+                    item.start_time_seconds >= recordingDuration - 1 &&
+                    item.end_time_seconds > recordingDuration;
+                if (too_close_to_end) {
+                    console.warn(
+                        `Audio event ${item.id} is too close to the end of the recording and will be filtered out.`,
+                    );
+                }
+
+                return !too_close_to_end;
+            });
+
             const callbackResponse = {
-                subjects: eventModels,
+                subjects: filteredEventModels,
                 totalItems: responseMeta.paging.total,
                 context: gridContext,
             };
@@ -492,8 +547,57 @@ export class WorkbenchApi {
          * @returns {string}
          */
         return (_url, subject) => {
+            subject = this.eventWithContext(subject);
             return this.audioEventUrl(subject);
         };
+    }
+
+    /**
+     * Clamps a time value to be within the bounds of a recording.
+     * Ensures the time is between 0 and the recording duration.
+     * Avoids 422 errors when requesting audio segments that are out of bounds.
+     *
+     * @param {number} time - The time in seconds to clamp
+     * @param {number} recordingDuration - The duration of the recording in seconds
+     * @returns {number} - The clamped time value
+     */
+    clampTimeToRecording(time, recordingDuration) {
+        return Math.max(Math.min(time, recordingDuration), 0).toFixed(2);
+    }
+
+    /**
+     * Creates a new audio event object with sanitized start and end times
+     * and optional padding.
+     * @param {AudioEvent} audioEvent
+     * @param {number} paddingSeconds
+     * @returns
+     */
+    eventWithContext(audioEvent, paddingSeconds = 0) {
+        let audioStart = audioEvent.start_time_seconds - paddingSeconds;
+        let audioEnd = audioEvent.end_time_seconds + paddingSeconds;
+        if (!audioEvent.audio_recording) {
+            console.warn(
+                "eventWithContext: audio_recording not associated with event",
+                audioEvent.id,
+                "- context will not be clamped to recording duration",
+            );
+        }
+        audioStart = this.clampTimeToRecording(
+            audioStart,
+            audioEvent.audio_recording?.duration_seconds ?? Infinity,
+        );
+        audioEnd = this.clampTimeToRecording(
+            audioEnd,
+            audioEvent.audio_recording?.duration_seconds ?? Infinity,
+        );
+
+        const eventWithContext = {
+            ...audioEvent,
+            audio_start_seconds: audioStart,
+            audio_end_seconds: audioEnd,
+        };
+
+        return eventWithContext;
     }
 
     /**
@@ -502,13 +606,18 @@ export class WorkbenchApi {
      */
     audioEventUrl(audioEvent) {
         const recordingId = audioEvent.audio_recording_id;
-        const start = audioEvent.start_time_seconds;
-        const end = audioEvent.end_time_seconds;
+
+        if (audioEvent.audio_start_seconds === undefined) {
+            throw new Error(
+                "audioEventUrl: audio_start_seconds or audio_end_seconds is not set on the event. " +
+                    "Call eventWithContext() before calling audioEventUrl().",
+            );
+        }
 
         const urlBase = this.#createUrl(
             `/audio_recordings/${recordingId}/media.flac`,
         );
-        const params = `?start_offset=${start}&end_offset=${end}`;
+        const params = `?start_offset=${audioEvent.audio_start_seconds}&end_offset=${audioEvent.audio_end_seconds}`;
         const url = urlBase + params;
 
         return this.#withUserToken(url);
