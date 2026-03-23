@@ -473,15 +473,21 @@ export class WorkbenchApi {
                 const recordingDuration =
                     item.audio_recording?.duration_seconds;
 
-                return (
-                    recordingDuration === undefined ||
-                    !(
-                        (item.start_time_seconds >= recordingDuration - 1 &&
-                            item.end_time_seconds > recordingDuration) ||
-                        (item.start_time_seconds < 0 &&
-                            item.end_time_seconds < 1)
-                    )
-                );
+                if (recordingDuration === undefined) {
+                    // keep it if the recording was not attached and we can't verify it's not a weird edge case
+                    return true;
+                }
+
+                const too_close_to_end =
+                    item.start_time_seconds >= recordingDuration - 1 &&
+                    item.end_time_seconds > recordingDuration;
+                if (too_close_to_end) {
+                    console.warn(
+                        `Audio event ${item.id} is too close to the end of the recording and will be filtered out.`,
+                    );
+                }
+
+                return !too_close_to_end;
             });
 
             const callbackResponse = {
