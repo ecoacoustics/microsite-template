@@ -1,204 +1,201 @@
 {{ define "main" }}
 <div id="login-page" class="page">
-    <div class="login-container">
-        <sl-card class="card-header">
-            <div slot="header"><h1>{{ .Title }}</h1></div>
-            <form id="login-form" class="validity-styles">
-                <sl-input
-                    type="text"
-                    name="user[login]"
-                    label="Username or Email Address"
-                    class="login-form-input"
-                    required
-                ></sl-input>
-                <sl-input
-                    type="password"
-                    name="user[password]"
-                    label="Password"
-                    class="login-form-input"
-                    password-toggle
-                    required
-                ></sl-input>
+  <div class="login-container">
+    <sl-card class="card-header">
+      <div slot="header"><h1>{{ .Title }}</h1></div>
+      <form id="login-form" class="validity-styles">
+        <sl-input
+          type="text"
+          name="user[login]"
+          label="Username or Email Address"
+          class="login-form-input"
+          required
+        ></sl-input>
+        <sl-input
+          type="password"
+          name="user[password]"
+          label="Password"
+          class="login-form-input"
+          password-toggle
+          required
+        ></sl-input>
 
-                <sl-checkbox
-                    name="user[remember_me]"
-                    class="login-form-input"
-                 >
-                    Remember Me
-                </sl-checkbox>
+        <sl-checkbox name="user[remember_me]" class="login-form-input">
+          Remember Me
+        </sl-checkbox>
 
-                <sl-button
-                    type="submit"
-                    variant="primary"
-                    class="login-form-input"
-                >
-                    Log In
-                </sl-button>
-            </form>
+        <sl-button type="submit" variant="primary" class="login-form-input">
+          Log In
+        </sl-button>
+      </form>
 
-            <p><strong id="error-output"></strong></p>
+      <p><strong id="error-output"></strong></p>
 
-            {{ .Content }}
-            <p>Don't have an account?
-                <a href="{{ site.Params.workbenchhost }}/security/register">Register here</a>.
-            </p>
-        </sl-card>
-    </div>
+      {{ .Content }}
+      <p>
+        Don't have an account?
+        <a href="{{ site.Params.workbench_host }}/security/register"
+          >Register here</a
+        >.
+      </p>
+    </sl-card>
+  </div>
 
-    <style>
-        body {
-            background-image: url("ecosounds-hero.jpg");
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
+  <style>
+    body {
+      background-image: url("ecosounds-hero.jpg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
 
-        #login-form {
-            display: inline-block;
-            width: 500px;
-            max-width: 100%;
+    #login-form {
+      display: inline-block;
+      width: 500px;
+      max-width: 100%;
 
-            & > * {
-                display: block;
-                margin-top: 1rem;
-            }
-        }
+      & > * {
+        display: block;
+        margin-top: 1rem;
+      }
+    }
 
-        #error-output {
-            color: var(--sl-color-danger-600);
-        }
+    #error-output {
+      color: var(--sl-color-danger-600);
+    }
 
-        .login-container {
-            display: flex;
-            gap: 12em;
+    .login-container {
+      display: flex;
+      gap: 12em;
 
-            /*
+      /*
                 TODO: The fact that there is margin here is a smell that the
                 padding for the common .container is incorrect.
             */
-            margin-top: 1rem;
+      margin-top: 1rem;
 
-            & > * {
-                flex-shrink: 1;
-                min-width: 0;
-            }
+      & > * {
+        flex-shrink: 1;
+        min-width: 0;
+      }
+    }
+
+    /* user invalid styles */
+    .validity-styles sl-input[data-user-invalid]::part(base),
+    .validity-styles sl-select[data-user-invalid]::part(combobox),
+    .validity-styles sl-checkbox[data-user-invalid]::part(control) {
+      border-color: var(--sl-color-danger-600);
+    }
+
+    .validity-styles sl-input:focus-within[data-user-invalid]::part(base),
+    .validity-styles sl-select:focus-within[data-user-invalid]::part(combobox),
+    .validity-styles
+      sl-checkbox:focus-within[data-user-invalid]::part(control) {
+      border-color: var(--sl-color-danger-600);
+      box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-color-danger-300);
+    }
+  </style>
+
+  <script type="module">
+    const api = await workbenchApi();
+    const formElement = document.getElementById("login-form");
+    const formInputs = document.getElementsByClassName("login-form-input");
+
+    function redirectSuccess() {
+      // We can navigate the user back to a previous page location using
+      // the "?redirect=/path" parameter.
+      const queryStrings = new URLSearchParams(location.search);
+      const redirectQsp = queryStrings.get("redirect");
+
+      // We don't use history.back here because the browsers bfcache
+      // would return a stale version of the webpage where the user is
+      // not logged in.
+      // https://web.dev/articles/bfcache
+      //
+      // We also use window.location.replace() instead of
+      // window.location.href so that if the user presses the back
+      // button, they will not be navigated back to the login page.
+      if (redirectQsp) {
+        // To minimize security risks, we don't allow the redirect parameter
+        // to point to an external site (or different sub-domain).
+        const redirectLocation = new URL(redirectQsp, location.origin);
+        const isRedirectSafe = redirectLocation.hostname === location.hostname;
+
+        if (isRedirectSafe) {
+          location.replace(redirectLocation);
+          return;
         }
+      }
 
-        /* user invalid styles */
-        .validity-styles sl-input[data-user-invalid]::part(base),
-        .validity-styles sl-select[data-user-invalid]::part(combobox),
-        .validity-styles sl-checkbox[data-user-invalid]::part(control) {
-            border-color: var(--sl-color-danger-600);
-        }
+      location.replace("/");
+    }
 
-        .validity-styles sl-input:focus-within[data-user-invalid]::part(base),
-        .validity-styles sl-select:focus-within[data-user-invalid]::part(combobox),
-        .validity-styles sl-checkbox:focus-within[data-user-invalid]::part(control) {
-            border-color: var(--sl-color-danger-600);
-            box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-color-danger-300);
-        }
-    </style>
+    function printFailure(error) {
+      console.error(error);
 
-    <script type="module">
-        const api = await workbenchApi();
-        const formElement = document.getElementById("login-form");
-        const formInputs = document.getElementsByClassName("login-form-input");
+      const errorOutputElement = document.getElementById("error-output");
+      if (!errorOutputElement) {
+        console.error("Error output element does not exist");
+        return;
+      }
 
-        function redirectSuccess() {
-            // We can navigate the user back to a previous page location using
-            // the "?redirect=/path" parameter.
-            const queryStrings = new URLSearchParams(location.search);
-            const redirectQsp = queryStrings.get("redirect");
+      errorOutputElement.innerText = error;
+    }
 
-            // We don't use history.back here because the browsers bfcache
-            // would return a stale version of the webpage where the user is
-            // not logged in.
-            // https://web.dev/articles/bfcache
-            //
-            // We also use window.location.replace() instead of
-            // window.location.href so that if the user presses the back
-            // button, they will not be navigated back to the login page.
-            if (redirectQsp) {
-                // To minimize security risks, we don't allow the redirect parameter
-                // to point to an external site (or different sub-domain).
-                const redirectLocation = new URL(redirectQsp, location.origin);
-                const isRedirectSafe = redirectLocation.hostname === location.hostname;
+    function disableForm() {
+      for (const element of formInputs) {
+        element.setAttribute("disabled", true);
+      }
+    }
 
-                if (isRedirectSafe) {
-                    location.replace(redirectLocation);
-                    return;
-                }
-            }
+    function enableForm() {
+      for (const element of formInputs) {
+        element.removeAttribute("disabled");
+      }
+    }
 
-            location.replace("/");
-        }
+    async function handleSubmission(username, password) {
+      disableForm();
 
-        function printFailure(error) {
-            console.error(error);
+      if (await api.isLoggedIn()) {
+        redirectSuccess();
+      }
 
-            const errorOutputElement = document.getElementById("error-output");
-            if (!errorOutputElement) {
-                console.error("Error output element does not exist");
-                return;
-            }
+      const authSuccess = await api.loginUser(username, password);
+      if (authSuccess) {
+        redirectSuccess();
+      } else {
+        printFailure("Incorrect username or password.");
+      }
 
-            errorOutputElement.innerText = error;
-        }
+      enableForm();
+    }
 
-        function disableForm() {
-            for (const element of formInputs) {
-                element.setAttribute("disabled", true);
-            }
-        }
+    async function setupLogin() {
+      // If the user is already logged in, it is likely that the user
+      // navigated to this page using the back button.
+      // Therefore, we want to go back one more page as re-logging in will
+      // have no effect.
+      if (await api.isLoggedIn()) {
+        redirectSuccess();
+      }
 
-        function enableForm() {
-            for (const element of formInputs) {
-                element.removeAttribute("disabled");
-            }
-        }
+      formElement.addEventListener("submit", (event) => {
+        event.preventDefault();
 
-        async function handleSubmission(username, password) {
-            disableForm();
+        const formData = new FormData(formElement);
+        const formValues = Object.fromEntries(formData);
 
-            if (await api.isLoggedIn()) {
-                redirectSuccess();
-            }
+        const username = formValues["user[login]"];
+        const password = formValues["user[password]"];
 
-            const authSuccess = await api.loginUser(username, password);
-            if (authSuccess) {
-                redirectSuccess();
-            } else {
-                printFailure("Incorrect username or password.");
-            }
+        // This async function is not awaited to not lock up the main
+        // render thread.
+        handleSubmission(username, password);
+      });
+    }
 
-            enableForm();
-        }
-
-        async function setupLogin() {
-            // If the user is already logged in, it is likely that the user
-            // navigated to this page using the back button.
-            // Therefore, we want to go back one more page as re-logging in will
-            // have no effect.
-            if (await api.isLoggedIn()) {
-                redirectSuccess();
-            }
-
-            formElement.addEventListener("submit", (event) => {
-                event.preventDefault();
-
-                const formData = new FormData(formElement);
-                const formValues = Object.fromEntries(formData);
-
-                const username = formValues["user[login]"];
-                const password = formValues["user[password]"];
-
-                // This async function is not awaited to not lock up the main
-                // render thread.
-                handleSubmission(username, password);
-            });
-        }
-
-        setupLogin();
-    </script>
+    setupLogin();
+  </script>
 </div>
 {{ end }}

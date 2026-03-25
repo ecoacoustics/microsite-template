@@ -74,10 +74,12 @@
             await api.logoutUser()
 
             // Because we are in a MPA application, it is generally hard to
-            // keep track of state.
-            // While inefficient, I reload the application so that we're
-            // sure that the state has changed to a "logged out" state.
-            window.location.reload();
+            // keep track of state. Reload to clear state.
+            // Navigate home (reloading just takes you to the same page which 
+            // for verify immediately redirects you to login which is pointless and annoying)
+            // we use window.location instead of .replace because we do want the user to be able to navigate back to the
+            // previous page after logging out.
+            window.location = "/";
         } catch(err) {
             console.error("Failed to log out user.", err);
         }

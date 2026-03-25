@@ -9,10 +9,13 @@ menus:
   #   - name: Credits
   #     pageRef: https://ecosounds.org/about/credits
   #     weight: 10
+# Avoid camel casing params. Hugo downcases all params when it parses the config.
+# We can still case-insensitively access params, but if we try to dump them as a json blob
+# we will lose the camel casing which can be confusing later.
 params:
-  apiHost: https://api.staging.ecosounds.org
-  workbenchHost: https://staging.ecosounds.org
-  heroImage: images/Plains_wanderer_female.jpg
+  api_host: https://api.staging.ecosounds.org
+  workbench_host: https://staging.ecosounds.org
+  hero_image: images/Plains_wanderer_female.jpg
   # navbar:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none
