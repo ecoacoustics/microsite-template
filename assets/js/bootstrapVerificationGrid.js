@@ -21,7 +21,7 @@ async function bootstrapVerificationGrid(target, campaign) {
   const mergedFilterBody = {
     ...campaignFilters,
     filter: {
-      and: [campaignFilters.filter, { "verification_count": { eq: 0 } }],
+      and: [campaignFilters.filter, { verification_count: { eq: 0 } }],
     },
   };
 
@@ -67,10 +67,10 @@ function showUnconfirmedAccountWarning() {
     return;
   }
 
-  const workbenchHost = globalThis.siteParams?.workbenchhost;
+  const workbenchHost = globalThis.siteParams?.workbench_host;
   if (workbenchHost) {
     const contactLinkContainer = document.getElementById(
-      "unconfirmed-contact-link"
+      "unconfirmed-contact-link",
     );
     if (contactLinkContainer) {
       const contactLink = document.createElement("a");

@@ -1,7 +1,9 @@
-<script type="module">
-  {{/* Making hugo.yaml site params accessible through js */}}
-  globalThis.siteParams = {{ site.Params | jsonify | safeJS }};
-</script>
+{{/* Making hugo.yaml site params accessible through js */}}
+{{- with resources.Get "js/params.js" | resources.ExecuteAsTemplate "js/params.js" . | fingerprint }}
+
+<script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity}}"></script>
+{{- end }}
+
 
 {{- with resources.Get "js/workbenchApi.js" }}
   {{- if eq hugo.Environment "development" }}

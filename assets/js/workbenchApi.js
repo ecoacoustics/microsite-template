@@ -14,7 +14,7 @@ const bawApiDecisionMapping = {
  * A callback that can be used to get the current global WorkbenchApi instance
  */
 globalThis.workbenchApi ??= () =>
-    WorkbenchApi.instance(globalThis.siteParams.apihost);
+    WorkbenchApi.instance(globalThis.siteParams.api_host);
 
 /**
  * A service to interact with the baw-api
@@ -44,10 +44,10 @@ export class WorkbenchApi {
     constructor(host) {
         // guard doubles as a type check to ensure that the host is a string
         if (host === undefined) {
-            throw new Error("apiHost is not defined.");
+            throw new Error("api_host is not defined.");
         } else if (!host.startsWith("http")) {
             const errorMessage = `
-                Api host must start with http or https.
+                API host must start with http or https.
                     Incorrect Example: api.ecosounds.org
                     Correct Example: https://api.ecosounds.org
             `;
@@ -83,6 +83,23 @@ export class WorkbenchApi {
 
     /** @type {string} */
     #host;
+
+    /**
+     * The localStorage key used to persist the auth token across page reloads.
+     * Using localStorage avoids the need for 3rd party cookies which are
+     * deprecated and blocked by some browsers (e.g. Safari).
+     * 
+     * This is not a good long term solution for session persistence and it makes
+     * us vulnerable to XSS attacks. However, low security tokens are issued by
+     * the API and the tokens do time out after a period of inactivity, 
+     * so the risk is somewhat mitigated. We also control all content on the site
+     * so we can be reasonably confident that there are no XSS vulnerabilities that
+     * would allow an attacker to steal the token - except for attack vectors
+     * like browser extensions which we have no control over.
+     * 
+     * Our eventual goal is to move to an OAuth PKCE flow.
+     */
+    static #TOKEN_STORAGE_KEY = "workbench-api-auth-token";
 
     /**
      * An authentication token that will be added to all API requests.
@@ -169,12 +186,21 @@ export class WorkbenchApi {
     async logoutUser() {
         const url = this.#createUrl("/security");
         const response = await this.#fetch("DELETE", url);
-        if (!response.ok) {
-            return null;
-        }
 
+        // So even if the logout fails, we can still clear the token,
+        // Which will force a login flow for authenticated access for the user anyway.
+        // More consistent if e.g. the API is flaky.
         this.#authToken = null;
         this.#userProfileCache = null;
+        this.#clearToken();
+
+        if (!response.ok) {
+            console.warn(
+                "Logout request failed, but local session has been cleared.",
+                response,
+            );
+            return null;
+        }
 
         const responseBody = await response.json();
         return responseBody;
@@ -182,57 +208,48 @@ export class WorkbenchApi {
 
     /**
      * Authenticates the user using a username and password combination.
-     * This function will return a boolean indicating if authentication was
-     * successful.
+     * Uses the JSON-only POST /security endpoint to obtain an auth token
+     * without relying on cookies or HTML form submissions.
      *
-     * Note that this method does not refresh the authentication token because
-     * after logging in, the user will typically navigate to another page,
-     * causing the service to re-init (which will refresh the auth token).
-     * This is an optimization decision that was made to minimize making an API
-     * requests.
+     * On success the auth token is persisted to localStorage so that the
+     * session survives page reloads.
      *
      * @param {string} username
      * @param {string} password
      *
-     * @returns {Promise<boolean>}
+     * @returns {Promise<string | null>} Returns an error message if login fails, or null if login succeeds
      */
     async loginUser(username, password) {
-        // We don't send "Authentication" headers during login because we might
-        // be refreshing the authentication token if the user is trying to log
-        // in to a stale session.
-        const signInEndpoint = this.#createUrl("/my_account/sign_in");
-        const authTokenRequest = await this.#fetch(
-            "GET",
-            signInEndpoint,
-            null,
-            { Accept: "text/html" },
-            false,
-        );
-
-        if (!authTokenRequest.ok) {
-            return false;
-        }
-
-        const page = await authTokenRequest.text();
-        const authenticityToken = page.match(
-            /name="authenticity_token" value="(.+?)"/,
-        );
-
-        const requestBody = new FormData();
-        requestBody.append("user[login]", username);
-        requestBody.append("user[password]", password);
-        requestBody.append("commit", "Log+in");
-        requestBody.append("authenticity_token", authenticityToken[1]);
-
-        const signInResponse = await this.#fetch(
+        const signInEndpoint = this.#createUrl("/security");
+        const response = await this.#fetch(
             "POST",
             signInEndpoint,
-            requestBody,
-            { Accept: "text/html" },
+            { user: { login: username, password: password } },
+            {},
             false,
         );
 
-        return signInResponse.ok;
+        const responseBody = await response.json();
+        const authToken = responseBody.data?.auth_token;
+
+        if (!response.ok) {
+            let errorMessage = responseBody.meta.error?.details;
+            errorMessage =
+                errorMessage || "Login request failed due to an unknown error.";
+            return errorMessage;
+        }
+
+        if (!authToken) {
+            return "Login request succeeded but no auth token was returned. Please try again or contact support.";
+        }
+
+        this.#authToken = authToken;
+
+        if (!this.#saveToken(authToken)) {
+            return "Failed to save auth token to localStorage. The session will not persist across page reloads.";
+        }
+
+        return null;
     }
 
     /**
@@ -315,7 +332,7 @@ export class WorkbenchApi {
 
     /**
      * Uses a verification model id to fetch the verification object from the
-     * baw-api.
+     * workbench-api.
      * If there is no verification object with the given id, this method will
      * return null.
      *
@@ -338,9 +355,9 @@ export class WorkbenchApi {
      * @returns {Promise<boolean>} - A boolean value indicating whether the verification was created successfully
      */
     async upsertVerification(model) {
-        // convert the verification model to a baw-api compatible model
+        // convert the verification model to a workbench-api compatible model
         // I do this here so that the entire app can have no knowledge of how
-        // the baw-api model records verifications and they only have to deal
+        // the workbench-api model records verifications and they only have to deal
         // with the web components verification model.
         const bawModel = this.#verificationToBawModel(model);
         const payload = {
@@ -624,30 +641,82 @@ export class WorkbenchApi {
     }
 
     /**
-     * Refreshes the authentication token by using exiting cookies to
-     * authenticate.
+     * Restores the authentication token from localStorage and validates it
+     * against the API. If the stored token is invalid or expired it is
+     * cleared so the user is treated as logged-out.
      *
      * @returns {Promise<boolean>}
-     * A boolean indicating if the auth token was successfully fetched
+     * A boolean indicating if a valid auth token was restored
      */
     async #refreshAuthToken() {
+        const storedToken = this.#loadToken();
+        if (!storedToken) {
+            return false;
+        }
+
+        // Temporarily set the token so #fetch includes the Authorization header
+        this.#authToken = storedToken;
+
         const securityEndpoint = this.#createUrl("/security/user");
-        const response = await this.#fetch(
-            "GET",
-            securityEndpoint,
-            undefined,
-            undefined,
-            false,
-        );
+        const response = await this.#fetch("GET", securityEndpoint);
+
         if (!response.ok) {
+            // Token is invalid or expired – clear it
+            this.#authToken = null;
+            this.#clearToken();
             return false;
         }
 
         const responseBody = await response.json();
-        const authToken = responseBody.data.auth_token;
-        this.#authToken = authToken;
+        const freshToken = responseBody.data?.auth_token;
+
+        if (freshToken) {
+            this.#authToken = freshToken;
+            this.#saveToken(freshToken);
+        }
 
         return true;
+    }
+
+    /**
+     * Saves the auth token to localStorage.
+     * @param {string} token
+     * @returns {boolean} - A boolean indicating if the token was successfully saved
+     */
+    #saveToken(token) {
+        try {
+            localStorage.setItem(WorkbenchApi.#TOKEN_STORAGE_KEY, token);
+            return true;
+        } catch {
+            // localStorage may be unavailable (e.g. private browsing in some browsers)
+            return false;
+        }
+    }
+
+    /**
+     * Loads the auth token from localStorage.
+     * @returns {string | null}
+     */
+    #loadToken() {
+        try {
+            return localStorage.getItem(WorkbenchApi.#TOKEN_STORAGE_KEY);
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Removes the auth token from localStorage.
+     * @returns {boolean} - A boolean indicating if the token was successfully removed
+     */
+    #clearToken() {
+        try {
+            localStorage.removeItem(WorkbenchApi.#TOKEN_STORAGE_KEY);
+            return true;
+        } catch {
+            // localStorage may be unavailable
+            return false;
+        }
     }
 
     /**
@@ -744,10 +813,6 @@ export class WorkbenchApi {
             ...headerOverride,
         };
 
-        // If the "Authorization" header is omitted, the cookie will be used for
-        // authorization.
-        // This can be useful when refreshing the authentication token, or for
-        // making requests where the auth token may have expired.
         if (this.#authToken && withAuthHeader) {
             headers["Authorization"] = `Token token=\"${this.#authToken}\"`;
         }
@@ -765,7 +830,9 @@ export class WorkbenchApi {
             method,
             headers,
             body,
-            credentials: "include",
+            // do not send or keep any cookies with these requests because any such
+            // cookies are 3rd party cookies which are deprecated and blocked by some browsers (e.g. Safari).
+            credentials: "omit",
         }).catch((error) => {
             const errorMessage = `Failed to connect to the API.
 Possible reasons:

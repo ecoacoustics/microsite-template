@@ -14,7 +14,7 @@
     pre-fetching it as fast as possible so that it's visible as soon as the page
     renders.
 */}}
-{{ $heroImage := site.Params.HeroImage }}
+{{ $heroImage := site.Params.hero_image }}
 {{ with resources.Get $heroImage }}
     <link rel="preload" as="image" href="{{ .RelPermalink }}">
 {{- end -}}
