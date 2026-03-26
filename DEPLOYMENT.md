@@ -20,6 +20,14 @@ Most of the steps described can be found in the hugo
     - `cp ./themes/microsite-template/netlify.toml ./netlify.toml`
 6. Copy the microsite theme's config template and customize the values for client personalization
     - `cp ./themes/microsite-template/hugo.example.yaml ./hugo.yaml`
+    - `rm hugo.toml`
+7. Copy the gitignore
+    - `cp ./themes/microsite-template/.gitignore ./.gitignore`
+8. Create a customizations.css file
+    - `touch assets/css/customizations.css`
+    - Use customizations.css to change styling on this site.
+    - You can also override css variables defined in `main.css` because `customizations.css` has a higher priority.
+    - Avoid overriding theme css files, e.g. `main.css` unless you absolutely need to override the whole file.
 
 ## Deploying a Microsite
 

@@ -12,7 +12,7 @@
 :root {
     /* Shoelace Overrides */
     {{ range $key, $value := .Site.Params.style.ThemeShades }}
-    --sl-color-primary-{{ $key }}: rgb({{ $value }});
+    --sl-color-primary-{{ $key }}: {{ $value }};
     {{ end }}
 
     /*
