@@ -9,6 +9,8 @@ server:
         Cross-Origin-Opener-Policy: same-origin
         Cross-Origin-Embedder-Policy: require-corp
         Cross-Origin-Resource-Policy: cross-origin
+        # CSP for local development - must be kept in sync with netlify.toml
+        Content-Security-Policy-Report-Only: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' data: https://*.ecosounds.org https://*.acousticobservatory.org https://cdn.jsdelivr.net https://www.google-analytics.com; media-src 'self' https://*.ecosounds.org https://*.acousticobservatory.org; frame-src 'none'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
         ignoreLogs:
           - warning-goldmark-raw-html
 module:

@@ -88,6 +88,16 @@ export class WorkbenchApi {
      * The localStorage key used to persist the auth token across page reloads.
      * Using localStorage avoids the need for 3rd party cookies which are
      * deprecated and blocked by some browsers (e.g. Safari).
+     * 
+     * This is not a good long term solution for session persistence and it makes
+     * us vulnerable to XSS attacks. However, low security tokens are issued by
+     * the API and the tokens do time out after a period of inactivity, 
+     * so the risk is somewhat mitigated. We also control all content on the site
+     * so we can be reasonably confident that there are no XSS vulnerabilities that
+     * would allow an attacker to steal the token - except for attack vectors
+     * like browser extensions which we have no control over.
+     * 
+     * Our eventual goal is to move to an OAuth PKCE flow.
      */
     static #TOKEN_STORAGE_KEY = "workbench-api-auth-token";
 
@@ -176,13 +186,21 @@ export class WorkbenchApi {
     async logoutUser() {
         const url = this.#createUrl("/security");
         const response = await this.#fetch("DELETE", url);
-        if (!response.ok) {
-            return null;
-        }
 
+        // So even if the logout fails, we can still clear the token,
+        // Which will force a login flow for authenticated access for the user anyway.
+        // More consistent if e.g. the API is flaky.
         this.#authToken = null;
         this.#userProfileCache = null;
         this.#clearToken();
+
+        if (!response.ok) {
+            console.warn(
+                "Logout request failed, but local session has been cleared.",
+                response,
+            );
+            return null;
+        }
 
         const responseBody = await response.json();
         return responseBody;
@@ -199,7 +217,7 @@ export class WorkbenchApi {
      * @param {string} username
      * @param {string} password
      *
-     * @returns {Promise<boolean>}
+     * @returns {Promise<string | null>} Returns an error message if login fails, or null if login succeeds
      */
     async loginUser(username, password) {
         const signInEndpoint = this.#createUrl("/security");
@@ -211,21 +229,27 @@ export class WorkbenchApi {
             false,
         );
 
-        if (!response.ok) {
-            return false;
-        }
-
         const responseBody = await response.json();
         const authToken = responseBody.data?.auth_token;
 
+        if (!response.ok) {
+            let errorMessage = responseBody.meta.error?.details;
+            errorMessage =
+                errorMessage || "Login request failed due to an unknown error.";
+            return errorMessage;
+        }
+
         if (!authToken) {
-            return false;
+            return "Login request succeeded but no auth token was returned. Please try again or contact support.";
         }
 
         this.#authToken = authToken;
-        this.#saveToken(authToken);
 
-        return true;
+        if (!this.#saveToken(authToken)) {
+            return "Failed to save auth token to localStorage. The session will not persist across page reloads.";
+        }
+
+        return null;
     }
 
     /**

@@ -155,20 +155,26 @@
     }
 
     async function handleSubmission(username, password) {
-      disableForm();
+      try{
+        disableForm();
 
-      if (await api.isLoggedIn()) {
-        redirectSuccess();
+        if (await api.isLoggedIn()) {
+          redirectSuccess();
+        }
+
+        const authFailure = await api.loginUser(username, password);
+        if (authFailure) {
+          printFailure(authFailure);
+        } else {
+          redirectSuccess();
+        }
       }
-
-      const authSuccess = await api.loginUser(username, password);
-      if (authSuccess) {
-        redirectSuccess();
-      } else {
-        printFailure("Incorrect username or password.");
+      catch (error) {
+        printFailure("An unexpected error occurred. Please try again and then report this issue to support if it persists.");
       }
-
-      enableForm();
+      finally {
+        enableForm();
+      }
     }
 
     async function setupLogin() {
