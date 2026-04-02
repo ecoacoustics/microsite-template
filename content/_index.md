@@ -5,7 +5,7 @@ date = 2023-01-01T08:00:00-07:00
 
 {{< section/hero
 caption="Image: JJ Harrison, CC BY-SA 3.0, via Wikimedia Commons"
-title="Can you hear a Plains Wanderer?">}}
+title="Can you hear a <span>Plains Wanderer?</span>">}}
 {{< /section/hero >}}
 
 {{% section class="oe-call-to-action" %}}

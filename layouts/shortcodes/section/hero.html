@@ -7,7 +7,7 @@
 >
   <div class="page-section-content hero-content-container">
     <div class="hero-content">
-      <h1 class="oe-hero-title">{{ .Get "title" }}</h1>
+      <h1 class="oe-hero-title">{{ .Get "title" | safeHTML }}</h1>
       <div class="slotted-hero-content">
         {{ .Inner }}
       </div>
