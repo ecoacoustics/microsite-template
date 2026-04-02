@@ -1,5 +1,7 @@
 title: "Call Detective"
 theme: "microsite-template"
+server:
+  _merge: deep
 services:
   # https://gohugo.io/templates/embedded/#configuration-google-analytics
   # googleAnalytics:
