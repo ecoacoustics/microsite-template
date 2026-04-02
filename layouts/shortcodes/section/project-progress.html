@@ -111,7 +111,7 @@
 
         // I floor the number so that when we approach 100% verification, users
         // don't see a 100% verified state and stop verifying.
-        const progressPercentage = Math.floor(100 * (verified / totalCount));
+        const progressPercentage = totalCount === 0 ? 0 : Math.floor(100 * (verified / totalCount));
         const roundedPercentage = progressPercentage.toFixed(0);
         const percentageMessage = `${roundedPercentage}%`;
 
