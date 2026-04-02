@@ -2,10 +2,10 @@
     Before modifying this file, please read the ARDC branding guidelines:
     https://ardc.edu.au/resource/acknowledging-the-ardc/
 */}}
-{{- $isDark := eq (lower (printf "%v" (.Get "dark"))) "true" -}}
-{{- $sectionClass := .Get "class" -}}
+{{- $isDark := eq (lower (string (.Get "dark"))) "true" -}}
+{{- $sectionClass := .Get "class" | default "" -}}
 {{- if $isDark -}}
-  {{- $sectionClass = printf "%s sponsors-dark" $sectionClass -}}
+    {{- $sectionClass = print $sectionClass " sponsors-dark" | strings.TrimSpace -}}
 {{- end -}}
 
 <section class="page-section {{ $sectionClass }}">
@@ -214,7 +214,23 @@
 
     .sponsors-dark {
         background-color: #000;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.7);
+
+        & a {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        & .sponsor-text-row a {
+            --sponsors-link-base-opacity: 0.7;
+            --sponsors-link-hover-opacity: 0.8;
+
+            opacity: var(--sponsors-link-base-opacity);
+            transition: filter 120ms ease, opacity 120ms ease;
+        }
+        & .sponsor-text-row a:hover {
+            filter: brightness(1.15);
+            opacity: var(--sponsors-link-hover-opacity);
+        }
+
 
         /*
             OpenEcoacoustics logo uses .cls-1 for black fills.
