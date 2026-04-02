@@ -218,3 +218,9 @@ figure {
 .fullbleed {
     grid-column: fullbleed !important;
 }
+
+.person-card img[slot="image"] {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+}
