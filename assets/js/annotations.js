@@ -16,11 +16,15 @@ export function createAnnotation(
   // we can remove the contextPaddingStart parameter and just use the
   // audioEvent.start_time_seconds directly.
   // see: https://github.com/ecoacoustics/web-components/issues/505
+  // When frequency bounds are null, the event spans the full frequency range.
+  const lowFrequency = audioEvent.low_frequency_hertz ?? 0;
+  const highFrequency = audioEvent.high_frequency_hertz ?? audioEvent.audio_recording.sample_rate_hertz / 2;
+
   const attributeMap = new Map([
     ["start-time", contextPaddingStart],
     ["end-time", eventDuration + contextPaddingStart],
-    ["low-frequency", audioEvent.low_frequency_hertz],
-    ["high-frequency", audioEvent.high_frequency_hertz],
+    ["low-frequency", lowFrequency],
+    ["high-frequency", highFrequency],
     ["tags", label],
   ]);
 
