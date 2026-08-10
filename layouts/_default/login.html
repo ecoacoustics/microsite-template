@@ -38,6 +38,18 @@
           >Register here</a
         >.
       </p>
+      <p>
+        Login uses your
+        <a href="{{ site.Params.workbench_host }}">{{ site.Params.workbench_host | replaceRE "^https?://" "" }}</a>
+        account credentials.
+      </p>
+      {{- with site.Params.contact_url }}
+      <p>
+        Having trouble logging in?
+        <a href="{{ . }}">Contact us</a>
+        for support.
+      </p>
+      {{- end }}
     </sl-card>
   </div>
 

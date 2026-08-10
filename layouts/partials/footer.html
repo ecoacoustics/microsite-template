@@ -6,6 +6,11 @@
           <a href="{{ .PageRef }}">{{ .Name }}</a>
         </li>
       {{- end }}
+      {{- with site.Params.contact_url }}
+        <li>
+          <a href="{{ . }}">Contact Us</a>
+        </li>
+      {{- end }}
     </ul>
   </div>
 
