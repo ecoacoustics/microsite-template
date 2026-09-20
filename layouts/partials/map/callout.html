@@ -1,0 +1,12 @@
+{{/*
+    Default inner content for a map callout.
+
+    The map shortcode owns the outer map-callout article and close button.
+    Parent sites can override this partial to render site-specific content.
+*/}}
+{{- $site := .site -}}
+<div class="map-callout-content">
+    <h3 class="map-callout-title">{{ $site.campaign }}</h3>
+    <p class="map-callout-text">{{ $site.description }}</p>
+    <a class="map-callout-link" href="{{ $site.page }}">Learn more</a>
+</div>

@@ -1,0 +1,11 @@
+{{/*
+    Default inner content for a recording-location card.
+
+    The site-cards shortcode owns the outer site-card article. Parent sites
+    can override this partial to render richer site information.
+*/}}
+{{- $site := .site -}}
+<div class="site-info-content">
+    <h3 class="site-info-title">{{ $site.campaign }}</h3>
+    <p class="site-info-text">{{ $site.description }}</p>
+</div>

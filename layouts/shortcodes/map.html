@@ -1,0 +1,344 @@
+{{ $mapParams := site.Params.map | default dict }}
+{{ $mapSites := $mapParams.sites | default (slice) }}
+{{ $mapNarrowBreakpoint := default "768px" site.Params.style.smallBreakPoint }}
+{{ if not $mapSites }}
+<section class="map map-configuration-error" aria-label="Field sites">
+    <div class="map-stage">
+        <div class="map-shell">
+            <div class="map-message" role="alert">
+                <p><strong>Map configuration required.</strong> Define <code>params.map.sites</code> before using the <code>map</code> shortcode.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ else }}
+{{ $mapID := .Get "id" | default (printf "map-%03d" .Ordinal) }}
+{{ $onCalloutShown := strings.Trim (.Get "on-callout-shown" | default "") "\"" }}
+{{ $onCalloutHidden := strings.Trim (.Get "on-callout-hidden" | default "") "\"" }}
+{{ $previewCalloutOnly := eq (lower (printf "%v" (.Get "preview-callout-only"))) "true" }}
+{{ $mapOnboardingTitle := .Get "onboarding-title" | default "Explore the diverse recording locations" }}
+{{ $mapOnboardingText := .Get "onboarding-text" | default "Choose a location on the map to find out more about the field site." }}
+{{ $googleMapsAPIKey := getenv "GOOGLE_MAPS_API_KEY" }}
+{{ $googleMapsMapID := or (getenv "GOOGLE_MAPS_MAP_ID") "DEMO_MAP_ID" }}
+{{ $mapMinZoom := default 4 $mapParams.min_zoom }}
+{{ $mapMaxZoom := default 12 $mapParams.max_zoom }}
+{{ $mapStrictBounds := default false $mapParams.strict_bounds }}
+{{ $mapInitialCenter := $mapParams.initial_center | default dict }}
+{{ $mapInitialLatitude := default -27.5 $mapInitialCenter.latitude }}
+{{ $mapInitialLongitude := default 137.5 $mapInitialCenter.longitude }}
+{{ $mapInitialZoom := default 4 $mapParams.initial_zoom }}
+{{ $mapFitInitialBounds := true }}
+{{ if isset $mapParams "fit_initial_bounds" }}
+    {{ $mapFitInitialBounds = $mapParams.fit_initial_bounds }}
+{{ end }}
+{{ $mapBounds := $mapParams.bounds | default dict }}
+{{ $mapNorth := default -10 $mapBounds.north }}
+{{ $mapSouth := default -45 $mapBounds.south }}
+{{ $mapEast := default 155 $mapBounds.east }}
+{{ $mapWest := default 110 $mapBounds.west }}
+
+<section id="{{ $mapID }}" class="map{{ if $previewCalloutOnly }} map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}" aria-label="Field sites">
+    <div class="map-stage">
+        <div class="map-shell">
+            {{ if $previewCalloutOnly }}
+                {{ $site := index $mapSites 0 }}
+                <article class="map-callout dev-callout-preview" aria-label="Development callout preview" tabindex="-1">
+                    {{ partial "map/callout.html" (dict
+                        "site" $site
+                    ) }}
+                </article>
+            {{ else }}
+            <div class="map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of campaign field sites"></div>
+            <svg class="map-leader-lines" aria-hidden="true"><line class="map-leader-line" /></svg>
+            <aside class="map-callout map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
+                <div class="map-callout-content">
+                    <h3 class="map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
+                    <p class="map-callout-text">{{ $mapOnboardingText }}</p>
+                </div>
+            </aside>
+            {{ range $siteIndex, $site := $mapSites }}
+                <article
+                    class="map-callout"
+                    id="{{ printf "%s-callout-%03d" $mapID $siteIndex }}"
+                    role="dialog"
+                    aria-label="{{ $site.campaign }} site details"
+                    tabindex="-1"
+                    hidden
+                >
+                    <button class="map-callout-close" type="button" aria-label="Close site details">&times;</button>
+                    {{ partial "map/callout.html" (dict
+                        "site" $site
+                    ) }}
+                </article>
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+{{ if not $previewCalloutOnly }}
+<script>
+    (() => {
+        const root = document.getElementById("{{ $mapID }}");
+        const mapShell = root.querySelector(".map-shell");
+        const mapElement = root.querySelector(".map-element");
+        const onboardingCallout = root.querySelector(".map-onboarding-callout");
+        const callouts = [...root.querySelectorAll("article.map-callout")];
+        const leaderLine = root.querySelector(".map-leader-line");
+        const sites = [
+            {{ range $site := $mapSites }}
+                {
+                    campaign: {{ $site.campaign | jsonify | safeJS }},
+                    latitude: {{ $site.latitude }},
+                    longitude: {{ $site.longitude }}
+                },
+            {{ end }}
+        ];
+
+        const googleMapsAPIKey = {{ $googleMapsAPIKey | jsonify | safeJS }};
+        const googleMapsMapID = {{ $googleMapsMapID | jsonify | safeJS }};
+        let map;
+        let selectedIndex = null;
+        let selectedMarkerElement = null;
+        let activeCallout = null;
+        let trackingFrame = null;
+        let leaderLineTracking = false;
+        const narrowViewport = window.matchMedia(`(max-width: ${root.dataset.mapBreakpoint})`);
+
+        function showMapMessage(message) {
+            mapElement.innerHTML = `<div class="map-message">${message}</div>`;
+        }
+
+        function loadGoogleMaps() {
+            if (!googleMapsAPIKey) return Promise.reject(new Error("GOOGLE_MAPS_API_KEY is not configured."));
+            // Load the Google Maps JavaScript API if it hasn't been loaded yet.
+            // only 1 instance of the Google Maps API should be loaded even if multiple maps are present on the page.
+            if (globalThis.__micrositeGoogleMapsLoader) return globalThis.__micrositeGoogleMapsLoader;
+            let loader;
+            loader = new Promise((resolve, reject) => {
+                const callbackName = `mapReady_${Date.now()}`;
+                const script = document.createElement("script");
+                const params = new URLSearchParams({ callback: callbackName, key: googleMapsAPIKey, libraries: "marker", v: "weekly" });
+                globalThis[callbackName] = () => { delete globalThis[callbackName]; resolve(); };
+                script.async = true;
+                script.defer = true;
+                script.src = `https://maps.googleapis.com/maps/api/js?${params}`;
+                script.onerror = () => {
+                    delete globalThis[callbackName];
+                    if (globalThis.__micrositeGoogleMapsLoader === loader) delete globalThis.__micrositeGoogleMapsLoader;
+                    reject(new Error("Google Maps JavaScript API failed to load."));
+                };
+                document.head.appendChild(script);
+            });
+            globalThis.__micrositeGoogleMapsLoader = loader;
+            return loader;
+        }
+
+        function getMapPoint() {
+            if (!selectedMarkerElement || selectedIndex === null) return null;
+            const shellBounds = mapShell.getBoundingClientRect();
+            const markerBounds = selectedMarkerElement.getBoundingClientRect();
+            return { x: markerBounds.left + markerBounds.width / 2 - shellBounds.left, y: markerBounds.top + markerBounds.height / 2 - shellBounds.top, radius: Math.max(markerBounds.width, markerBounds.height) / 2 };
+        }
+
+        function positionCallout() {
+            const point = getMapPoint();
+            if (!point || !activeCallout || activeCallout.hidden) return;
+            const calloutWidth = activeCallout.offsetWidth;
+            const calloutHeight = activeCallout.offsetHeight;
+            const gap = 24;
+
+            activeCallout.style.bottom = "auto";
+
+            if (narrowViewport.matches) {
+                const markerBounds = selectedMarkerElement.getBoundingClientRect();
+                const shellBounds = mapShell.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const leftSpace = markerBounds.left;
+                const rightSpace = viewportWidth - markerBounds.right;
+                const topSpace = markerBounds.top;
+                const bottomSpace = viewportHeight - markerBounds.bottom;
+                const horizontalSpace = Math.max(leftSpace, rightSpace);
+                const verticalSpace = Math.max(topSpace, bottomSpace);
+                const leftFits = leftSpace >= calloutWidth + gap;
+                const rightFits = rightSpace >= calloutWidth + gap;
+                const topFits = topSpace >= calloutHeight + gap;
+                const bottomFits = bottomSpace >= calloutHeight + gap;
+                let placeVertically = verticalSpace >= horizontalSpace * 1.8;
+                if (placeVertically && !topFits && !bottomFits && (leftFits || rightFits)) placeVertically = false;
+                if (!placeVertically && !leftFits && !rightFits && (topFits || bottomFits)) placeVertically = true;
+                const placeLeft = leftSpace >= rightSpace && (leftFits || !rightFits);
+                const placeAbove = topSpace >= bottomSpace && (topFits || !bottomFits);
+                const preferredLeft = placeVertically
+                    ? markerBounds.left + (markerBounds.width - calloutWidth) / 2
+                    : placeLeft
+                        ? markerBounds.left - calloutWidth - gap
+                        : markerBounds.right + gap;
+                const preferredTop = placeVertically
+                    ? placeAbove
+                        ? markerBounds.top - calloutHeight - gap
+                        : markerBounds.bottom + gap
+                    : markerBounds.top + (markerBounds.height - calloutHeight) / 2;
+                const viewportLeft = Math.min(
+                    Math.max(gap, preferredLeft),
+                    Math.max(gap, viewportWidth - calloutWidth - gap)
+                );
+                const viewportTop = Math.min(
+                    Math.max(gap, preferredTop),
+                    Math.max(gap, viewportHeight - calloutHeight - gap)
+                );
+
+                activeCallout.style.left = `${viewportLeft - shellBounds.left}px`;
+                activeCallout.style.right = "auto";
+                activeCallout.style.top = `${viewportTop - shellBounds.top}px`;
+                return;
+            }
+
+            const width = mapShell.clientWidth;
+            const height = mapShell.clientHeight;
+            const onRight = point.x < width * 0.58;
+            const horizontal = { left: onRight ? Math.min(width - calloutWidth - gap, width * 0.62) : gap, right: "auto" };
+            const top = Math.min(Math.max(gap, point.y - calloutHeight / 2), Math.max(gap, height - calloutHeight - gap));
+            activeCallout.style.left = `${horizontal.left}px`;
+            activeCallout.style.right = horizontal.right;
+            activeCallout.style.top = `${top}px`;
+        }
+
+        function updateLeaderLine() {
+            if (selectedIndex === null || !activeCallout || activeCallout.hidden) { leaderLine.setAttribute("opacity", "0"); return; }
+            positionCallout();
+            const point = getMapPoint();
+            const shellBounds = mapShell.getBoundingClientRect();
+            const calloutBounds = activeCallout.getBoundingClientRect();
+            const left = calloutBounds.left - shellBounds.left;
+            const right = calloutBounds.right - shellBounds.left;
+            const top = calloutBounds.top - shellBounds.top;
+            const bottom = calloutBounds.bottom - shellBounds.top;
+            const targetX = point.x < left ? left : right;
+            const targetY = Math.min(bottom - 28, Math.max(top + 28, point.y));
+            const directionX = targetX - point.x;
+            const directionY = targetY - point.y;
+            const distance = Math.hypot(directionX, directionY) || 1;
+            leaderLine.setAttribute("x1", point.x + directionX / distance * point.radius);
+            leaderLine.setAttribute("y1", point.y + directionY / distance * point.radius);
+            leaderLine.setAttribute("x2", targetX);
+            leaderLine.setAttribute("y2", targetY);
+            leaderLine.setAttribute("opacity", "1");
+        }
+
+        function startLeaderLineTracking() {
+            if (leaderLineTracking) return;
+            leaderLineTracking = true;
+            const track = () => {
+                if (!leaderLineTracking || selectedIndex === null || !activeCallout || activeCallout.hidden) {
+                    leaderLineTracking = false;
+                    trackingFrame = null;
+                    return;
+                }
+                updateLeaderLine();
+                trackingFrame = requestAnimationFrame(track);
+            };
+            trackingFrame = requestAnimationFrame(track);
+        }
+
+        function stopLeaderLineTracking() {
+            leaderLineTracking = false;
+            if (trackingFrame !== null) cancelAnimationFrame(trackingFrame);
+            trackingFrame = null;
+            updateLeaderLine();
+        }
+
+        function setMarkerState(markers, index) {
+            markers.forEach((marker, markerIndex) => {
+                const isSelected = markerIndex === index;
+                marker.content.classList.toggle("is-selected", isSelected);
+                marker.content.setAttribute("aria-pressed", String(isSelected));
+            });
+        }
+
+        function showCallout(index) {
+            callouts.forEach((callout, calloutIndex) => {
+                callout.hidden = calloutIndex !== index;
+            });
+            return callouts[index];
+        }
+
+        function hideCallout(callout) {
+            if (callout) callout.hidden = true;
+        }
+
+        function selectSite(index, markers) {
+            const previousIndex = selectedIndex;
+            selectedIndex = index;
+            selectedMarkerElement = markers[index].content;
+            onboardingCallout.hidden = true;
+            if (activeCallout) {
+                {{ with $onCalloutHidden }}globalThis[{{ . | jsonify | safeJS }}]?.(activeCallout, sites[previousIndex], previousIndex);{{ end }}
+                hideCallout(activeCallout);
+            }
+            activeCallout = showCallout(index);
+            {{ with $onCalloutShown }}globalThis[{{ . | jsonify | safeJS }}]?.(activeCallout, sites[index], index);{{ end }}
+            setMarkerState(markers, index);
+            updateLeaderLine();
+            requestAnimationFrame(() => activeCallout.focus({ preventScroll: true }));
+        }
+
+        async function initializeMap() {
+            await loadGoogleMaps();
+            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+            const mapBounds = new google.maps.LatLngBounds({ lat: {{ $mapSouth }}, lng: {{ $mapWest }} }, { lat: {{ $mapNorth }}, lng: {{ $mapEast }} });
+            map = new google.maps.Map(mapElement, {
+                center: { lat: {{ $mapInitialLatitude }}, lng: {{ $mapInitialLongitude }} },
+                fullscreenControl: false,
+                gestureHandling: "cooperative",
+                mapId: googleMapsMapID,
+                mapTypeControl: false,
+                mapTypeId: "satellite",
+                streetViewControl: false,
+                zoom: {{ $mapInitialZoom }},
+                minZoom: {{ $mapMinZoom }},
+                maxZoom: {{ $mapMaxZoom }},
+                restriction: { latLngBounds: { north: {{ $mapNorth }}, south: {{ $mapSouth }}, east: {{ $mapEast }}, west: {{ $mapWest }} }, strictBounds: {{ $mapStrictBounds }} }
+            });
+            const markers = sites.map((site, index) => {
+                const markerButton = document.createElement("button");
+                markerButton.className = "map-marker-button";
+                markerButton.type = "button";
+                markerButton.ariaLabel = site.campaign;
+                markerButton.setAttribute("aria-pressed", "false");
+                markerButton.innerHTML = '<span class="map-marker-dot"></span>';
+                const marker = new AdvancedMarkerElement({ content: markerButton, gmpClickable: true, map, position: { lat: site.latitude, lng: site.longitude }, title: site.campaign });
+                markerButton.addEventListener("click", () => selectSite(index, markers));
+                return marker;
+            });
+            {{ if $mapFitInitialBounds }}google.maps.event.addListenerOnce(map, "idle", () => map.fitBounds(mapBounds, 0));{{ end }}
+            map.addListener("bounds_changed", startLeaderLineTracking);
+            map.addListener("idle", stopLeaderLineTracking);
+            window.addEventListener("resize", updateLeaderLine);
+            callouts.forEach((callout, index) => callout.querySelector(".map-callout-close").addEventListener("click", () => {
+                const markerToRestore = selectedMarkerElement;
+                selectedIndex = null;
+                selectedMarkerElement = null;
+                {{ with $onCalloutHidden }}globalThis[{{ . | jsonify | safeJS }}]?.(callout, sites[index], index);{{ end }}
+                hideCallout(callout);
+                activeCallout = null;
+                setMarkerState(markers, null);
+                stopLeaderLineTracking();
+                markerToRestore?.focus({ preventScroll: true });
+            }));
+            root.addEventListener("keydown", (event) => {
+                if (event.key !== "Escape" || !activeCallout) return;
+                event.preventDefault();
+                activeCallout.querySelector(".map-callout-close")?.click();
+            });
+        }
+
+        initializeMap().catch((error) => {
+            console.error(error);
+            showMapMessage(googleMapsAPIKey ? "Google Maps could not be loaded. Check the API key, Maps JavaScript API, and Advanced Markers configuration." : "Add GOOGLE_MAPS_API_KEY to the local environment to display this map.");
+        });
+    })();
+</script>
+{{ end }}
+{{ end }}

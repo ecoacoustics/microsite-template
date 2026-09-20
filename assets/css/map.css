@@ -1,0 +1,141 @@
+.map {
+    --map-min-height: 36rem;
+    --map-min-height-mobile: 30rem;
+    --map-border: #c8d4d2;
+    --map-accent: #c7623d;
+    --map-line: #d9784f;
+    position: relative;
+    color: var(--micro-theme-color, #243238);
+    grid-column: fullbleed;
+    margin: 0;
+}
+
+.map-stage,
+.map-shell {
+    position: relative;
+    min-height: var(--map-min-height);
+}
+
+.map-shell {
+    overflow: hidden;
+    border: 1px solid var(--map-border);
+    background: #a9c6d2;
+}
+
+.map-element {
+    position: absolute;
+    inset: 0;
+}
+
+.map-message {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 2rem;
+    background: #edf3f1;
+    text-align: center;
+}
+
+.map-leader-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.map-leader-line {
+    stroke: var(--map-line);
+    stroke-width: 3;
+    stroke-dasharray: 0.45rem 0.35rem;
+    vector-effect: non-scaling-stroke;
+}
+
+.map-callout {
+    position: absolute;
+    width: calc(100% - 3rem);
+    max-width: 22rem;
+    padding: 1rem;
+    border: 1px solid var(--map-border);
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
+    z-index: 4;
+}
+
+.map-callout-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 5;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.5rem;
+}
+
+.map-callout-title {
+    margin: 0;
+    font-size: 1.35rem;
+}
+
+.map-callout-text {
+    color: var(--map-muted, #65757a);
+    line-height: 1.35;
+}
+
+.map-marker-button {
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    padding: 0;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: rgba(36, 50, 56, 0.78);
+    cursor: pointer;
+}
+
+.map-marker-dot {
+    display: block;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: var(--map-accent);
+}
+
+.map-onboarding-callout {
+    top: 1.5rem;
+    right: 1.5rem;
+    bottom: auto;
+    left: auto;
+}
+
+/* 768px must stay in sync with site.Params.style.smallBreakPoint, which the map
+   shortcode passes to JS via data-map-breakpoint for callout positioning. */
+@media (max-width: 768px) {
+    .map-stage,
+    .map-shell {
+        min-height: var(--map-min-height-mobile);
+    }
+
+    .map-onboarding-callout {
+        top: auto;
+        right: 1rem;
+        bottom: 1rem;
+        left: 1rem;
+        width: auto;
+    }
+    .map-shell {
+        overflow: visible;
+    }
+
+    .map-callout:not(.map-onboarding-callout) {
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: min(calc(100vw - 2rem), 22rem);
+    }
+}

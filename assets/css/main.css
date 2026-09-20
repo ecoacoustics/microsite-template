@@ -6,6 +6,7 @@
 @import "webcomponents-theme";
 
 @import "home";
+@import "map";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */
