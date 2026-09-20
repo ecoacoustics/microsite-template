@@ -2,8 +2,14 @@
   For some reason, importing css through a partial disables hugo pre-processing
   Therefore, I am just using the verbose css import syntax.
 */}}
+{{ $page := . }}
+{{ $sassOptions := dict }}
+{{ with getenv "HUGO_SASS_TRANSPILER" }}
+  {{ $sassOptions = dict "transpiler" . }}
+{{ end }}
+
 {{ $css := resources.Get "css/main.css" }}
-{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" . | css.Sass }}
+{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" $page | css.Sass $sassOptions }}
 
 {{- with  $css }}
   {{- if eq hugo.Environment "development" }}
@@ -18,7 +24,7 @@
 
 {{ $css := resources.Get "css/customizations.css" }}
 {{- with $css }}
-  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" . | css.Sass }}
+  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" $page | css.Sass $sassOptions }}
 
   {{- with  $css }}
     {{- if eq hugo.Environment "development" }}
