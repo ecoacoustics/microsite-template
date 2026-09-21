@@ -1,5 +1,5 @@
 # baseURL: https://development.ecosounds.org/
-languageCode: en-US
+defaultContentLanguage: en
 title: Call Detective
 server:
   headers:
@@ -16,7 +16,7 @@ server:
 module:
   hugoVersion:
     extended: false
-    min: 0.116.0
+    min: 0.166.0
 markup:
   goldmark:
     renderer:

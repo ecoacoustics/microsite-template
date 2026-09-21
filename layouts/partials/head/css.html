@@ -3,17 +3,15 @@
   Therefore, I am just using the verbose css import syntax.
 */}}
 {{ $page := . }}
-{{ $sassOptions := dict }}
-{{ with getenv "HUGO_SASS_TRANSPILER" }}
-  {{ $sassOptions = dict "transpiler" . }}
-{{ end }}
 
 {{ $css := resources.Get "css/main.css" }}
-{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" $page | css.Sass $sassOptions }}
+{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" $page | css.Build }}
 
 {{- with  $css }}
   {{- if eq hugo.Environment "development" }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}">
+    {{- with . | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}">
+    {{- end }}
   {{- else }}
     {{- with . | minify | fingerprint }}
       <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
@@ -24,7 +22,7 @@
 
 {{ $css := resources.Get "css/customizations.css" }}
 {{- with $css }}
-  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" $page | css.Sass $sassOptions }}
+  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" $page | css.Build }}
 
   {{- with  $css }}
     {{- if eq hugo.Environment "development" }}

@@ -136,6 +136,6 @@
         right: auto;
         bottom: auto;
         left: auto;
-        width: min(calc(100vw - 2rem), 22rem);
+        width: calc(min((100vw - 2rem), 22rem));
     }
 }
