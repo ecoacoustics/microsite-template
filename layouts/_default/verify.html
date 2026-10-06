@@ -1,4 +1,12 @@
 {{ define "main" }}
+{{- $verifyStyle := partial "verify-page-style.html" . -}}
+{{- with $verifyStyle }}
+<style>
+    #verify-page {
+        {{ . | safeCSS }}
+    }
+</style>
+{{- end }}
 <div id="verify-page" class="page">
     <sl-alert id="unconfirmed-account-warning" variant="warning">
         <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
@@ -56,8 +64,7 @@
         <script src="{{ .RelPermalink }}" type="module"></script>
         {{- end }}
     {{- else }}
-        {{- $opts := dict "minify" true }}
-        {{- with . | fingerprint }}
+        {{- with . | minify | fingerprint }}
         <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
         {{- end }}
     {{- end }}

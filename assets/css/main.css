@@ -1,11 +1,12 @@
-@import "resets";
-@import "common";
-@import "footer";
-@import "navigation";
-@import "theme";
-@import "webcomponents-theme";
+@import "./resets.css";
+@import "./common.css";
+@import "./footer.css";
+@import "./navigation.css";
+@import "./theme.css";
+@import "./webcomponents-theme.css";
 
-@import "home";
+@import "./home.css";
+@import "./map.css";
 
 /* Added a second definition to separate templated values from not so syntax
   highlighting will work */

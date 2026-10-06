@@ -1,0 +1,28 @@
+{{/*
+    Generic recording-location card list.
+
+    This shortcode owns the site-card wrappers and delegates each site's inner
+    content to the map/card.html partial. Parent sites can override that partial
+    without copying this loop or the card container structure.
+*/}}
+{{ $mapParams := site.Params.map | default dict }}
+{{ $mapSites := $mapParams.sites | default (slice) }}
+{{ if not $mapSites }}
+<section class="site-cards site-cards-configuration-error" aria-label="Recording locations">
+    <div class="map-message" role="alert">
+        <p><strong>Site cards configuration required.</strong> Define <code>params.map.sites</code> before using the <code>site-cards</code> shortcode.</p>
+    </div>
+</section>
+{{ else }}
+<section class="site-cards" aria-labelledby="site-cards-title">
+    <h2 id="site-cards-title">Recording locations</h2>
+    <div class="cards-grid">
+        {{ range $site := $mapSites }}
+            {{ $cardID := printf "site-card-%s" ($site.campaign | urlize) }}
+            <article class="site-card" id="{{ $cardID }}">
+                {{ partial "map/card.html" (dict "site" $site) }}
+            </article>
+        {{ end }}
+    </div>
+</section>
+{{ end }}

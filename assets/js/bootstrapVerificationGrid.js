@@ -13,15 +13,22 @@ const api = await workbenchApi();
 async function bootstrapVerificationGrid(target, campaign) {
   const campaignFilters = campaign?.filters;
   if (!campaignFilters?.filter) {
-    console.error(`Campaign ${campaign} does not have a filters set`);
+    console.error(`Campaign ${campaign?.name ?? "unknown"} does not have a filters set`);
     return;
   }
+
+  const tagFilter = Array.isArray(campaign.tags) && campaign.tags.length > 0
+    ? { "tags.text": { in: campaign.tags } }
+    : null;
+  const campaignFilter = tagFilter
+    ? { and: [campaignFilters.filter, tagFilter] }
+    : campaignFilters.filter;
 
   // merge filter with unverified only
   const mergedFilterBody = {
     ...campaignFilters,
     filter: {
-      and: [campaignFilters.filter, { verification_count: { eq: 0 } }],
+      and: [campaignFilter, { verification_count: { eq: 0 } }],
     },
   };
 

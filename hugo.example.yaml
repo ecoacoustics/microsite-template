@@ -11,6 +11,16 @@ menus:
   #   - name: Credits
   #     pageRef: https://ecosounds.org/about/credits
   #     weight: 10
+security:
+  funcs:
+    getenv:
+      - "^HUGO_"
+      - "^CI$"
+      - "^GOOGLE_MAPS_API_KEY$"
+      - "^GOOGLE_MAPS_MAP_ID$"
+# When using the map shortcode, set these environment variables locally and in deployment.
+# GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+# GOOGLE_MAPS_MAP_ID=your-google-maps-map-id
 # Avoid camel casing params. Hugo downcases all params when it parses the config.
 # We can still case-insensitively access params, but if we try to dump them as a json blob
 # we will lose the camel casing which can be confusing later.
@@ -18,6 +28,14 @@ params:
   api_host: https://api.staging.ecosounds.org
   workbench_host: https://staging.ecosounds.org
   hero_image: images/Plains_wanderer_female.jpg
+  # Required by the map and site-cards shortcodes. Add one entry per recording site.
+  map:
+    sites:
+      - campaign: "Example Recording Site"
+        latitude: -27.5
+        longitude: 153.0
+        page: "/"
+        description: "An example acoustic recording location."
   # navbar:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none

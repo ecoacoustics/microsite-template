@@ -2,12 +2,16 @@
   For some reason, importing css through a partial disables hugo pre-processing
   Therefore, I am just using the verbose css import syntax.
 */}}
+{{ $page := . }}
+
 {{ $css := resources.Get "css/main.css" }}
-{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" . | css.Sass }}
+{{- $css = $css | resources.ExecuteAsTemplate "css/main.css" $page | css.Build }}
 
 {{- with  $css }}
   {{- if eq hugo.Environment "development" }}
-    <link rel="stylesheet" href="{{ .RelPermalink }}">
+    {{- with . | fingerprint }}
+      <link rel="stylesheet" href="{{ .RelPermalink }}">
+    {{- end }}
   {{- else }}
     {{- with . | minify | fingerprint }}
       <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
@@ -18,7 +22,7 @@
 
 {{ $css := resources.Get "css/customizations.css" }}
 {{- with $css }}
-  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" . | css.Sass }}
+  {{- $css = $css | resources.ExecuteAsTemplate "css/customizations.css" $page | css.Build }}
 
   {{- with  $css }}
     {{- if eq hugo.Environment "development" }}
