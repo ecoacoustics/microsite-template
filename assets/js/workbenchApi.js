@@ -490,21 +490,25 @@ export class WorkbenchApi {
                 const recordingDuration =
                     item.audio_recording?.duration_seconds;
 
-                if (recordingDuration === undefined) {
-                    // keep it if the recording was not attached and we can't verify it's not a weird edge case
-                    return true;
+                if (!Number.isFinite(recordingDuration)) {
+                    console.warn(
+                        `Audio event ${item.id} does not have a finite recording duration and will be filtered out.`,
+                    );
+                    return false;
                 }
 
-                const too_close_to_end =
-                    item.start_time_seconds >= recordingDuration - 1 &&
-                    item.end_time_seconds > recordingDuration;
-                if (too_close_to_end) {
+                const eventWithContext = this.eventWithContext(item);
+                const audioStart = Number(eventWithContext.audio_start_seconds);
+                const audioEnd = Number(eventWithContext.audio_end_seconds);
+                const hasValidAudioSegment = audioStart < audioEnd;
+
+                if (!hasValidAudioSegment) {
                     console.warn(
-                        `Audio event ${item.id} is too close to the end of the recording and will be filtered out.`,
+                        `Audio event ${item.id} does not have a valid audio segment within the recording duration and will be filtered out.`,
                     );
                 }
 
-                return !too_close_to_end;
+                return hasValidAudioSegment;
             });
 
             const callbackResponse = {
