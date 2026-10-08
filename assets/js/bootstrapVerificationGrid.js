@@ -1,3 +1,5 @@
+import { combineFilters, createTagFilter } from "./filterHelpers.js";
+
 const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
 const api = await workbenchApi();
@@ -17,19 +19,13 @@ async function bootstrapVerificationGrid(target, campaign) {
     return;
   }
 
-  const tagFilter = Array.isArray(campaign.tags) && campaign.tags.length > 0
-    ? { "tags.text": { in: campaign.tags } }
-    : null;
-  const campaignFilter = tagFilter
-    ? { and: [campaignFilters.filter, tagFilter] }
-    : campaignFilters.filter;
-
-  // merge filter with unverified only
   const mergedFilterBody = {
     ...campaignFilters,
-    filter: {
-      and: [campaignFilter, { verification_count: { eq: 0 } }],
-    },
+    filter: combineFilters([
+      campaignFilters.filter,
+      createTagFilter(campaign.tags),
+      { verification_count: { eq: 0 } },
+    ]),
   };
 
   // TODO: this event name and filter body should be pulled from the microsite
