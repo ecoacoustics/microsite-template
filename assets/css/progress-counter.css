@@ -1,0 +1,148 @@
+.progress-counter {
+    --progress-accent: var(--micro-theme-color);
+    --progress-light: color-mix(in srgb, var(--progress-accent) 16%, white);
+    --progress-muted: color-mix(in srgb, var(--progress-accent) 55%, white);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2rem;
+    max-width: 50rem;
+    margin: 0 auto;
+    color: var(--progress-accent);
+}
+
+.progress-counter-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.progress-counter-gauge-svg {
+    display: block;
+    width: 100%;
+    max-width: 15rem;
+    overflow: visible;
+}
+
+.progress-counter-gauge-track,
+.progress-counter-gauge-progress {
+    fill: none;
+    stroke-width: 16;
+    stroke-linecap: round;
+}
+
+.progress-counter-gauge-track {
+    stroke: var(--progress-light);
+}
+
+.progress-counter-gauge-progress {
+    stroke: var(--progress-accent);
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-counter-pivot,
+.progress-counter-needle line {
+    stroke: var(--progress-accent);
+    fill: var(--progress-accent);
+}
+
+.progress-counter-needle {
+    transform-origin: 100px 100px;
+    transform: rotate(-90deg);
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-counter-fraction {
+    margin: 1.5rem 0 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.progress-counter-status {
+    margin: 1rem 0 0;
+    color: var(--progress-muted);
+    font-size: 0.95rem;
+}
+
+.progress-counter-leaderboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(6rem, 8rem);
+    align-items: start;
+    column-gap: 1rem;
+    min-width: 0;
+}
+
+.progress-counter-leaderboard h2 {
+    grid-column: 1;
+    margin: 0 0 0.75rem;
+    color: var(--progress-accent);
+    font-size: 1.25rem;
+}
+
+.progress-counter-leaderboard table {
+    grid-column: 1;
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.progress-counter-leaderboard td {
+    padding: 0.2rem 0.5rem;
+    border-bottom: 1px solid var(--progress-light);
+    line-height: 1.1;
+    text-align: left;
+}
+
+.progress-counter-leaderboard td:first-child {
+    width: 3rem;
+    color: var(--progress-muted);
+}
+
+.progress-counter-leaderboard tr[data-rank="1"] td:first-child,
+.progress-counter-leaderboard tr[data-rank="2"] td:first-child,
+.progress-counter-leaderboard tr[data-rank="3"] td:first-child {
+    font-size: 0;
+    text-align: center;
+}
+
+.progress-counter-leaderboard tr[data-rank="1"] td:first-child::before,
+.progress-counter-leaderboard tr[data-rank="2"] td:first-child::before,
+.progress-counter-leaderboard tr[data-rank="3"] td:first-child::before {
+    font-size: 1.2rem;
+}
+
+.progress-counter-leaderboard tr[data-rank="1"] td:first-child::before {
+    content: "🥇";
+}
+
+.progress-counter-leaderboard tr[data-rank="2"] td:first-child::before {
+    content: "🥈";
+}
+
+.progress-counter-leaderboard tr[data-rank="3"] td:first-child::before {
+    content: "🥉";
+}
+
+.progress-counter-leaderboard tr.is-current {
+    font-weight: 700;
+}
+
+.progress-counter-total {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin: 0;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.5rem;
+    color: var(--progress-accent);
+    background: var(--progress-light);
+    text-align: center;
+}
+
+.progress-counter-total strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+}

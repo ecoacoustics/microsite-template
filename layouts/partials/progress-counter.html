@@ -1,0 +1,7 @@
+{{- $counterID := .counterID | default "progress-counter" -}}
+{{- $campaign := .campaign | default "" -}}
+
+<div class="progress-counter" id="{{ $counterID }}" data-progress-counter data-campaign="{{ $campaign }}">
+    {{ partial "progress-counter/gauge.html" . }}
+    {{ partial "progress-counter/leaderboard.html" . }}
+</div>

@@ -183,6 +183,91 @@ export class WorkbenchApi {
         return this.#userProfileCache;
     }
 
+    /**
+     * Reads an API response as JSON when possible and provides a useful
+     * fallback for non-JSON proxy or server error pages.
+     *
+     * @param {Response} response
+     * @returns {Promise<Record<string, unknown>>}
+     */
+    async #readJsonResponse(response) {
+        const responseText = await response.text();
+        if (!responseText) return {};
+
+        try {
+            return JSON.parse(responseText);
+        } catch {
+            return {
+                meta: {
+                    error: {
+                        details: `API returned HTTP ${response.status}.`,
+                    },
+                },
+            };
+        }
+    }
+
+    /**
+     * Fetches aggregate statistics for audio events matching a filter.
+     *
+     * @param {Record<string, unknown>} filter
+     * @returns {Promise<{count: number, taggings_count: number}>}
+     */
+    async getAudioEventStats(filter) {
+        const url = this.#createUrl("/audio_events/stats");
+        const response = await this.#fetch("POST", url, { filter });
+        const responseBody = await this.#readJsonResponse(response);
+
+        if (!response.ok) {
+            throw new Error(responseBody.meta?.error?.details || "Audio event stats request failed.");
+        }
+
+        return responseBody.data;
+    }
+
+    /**
+     * Fetches aggregate verification statistics for a filter.
+     *
+     * @param {Record<string, unknown>} filter
+     * @returns {Promise<Record<string, unknown>>}
+     */
+    async getVerificationStats(filter) {
+        const url = this.#createUrl("/verifications/stats");
+        const response = await this.#fetch("POST", url, { filter });
+        const responseBody = await this.#readJsonResponse(response);
+
+        if (!response.ok) {
+            throw new Error(responseBody.meta?.error?.details || "Verification stats request failed.");
+        }
+
+        return responseBody.data;
+    }
+
+    /**
+     * Resolves public user names for leaderboard IDs when permitted by the API.
+     *
+     * @param {number[]} userIDs
+     * @returns {Promise<Array<{id: number, user_name: string}>>}
+     */
+    async getUserAccounts(userIDs) {
+        if (!Array.isArray(userIDs) || userIDs.length === 0) {
+            return [];
+        }
+
+        const url = this.#createUrl("/user_accounts/filter");
+        const response = await this.#fetch("POST", url, {
+            filter: { id: { in: userIDs } },
+            projection: { only: ["id", "user_name"] },
+        });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const responseBody = await response.json();
+        return responseBody.data ?? [];
+    }
+
     async logoutUser() {
         const url = this.#createUrl("/security");
         const response = await this.#fetch("DELETE", url);

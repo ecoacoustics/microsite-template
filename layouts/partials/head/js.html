@@ -4,7 +4,6 @@
 <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity}}"></script>
 {{- end }}
 
-
 {{- with resources.Get "js/workbenchApi.js" }}
   {{- if eq hugo.Environment "development" }}
     {{- with . }}
@@ -17,6 +16,19 @@
   {{- else }}
     {{- with . | minify | fingerprint }}
       <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $hasProgressCounter := or (isset .Params "site_name") (gt (len (findRE "progress-counter" .RawContent)) 0) -}}
+{{- if $hasProgressCounter }}
+  {{- with resources.Get "js/progressCounterDefault.js" | js.Build (dict "targetPath" "js/progressCounterDefault.js" "format" "esm") }}
+    {{- if eq hugo.Environment "development" }}
+      <script src="{{ .RelPermalink }}" type="module"></script>
+    {{- else }}
+      {{- with . | minify | fingerprint }}
+        <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

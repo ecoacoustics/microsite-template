@@ -58,11 +58,7 @@
         }
     </style>
 
-    {{- with resources.Get "js/filterHelpers.js" }}
-    <link rel="modulepreload" href="{{ .RelPermalink }}">
-    {{- end }}
-
-    {{- with resources.Get "js/bootstrapVerificationGrid.js" }}
+    {{- with resources.Get "js/bootstrapVerificationGrid.js" | js.Build (dict "targetPath" "js/bootstrapVerificationGrid.js" "format" "esm") }}
     {{- if eq hugo.Environment "development" }}
         {{- with . }}
         <script src="{{ .RelPermalink }}" type="module"></script>
