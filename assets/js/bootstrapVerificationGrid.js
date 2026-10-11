@@ -30,7 +30,7 @@ async function bootstrapVerificationGrid(target, campaign) {
 
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
-  target.getPage = api.getVerificationCallback(mergedFilterBody);
+  target.getPage = api.getVerificationCallback(mergedFilterBody, campaign.tags);
   target.urlTransformer = api.createMediaUrlTransformer();
 
   target.addEventListener("decision-made", (event) => {

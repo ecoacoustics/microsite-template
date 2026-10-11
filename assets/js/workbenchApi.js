@@ -504,11 +504,15 @@ export class WorkbenchApi {
     /**
      * Fetches a verification object from the API
      *
-     * @param {string} tag
+     * @param {Record<string, unknown>} filterBody
+     * @param {unknown[]} [tagIDs]
      * @returns {() => Promise<AudioEvent[]>}
      */
-    getVerificationCallback(filterBody) {
+    getVerificationCallback(filterBody, tagIDs = []) {
         const url = this.#createUrl("/audio_events/filter");
+        const configuredTagIDs = new Set(
+            Array.isArray(tagIDs) ? tagIDs.map((tagID) => Number(tagID)) : [],
+        );
 
         // we wrap the "page" variable in a closure so that only this callback
         // is stateful and the service can remain stateless.
@@ -553,7 +557,11 @@ export class WorkbenchApi {
             // end_time_seconds to the recording duration, preventing invalid
             // media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
-                const tagOfInterest = model.taggings[0];
+                const taggings = Array.isArray(model.taggings) ? model.taggings : [];
+                const tagOfInterest = configuredTagIDs.size > 0
+                    ? taggings.find((tagging) => configuredTagIDs.has(Number(tagging.tag_id)))
+                    : taggings[0];
+
                 const tagPromise = tagOfInterest
                     ? this.getTag(tagOfInterest.tag_id)
                     : Promise.resolve(null);
@@ -572,6 +580,15 @@ export class WorkbenchApi {
             await Promise.allSettled(associatedModelPromises);
 
             const filteredEventModels = eventModels.filter((item) => {
+                // A subject without a tag cannot be presented as a
+                // verification task or committed to the API.
+                if (!item.tag) {
+                    console.warn(
+                        `Audio event ${item.id} has no tagging matching the configured tags and will be filtered out.`,
+                    );
+                    return false;
+                }
+
                 const recordingDuration =
                     item.audio_recording?.duration_seconds;
 

@@ -49,15 +49,21 @@ params:
     verification: true # default: true
   campaigns:
     - name: "Powerful Owl"
+      tags:
+        # "Powerful Owl"
+        - 151
       filters:
         filter:
-          tags.text:
-            eq: "Powerful Owl"
+          projects.id:
+            eq: 1147
     - name: "Australian Brush-turkey"
+      tags:
+        # "Australian Brush-turkey"
+        - 4
       filters:
         filter:
-          tags.text:
-            eq: "Australian Brush-turkey"
+          projects.id:
+            eq: 1147
 
   style:
     roundedButtons: true
