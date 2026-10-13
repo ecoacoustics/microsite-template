@@ -1,0 +1,11 @@
+{{ $workbenchName := site.Params.workbench_name }}
+{{ if ne (printf "%T" $workbenchName) "string" }}
+  {{ errorf "params.workbench_name must be a non-empty string." }}
+{{ else }}
+  {{ $workbenchName = strings.TrimSpace $workbenchName }}
+  {{ if eq $workbenchName "" }}
+    {{ errorf "params.workbench_name must be a non-empty string." }}
+  {{ else if and hugo.IsProduction (eq (lower $workbenchName) "staging") }}
+    {{ errorf "params.workbench_name must not be Staging in a production build. Set the production account provider name in hugo.yaml." }}
+  {{ end }}
+{{ end }}

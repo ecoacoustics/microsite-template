@@ -35,3 +35,21 @@ Most of the steps described can be found in the hugo
 2. Publish to Netlify using the repository as the websites source
 3. Create and publish a `call-detective.org` sub-domain
 4. Setup dns, dns challenge, and ssl in netlify
+
+## Workbench Registration
+
+Login and registration use the Workbench configured by `params.workbench_host`,
+with authenticated API requests sent to `params.api_host`. These must refer to
+the same environment.
+Set `params.workbench_name` to the user-facing name of that Workbench (for example,
+`Staging` for the development server). The login page uses this name when explaining
+which service powers accounts and registration.
+
+Workbench must support authentication callbacks (commit
+`db0c2e1bd70a835baf940f24b7a3b2486325238f` or later). Add the microsite's
+domain to Workbench's `settings.authRedirectDomains` allowlist. Callbacks must
+use HTTPS, including during local development. Include any preview or development
+domains that should support registration; only allow trusted sites.
+
+For existing child sites, follow the
+[upgrade steps in the changelog](./CHANGELOG.md#13102026---workbench-login-and-registration-callbacks).

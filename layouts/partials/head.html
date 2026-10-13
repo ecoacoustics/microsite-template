@@ -1,5 +1,18 @@
+{{ partialCached "validate-config.html" . }}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
+<script>
+    // Remove callback credentials before third-party scripts or analytics run.
+    const callbackUrl = new URL(location.href);
+    if (callbackUrl.searchParams.has("user_token")) {
+        globalThis.workbenchAuthCallback = {
+            token: callbackUrl.searchParams.get("user_token"),
+        };
+        callbackUrl.searchParams.delete("user_token");
+        history.replaceState(history.state, "", callbackUrl);
+        console.info("Authentication token detected in URL query parameters, saved to memory, and stripped from URL.");
+    }
+</script>
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
 {{/* Shoelace */}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />

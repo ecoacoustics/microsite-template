@@ -78,6 +78,27 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
 
 /**
  * @description
+ * Dismisses the verification grid's tutorial ("bootstrap") dialog if it was
+ * opened inside the component's shadow root.
+ *
+ * @param {Element} gridElement
+ */
+function dismissBootstrapDialog(gridElement) {
+  const bootstrap = gridElement.shadowRoot?.querySelector("oe-verification-bootstrap");
+  if (bootstrap) {
+    const closeBtn = bootstrap.shadowRoot?.querySelector(
+      '[data-testid="dismiss-bootstrap-dialog-btn"]',
+    );
+    if (closeBtn) {
+      closeBtn.click();
+    } else {
+      bootstrap.shadowRoot?.querySelector("dialog")?.close();
+    }
+  }
+}
+
+/**
+ * @description
  * Shows the unconfirmed account warning banner and disables the verification
  * grid. The warning includes a contact link if a workbench host is configured.
  */
@@ -88,6 +109,7 @@ function showUnconfirmedAccountWarning() {
   }
 
   const workbenchHost = globalThis.siteParams?.workbench_host;
+  const workbenchName = globalThis.siteParams?.workbench_name;
   if (workbenchHost) {
     const contactLinkContainer = document.getElementById(
       "unconfirmed-contact-link",
@@ -95,9 +117,11 @@ function showUnconfirmedAccountWarning() {
     if (contactLinkContainer) {
       const contactLink = document.createElement("a");
       contactLink.href = `${workbenchHost}/contact_us`;
-      contactLink.textContent = "contact us";
+      contactLink.textContent = workbenchName
+        ? `${workbenchName} contact form`
+        : "contact us";
 
-      const prefix = document.createTextNode(" If you need help, ");
+      const prefix = document.createTextNode(" If you need help, please use the ");
       const suffix = document.createTextNode(".");
       contactLinkContainer.append(prefix, contactLink, suffix);
     }
@@ -131,6 +155,12 @@ async function setup() {
     const userProfile = await api.getUserProfile();
     currentUserID = userProfile?.data?.id ?? null;
     if (userProfile?.data?.is_confirmed === false) {
+      for (const element of targetElements) {
+        // the dialog hides our not yet confirmed account warning, so we dismiss it first.
+        dismissBootstrapDialog(element);
+        element.style.display = "none";
+        element.remove();
+      }
       showUnconfirmedAccountWarning();
       return;
     }
@@ -149,6 +179,7 @@ async function setup() {
 
     // Initialize the verification grid with the filter settings
     bootstrapVerificationGrid(element, campaign, currentUserID);
+    element.classList.add("is-ready");
   }
 }
 
