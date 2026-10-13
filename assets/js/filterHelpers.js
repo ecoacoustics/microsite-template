@@ -38,3 +38,32 @@ export function combineFilters(filterParts, operator = "and") {
     [operator]: definedFilters,
   };
 }
+
+/**
+ * Strips the model prefix from any filter key qualified by the given model.
+ * e.g., "audio_events.id" becomes "id" if model is "audio_events".
+ * TODO: remove this hack after the backend supports self-referencing associations 
+ *
+ * @param {Record<string, unknown>} filter
+ * @param {string} modelName The model prefix to remove from matching filter keys.
+ * @returns {Record<string, unknown>}
+ */
+export function resolveSelfAssociations(filter, modelName) {
+    const prefix = `${modelName}.`;
+
+    function recurse(obj) {
+        if (Array.isArray(obj)) {
+            return obj.map(recurse);
+        } else if (obj && typeof obj === "object" && obj.constructor === Object) {
+            return Object.fromEntries(
+                Object.entries(obj).map(([key, value]) => [
+                    key.startsWith(prefix) ? key.slice(prefix.length) : key,
+                    recurse(value),
+                ])
+            );
+        }
+        return obj;
+    }
+
+    return recurse(filter);
+}

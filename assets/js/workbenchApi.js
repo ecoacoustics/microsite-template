@@ -1,3 +1,5 @@
+import { resolveSelfAssociations } from "./filterHelpers.js";
+
 // The decisions returned by the web components are not the same as the
 // decisions recorded by the baw-api.
 // This object maps web component decisions (key) to baw-api decisions (values).
@@ -191,7 +193,8 @@ export class WorkbenchApi {
      */
     async getAudioEventStats(filter) {
         const url = this.#createUrl("/audio_events/stats");
-        const response = await this.#fetch("POST", url, { filter });
+        const audioEventFilter = resolveSelfAssociations(filter, "audio_events");
+        const response = await this.#fetch("POST", url, { filter: audioEventFilter });
 
         if (!response.ok) {
             throw new Error("Audio event stats request failed.");
@@ -510,6 +513,7 @@ export class WorkbenchApi {
             const payload = {
                 paging: pagingBody,
                 ...filterBody,
+                filter: resolveSelfAssociations(filterBody.filter, "audio_events"),
             };
 
             const response = await this.#fetch("POST", url, payload);

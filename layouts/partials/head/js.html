@@ -4,26 +4,29 @@
 <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity}}"></script>
 {{- end }}
 
-{{- with resources.Get "js/workbenchApi.js" }}
+
+{{- with resources.Get "js/workbenchApi.js" | js.Build (dict "format" "esm") }}
   {{- if eq hugo.Environment "development" }}
     {{- with . }}
-    <script src="{{ .RelPermalink }}" type="module"></script>
+      {{/*
+        We load the workbenchApi as a module because is uses the esmodule
+        import/export syntax
+      */}}
+      <script src="{{ .RelPermalink }}" type="module"></script>
     {{- end }}
   {{- else }}
     {{- with . | minify | fingerprint }}
-    <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
     {{- end }}
   {{- end }}
 {{- end }}
 
 {{- with resources.Get "js/progressCounterDefault.js" | js.Build (dict "format" "esm") }}
   {{- if eq hugo.Environment "development" }}
-    {{- with . }}
     <script src="{{ .RelPermalink }}" type="module"></script>
-    {{- end }}
   {{- else }}
     {{- with . | minify | fingerprint }}
-    <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
     {{- end }}
   {{- end }}
 {{- end }}
