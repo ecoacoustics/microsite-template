@@ -8,6 +8,16 @@
 </style>
 {{- end }}
 <div id="verify-page" class="page">
+    <script>
+        // Suppress the verification grid's tutorial ("bootstrap") modal from automatically
+        // popping up on load, preventing it from obscuring the account confirmation warning.
+        // The tutorial remains accessible on demand via the grid's help (?) button.
+        // Better method here https://github.com/ecoacoustics/web-components/issues/504
+        try {
+            localStorage.setItem("oe-auto-dismiss-bootstrap", "true");
+            console.info("Verification grid bootstrap tutorial suppressed.");
+        } catch {}
+    </script>
     <sl-alert id="unconfirmed-account-warning" variant="warning">
         <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
         <strong>Account confirmation required</strong><br />
@@ -32,15 +42,19 @@
         }
 
         oe-verification-grid {
-            display: block;
+            display: none;
             padding: var(--micro-padding-small);
+        }
+
+        oe-verification-grid.is-ready {
+            display: block;
         }
 
         /*
             TODO: remove this once upstream max tile sizes have been implemented
             see: https://github.com/ecoacoustics/web-components/issues/391
         */
-        oe-verification-grid[grid-size="1"] {
+        oe-verification-grid[grid-size="1"].is-ready {
             /*
                 56rem is 896px on a default browser with font size 16.
                 We use rem units instead of px so that if the user zooms in, or

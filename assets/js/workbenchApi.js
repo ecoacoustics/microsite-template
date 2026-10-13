@@ -55,6 +55,8 @@ export class WorkbenchApi {
         }
 
         this.#host = host;
+
+        this.#setTokenFromRegisterCallback();
     }
 
     /** @type {WorkbenchApi} */
@@ -88,15 +90,15 @@ export class WorkbenchApi {
      * The localStorage key used to persist the auth token across page reloads.
      * Using localStorage avoids the need for 3rd party cookies which are
      * deprecated and blocked by some browsers (e.g. Safari).
-     * 
+     *
      * This is not a good long term solution for session persistence and it makes
      * us vulnerable to XSS attacks. However, low security tokens are issued by
-     * the API and the tokens do time out after a period of inactivity, 
+     * the API and the tokens do time out after a period of inactivity,
      * so the risk is somewhat mitigated. We also control all content on the site
      * so we can be reasonably confident that there are no XSS vulnerabilities that
      * would allow an attacker to steal the token - except for attack vectors
      * like browser extensions which we have no control over.
-     * 
+     *
      * Our eventual goal is to move to an OAuth PKCE flow.
      */
     static #TOKEN_STORAGE_KEY = "workbench-api-auth-token";
@@ -244,6 +246,7 @@ export class WorkbenchApi {
         }
 
         this.#authToken = authToken;
+        this.#userProfileCache = null;
 
         if (!this.#saveToken(authToken)) {
             return "Failed to save auth token to localStorage. The session will not persist across page reloads.";
@@ -645,6 +648,23 @@ export class WorkbenchApi {
     }
 
     /**
+     * Extracts an authentication token from the registration callback if present,
+     * stores it in localStorage, and clears it from the global context.
+     *
+     * We strip it ASAP from the qSP in head.html to limit exposure of the token in the URL.
+     * Thus we have to actually save when this script is ready to run.
+     */
+    #setTokenFromRegisterCallback() {
+        const token = globalThis.workbenchAuthCallback?.token;
+        delete globalThis.workbenchAuthCallback;
+        if (token) {
+            console.info("Registration callback token retrieved from memory; updating stored credentials.");
+            this.#clearToken();
+            this.#saveToken(token);
+        }
+    }
+
+    /**
      * Restores the authentication token from localStorage and validates it
      * against the API. If the stored token is invalid or expired it is
      * cleared so the user is treated as logged-out.
@@ -661,25 +681,31 @@ export class WorkbenchApi {
         // Temporarily set the token so #fetch includes the Authorization header
         this.#authToken = storedToken;
 
-        const securityEndpoint = this.#createUrl("/security/user");
-        const response = await this.#fetch("GET", securityEndpoint);
+        try {
+            const securityEndpoint = this.#createUrl("/security/user");
+            const response = await this.#fetch("GET", securityEndpoint);
 
-        if (!response.ok) {
-            // Token is invalid or expired – clear it
+            if (!response.ok) {
+                // Token is invalid or expired – clear it
+                this.#authToken = null;
+                this.#clearToken();
+                return false;
+            }
+
+            const responseBody = await response.json();
+            const freshToken = responseBody.data?.auth_token;
+
+            if (freshToken) {
+                this.#authToken = freshToken;
+                this.#saveToken(freshToken);
+            }
+
+            return true;
+        } catch {
             this.#authToken = null;
             this.#clearToken();
             return false;
         }
-
-        const responseBody = await response.json();
-        const freshToken = responseBody.data?.auth_token;
-
-        if (freshToken) {
-            this.#authToken = freshToken;
-            this.#saveToken(freshToken);
-        }
-
-        return true;
     }
 
     /**
@@ -690,6 +716,7 @@ export class WorkbenchApi {
     #saveToken(token) {
         try {
             localStorage.setItem(WorkbenchApi.#TOKEN_STORAGE_KEY, token);
+            console.info("Authentication token persisted to localStorage.");
             return true;
         } catch {
             // localStorage may be unavailable (e.g. private browsing in some browsers)

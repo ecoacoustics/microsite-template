@@ -46,6 +46,7 @@ menus:
 params:
   api_host: https://api.staging.ecosounds.org
   workbench_host: https://staging.ecosounds.org
+  workbench_name: Staging
   hero_image: images/Plains_wanderer_female.jpg
   # navbar:
   #   logo:

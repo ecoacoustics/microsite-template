@@ -1,8 +1,14 @@
 {{ define "main" }}
+{{ $workbenchName := site.Params.workbench_name }}
 <div id="login-page" class="page">
   <div class="login-container">
     <sl-card class="card-header">
       <div slot="header"><h1>{{ .Title }}</h1></div>
+      <p>
+        {{ .Site.Title }} is powered by the
+        <a href="{{ site.Params.workbench_host }}">{{ $workbenchName }}</a> platform.
+        Use your {{ $workbenchName }} account to log in, or register with {{ $workbenchName }} if you need an account.
+      </p>
       <form id="login-form" class="validity-styles">
         <sl-input
           type="text"
@@ -20,10 +26,6 @@
           required
         ></sl-input>
 
-        <sl-checkbox name="user[remember_me]" class="login-form-input">
-          Remember Me
-        </sl-checkbox>
-
         <sl-button type="submit" variant="primary" class="login-form-input">
           Log In
         </sl-button>
@@ -34,8 +36,8 @@
       {{ .Content }}
       <p>
         Don't have an account?
-        <a href="{{ site.Params.workbench_host }}/security/register"
-          >Register here</a
+        <a id="registration-link" href="{{ site.Params.workbench_host }}/security/register"
+          >Register with {{ $workbenchName }}</a
         >.
       </p>
     </sl-card>
@@ -97,16 +99,40 @@
   </style>
 
   <script type="module">
-    const api = await workbenchApi();
     const formElement = document.getElementById("login-form");
     const formInputs = document.getElementsByClassName("login-form-input");
 
-    function redirectSuccess() {
+    function getRedirectTarget() {
       // We can navigate the user back to a previous page location using
       // the "?redirect=/path" parameter.
       const queryStrings = new URLSearchParams(location.search);
       const redirectQsp = queryStrings.get("redirect");
 
+      if (redirectQsp) {
+        try {
+          // To minimize security risks, we don't allow the redirect parameter
+          // to point to an external site (or different sub-domain).
+          const redirectLocation = new URL(redirectQsp, location.origin);
+          if (redirectLocation.hostname === location.hostname) {
+            return redirectLocation;
+          }
+        } catch {
+          // Ignore malformed redirect URLs and fall back to root
+        }
+      }
+
+      return null;
+    }
+
+    const registrationLink = document.getElementById("registration-link");
+    const registrationUrl = new URL(registrationLink.href);
+    const destination = getRedirectTarget() ?? new URL("/", location.origin);
+    registrationUrl.searchParams.set("redirect", destination.href);
+    registrationLink.href = registrationUrl.href;
+
+    const api = await workbenchApi();
+
+    function redirectOnLoginSuccess() {
       // We don't use history.back here because the browsers bfcache
       // would return a stale version of the webpage where the user is
       // not logged in.
@@ -115,16 +141,10 @@
       // We also use window.location.replace() instead of
       // window.location.href so that if the user presses the back
       // button, they will not be navigated back to the login page.
-      if (redirectQsp) {
-        // To minimize security risks, we don't allow the redirect parameter
-        // to point to an external site (or different sub-domain).
-        const redirectLocation = new URL(redirectQsp, location.origin);
-        const isRedirectSafe = redirectLocation.hostname === location.hostname;
-
-        if (isRedirectSafe) {
-          location.replace(redirectLocation);
-          return;
-        }
+      const redirectLocation = getRedirectTarget();
+      if (redirectLocation) {
+        location.replace(redirectLocation);
+        return;
       }
 
       location.replace("/");
@@ -155,24 +175,19 @@
     }
 
     async function handleSubmission(username, password) {
-      try{
+      try {
         disableForm();
-
-        if (await api.isLoggedIn()) {
-          redirectSuccess();
-        }
 
         const authFailure = await api.loginUser(username, password);
         if (authFailure) {
           printFailure(authFailure);
         } else {
-          redirectSuccess();
+          redirectOnLoginSuccess();
         }
-      }
-      catch (error) {
+      } catch (error) {
+        console.error("Login failed.", error);
         printFailure("An unexpected error occurred. Please try again and then report this issue to support if it persists.");
-      }
-      finally {
+      } finally {
         enableForm();
       }
     }
@@ -183,7 +198,8 @@
       // Therefore, we want to go back one more page as re-logging in will
       // have no effect.
       if (await api.isLoggedIn()) {
-        redirectSuccess();
+        redirectOnLoginSuccess();
+        return;
       }
 
       formElement.addEventListener("submit", (event) => {
