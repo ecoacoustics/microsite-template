@@ -1,0 +1,20 @@
+{{/*
+        Renders the leaderboard table and community-total partial.
+
+        Parameters:
+        - anonymousUserLabel: Optional text used when a username lookup does not
+            return a name. Defaults to "Anonymous user".
+
+        JavaScript populates [data-progress-leaderboard] and uses
+        data-anonymous-user-label as the display fallback.
+*/}}
+<div class="leaderboard">
+    <h2>Top Contributors</h2>
+    <table>
+        <tbody
+            data-progress-leaderboard
+            data-anonymous-user-label="{{ .anonymousUserLabel | default "Anonymous user" }}"
+        ></tbody>
+    </table>
+    {{ partial "progress-counter/total.html" . }}
+</div>

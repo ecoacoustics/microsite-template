@@ -1,3 +1,5 @@
+import { resolveSelfAssociations } from "./filterHelpers.js";
+
 // The decisions returned by the web components are not the same as the
 // decisions recorded by the baw-api.
 // This object maps web component decisions (key) to baw-api decisions (values).
@@ -183,6 +185,68 @@ export class WorkbenchApi {
         }
 
         return this.#userProfileCache;
+    }
+
+    /**
+     * Fetches aggregate statistics for audio events matching a filter.
+     *
+     * @param {Record<string, unknown>} filter
+     * @returns {Promise<{count: number, taggings_count: number}>}
+     */
+    async getAudioEventStats(filter) {
+        const url = this.#createUrl("/audio_events/stats");
+        const audioEventFilter = resolveSelfAssociations(filter, "audio_events");
+        const response = await this.#fetch("POST", url, { filter: audioEventFilter });
+
+        if (!response.ok) {
+            throw new Error("Audio event stats request failed.");
+        }
+
+        const responseBody = await response.json();
+        return responseBody.data;
+    }
+
+    /**
+     * Fetches aggregate verification statistics for a filter.
+     *
+     * @param {Record<string, unknown>} filter
+     * @returns {Promise<Record<string, unknown>>}
+     */
+    async getVerificationStats(filter) {
+        const url = this.#createUrl("/verifications/stats");
+        const response = await this.#fetch("POST", url, { filter });
+
+        if (!response.ok) {
+            throw new Error("Verification stats request failed.");
+        }
+
+        const responseBody = await response.json();
+        return responseBody.data;
+    }
+
+    /**
+     * Resolves public user names for leaderboard IDs when permitted by the API.
+     *
+     * @param {number[]} userIDs
+     * @returns {Promise<Array<{id: number, user_name: string}>>}
+     */
+    async getUserAccounts(userIDs) {
+        if (!Array.isArray(userIDs) || userIDs.length === 0) {
+            return [];
+        }
+
+        const url = this.#createUrl("/user_accounts/filter");
+        const response = await this.#fetch("POST", url, {
+            filter: { id: { in: userIDs } },
+            projection: { only: ["id", "user_name"] },
+        });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const responseBody = await response.json();
+        return responseBody.data ?? [];
     }
 
     async logoutUser() {
@@ -422,11 +486,15 @@ export class WorkbenchApi {
     /**
      * Fetches a verification object from the API
      *
-     * @param {string} tag
+     * @param {Record<string, unknown>} filterBody
+     * @param {unknown[]} [tagIDs]
      * @returns {() => Promise<AudioEvent[]>}
      */
-    getVerificationCallback(filterBody) {
+    getVerificationCallback(filterBody, tagIDs = []) {
         const url = this.#createUrl("/audio_events/filter");
+        const configuredTagIDs = new Set(
+            Array.isArray(tagIDs) ? tagIDs.map((tagID) => Number(tagID)) : [],
+        );
 
         // we wrap the "page" variable in a closure so that only this callback
         // is stateful and the service can remain stateless.
@@ -448,6 +516,7 @@ export class WorkbenchApi {
             const payload = {
                 paging: pagingBody,
                 ...filterBody,
+                filter: resolveSelfAssociations(filterBody.filter, "audio_events"),
             };
 
             const response = await this.#fetch("POST", url, payload);
@@ -471,11 +540,23 @@ export class WorkbenchApi {
             // end_time_seconds to the recording duration, preventing invalid
             // media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
-                const tagOfInterest = model.taggings[0];
+                const taggings = Array.isArray(model.taggings) ? model.taggings : [];
+
+                // if the user has defined a set of configured tag IDs (which they should except for legacy websites)
+                // select the first tagging that matches one of the configured tag IDs
+                // For legacy websites where no configured tag IDs are defined, the first tagging will be used.
+                // TODO: remove legacy support once all websites have configured tag IDs
+                // if no tag of interest is found which matches the configured ids OR if there are no tags on the event at all, 
+                // tagOfInterest will be undefined
+                const tagOfInterest = configuredTagIDs.size > 0
+                    ? taggings.find((tagging) => configuredTagIDs.has(Number(tagging.tag_id)))
+                    : taggings[0];
+
                 const tagPromise = tagOfInterest
                     ? this.getTag(tagOfInterest.tag_id)
                     : Promise.resolve(null);
 
+                // Fetch the associated tag and audio recording in parallel
                 const [tag, recording] = await Promise.all([
                     tagPromise,
                     this.getAudioRecording(model.audio_recording_id),
@@ -490,6 +571,15 @@ export class WorkbenchApi {
             await Promise.allSettled(associatedModelPromises);
 
             const filteredEventModels = eventModels.filter((item) => {
+                // A subject without a tag cannot be presented as a
+                // verification task or committed to the API.
+                if (!item.tag) {
+                    console.warn(
+                        `Audio event ${item.id} has no tagging matching the configured tags and will be filtered out.`,
+                    );
+                    return false;
+                }
+
                 const recordingDuration =
                     item.audio_recording?.duration_seconds;
 

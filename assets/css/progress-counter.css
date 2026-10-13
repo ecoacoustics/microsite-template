@@ -1,0 +1,67 @@
+.progress-counter {
+    --progress-accent: var(--micro-theme-color);
+    --progress-light: color-mix(in srgb, var(--progress-accent) 16%, white);
+    --progress-muted: color-mix(in srgb, var(--progress-accent) 55%, white);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2rem;
+    max-width: 50rem;
+    margin: 0 auto;
+    color: var(--progress-accent);
+}
+
+.progress-counter-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.progress-counter-gauge-svg {
+    display: block;
+    width: 100%;
+    max-width: 15rem;
+    overflow: visible;
+}
+
+.progress-counter-gauge-track,
+.progress-counter-gauge-progress {
+    fill: none;
+    stroke-width: 16;
+    stroke-linecap: round;
+}
+
+.progress-counter-gauge-track {
+    stroke: var(--progress-light);
+}
+
+.progress-counter-gauge-progress {
+    stroke: var(--progress-accent);
+    stroke-dasharray: 100;
+    stroke-dashoffset: var(--progress-gauge-dash-offset, 100);
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-counter-pivot,
+.progress-counter-needle line {
+    stroke: var(--progress-accent);
+    fill: var(--progress-accent);
+}
+
+.progress-counter-needle {
+    transform-origin: 100px 100px;
+    transform: rotate(var(--progress-gauge-needle-angle, -90deg));
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-counter-fraction {
+    margin: 1.5rem 0 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.progress-counter-status {
+    margin: 1rem 0 0;
+    color: var(--progress-muted);
+    font-size: 0.95rem;
+}
