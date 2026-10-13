@@ -184,30 +184,6 @@ export class WorkbenchApi {
     }
 
     /**
-     * Reads an API response as JSON when possible and provides a useful
-     * fallback for non-JSON proxy or server error pages.
-     *
-     * @param {Response} response
-     * @returns {Promise<Record<string, unknown>>}
-     */
-    async #readJsonResponse(response) {
-        const responseText = await response.text();
-        if (!responseText) return {};
-
-        try {
-            return JSON.parse(responseText);
-        } catch {
-            return {
-                meta: {
-                    error: {
-                        details: `API returned HTTP ${response.status}.`,
-                    },
-                },
-            };
-        }
-    }
-
-    /**
      * Fetches aggregate statistics for audio events matching a filter.
      *
      * @param {Record<string, unknown>} filter
@@ -216,12 +192,12 @@ export class WorkbenchApi {
     async getAudioEventStats(filter) {
         const url = this.#createUrl("/audio_events/stats");
         const response = await this.#fetch("POST", url, { filter });
-        const responseBody = await this.#readJsonResponse(response);
 
         if (!response.ok) {
-            throw new Error(responseBody.meta?.error?.details || "Audio event stats request failed.");
+            throw new Error("Audio event stats request failed.");
         }
 
+        const responseBody = await response.json();
         return responseBody.data;
     }
 
@@ -234,12 +210,12 @@ export class WorkbenchApi {
     async getVerificationStats(filter) {
         const url = this.#createUrl("/verifications/stats");
         const response = await this.#fetch("POST", url, { filter });
-        const responseBody = await this.#readJsonResponse(response);
 
         if (!response.ok) {
-            throw new Error(responseBody.meta?.error?.details || "Verification stats request failed.");
+            throw new Error("Verification stats request failed.");
         }
 
+        const responseBody = await response.json();
         return responseBody.data;
     }
 
@@ -558,6 +534,13 @@ export class WorkbenchApi {
             // media requests (422 errors).
             const associatedModelPromises = eventModels.map(async (model) => {
                 const taggings = Array.isArray(model.taggings) ? model.taggings : [];
+
+                // if the user has defined a set of configured tag IDs (which they should except for legacy websites)
+                // select the first tagging that matches one of the configured tag IDs
+                // For legacy websites where no configured tag IDs are defined, the first tagging will be used.
+                // TODO: remove legacy support once all websites have configured tag IDs
+                // if no tag of interest is found which matches the configured ids OR if there are no tags on the event at all, 
+                // tagOfInterest will be undefined
                 const tagOfInterest = configuredTagIDs.size > 0
                     ? taggings.find((tagging) => configuredTagIDs.has(Number(tagging.tag_id)))
                     : taggings[0];
@@ -566,6 +549,7 @@ export class WorkbenchApi {
                     ? this.getTag(tagOfInterest.tag_id)
                     : Promise.resolve(null);
 
+                // Fetch the associated tag and audio recording in parallel
                 const [tag, recording] = await Promise.all([
                     tagPromise,
                     this.getAudioRecording(model.audio_recording_id),

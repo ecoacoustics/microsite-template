@@ -13,14 +13,15 @@ function setStatus(root, message) {
 }
 
 /**
- * Updates the counter's primary progress message.
+ * Shows or hides a progress-counter element.
  *
  * @param {Element} root
- * @param {string} message
+ * @param {string} selector
+ * @param {boolean} hidden
  */
-function setFraction(root, message) {
-    const fraction = root.querySelector("[data-progress-fraction]");
-    if (fraction) fraction.textContent = message;
+function setHidden(root, selector, hidden) {
+    const element = root.querySelector(selector);
+    if (element) element.hidden = hidden;
 }
 
 /**
@@ -45,19 +46,21 @@ function renderLeaderboard(root, leaderboard) {
     const target = root.querySelector("[data-progress-leaderboard]");
     if (!target) return;
 
-    target.replaceChildren();
-    leaderboard.forEach((entry) => {
-        const row = document.createElement("tr");
-        row.dataset.rank = String(entry.rank);
-        if (entry.isCurrent) row.classList.add("is-current");
+    const anonymousUserLabel = target.dataset.anonymousUserLabel;
+    target.replaceChildren(
+        ...leaderboard.map((entry) => {
+            const row = document.createElement("tr");
+            row.dataset.rank = String(entry.rank);
+            if (entry.isCurrentUser) row.classList.add("is-current");
 
-        [String(entry.rank), String(entry.name ?? "")].forEach((value) => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.appendChild(cell);
-        });
-        target.appendChild(row);
-    });
+            [String(entry.rank), String(entry.name ?? anonymousUserLabel ?? "")].forEach((value) => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+            return row;
+        }),
+    );
 }
 
 /**
@@ -69,17 +72,23 @@ function renderLeaderboard(root, leaderboard) {
  */
 export function renderProgressCounter(root, state, renderGraphic) {
     if (state.state !== "ready") {
-        setFraction(root, "Progress unavailable.");
-        setStatus(root, String(state.message ?? "Progress data is unavailable."));
+        setHidden(root, "[data-progress-fraction]", true);
+        setHidden(root, "[data-progress-login-message]", true);
+        setHidden(root, "[data-progress-unconfigured]", state.state !== "unconfigured");
+        setHidden(root, "[data-progress-error]", state.state !== "error");
+        setStatus(root, "");
         return;
     }
 
     const loggedIn = Boolean(state.loggedIn);
     const completionPercentage = Number(state.completionPercentage) || 0;
 
-    setFraction(root, loggedIn
-        ? `${state.completedEvents} out of ${state.totalEvents} events verified.`
-        : "Log in to see your contribution progress.");
+    setHidden(root, "[data-progress-fraction]", !loggedIn);
+    setHidden(root, "[data-progress-login-message]", loggedIn);
+    setHidden(root, "[data-progress-unconfigured]", true);
+    setHidden(root, "[data-progress-error]", true);
+    setText(root, "[data-progress-completed-events]", String(state.completedEvents));
+    setText(root, "[data-progress-total-events]", String(state.totalEvents));
     setText(
         root,
         "[data-progress-total]",

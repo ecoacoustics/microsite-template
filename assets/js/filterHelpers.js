@@ -1,18 +1,18 @@
 /**
  * Creates a tag filter when tags are configured.
  *
- * @param {unknown} tags
+ * @param {number[]} tagIDs
  * @param {string} tagField The field in the filter to which the tags should be applied.
  * @returns {Record<string, unknown> | null}
  */
-export function createTagFilter(tags, tagField = "tags.id") {
-  if (!Array.isArray(tags) || tags.length === 0) {
+export function createTagFilter(tagIDs, tagField = "tags.id") {
+  if (!Array.isArray(tagIDs) || tagIDs.length === 0) {
     return null;
   }
 
   return {
     [tagField]: {
-      in: tags,
+      in: tagIDs,
     },
   };
 }
@@ -28,9 +28,7 @@ export function createTagFilter(tags, tagField = "tags.id") {
  * @returns {Record<string, unknown>}
  */
 export function combineFilters(filterParts, operator = "and") {
-  const definedFilters = filterParts.filter(
-    (filter) => filter !== null && filter !== undefined,
-  );
+  const definedFilters = filterParts.filter(Boolean);
 
   if (definedFilters.length <= 1) {
     return definedFilters[0] ?? {};

@@ -11,26 +11,43 @@ const api = await workbenchApi();
  *
  * @param {VerificationGridComponent} target
  * @param {Record<string, unknown>} campaign
+ * @param {number | null} currentUserID
  */
-async function bootstrapVerificationGrid(target, campaign) {
+async function bootstrapVerificationGrid(target, campaign, currentUserID) {
   const campaignFilters = campaign?.filters;
   if (!campaignFilters?.filter) {
     console.error(`Campaign ${campaign?.name ?? "unknown"} does not have a filters set`);
     return;
   }
 
+  const taskFilter = campaign.only_unverified === false
+    ? {
+        or: [
+          { "verifications.creator_id": { not_eq: currentUserID } },
+          { "verifications.id": { eq: null } },
+          {
+            and: [
+              { "verifications.creator_id": { eq: currentUserID } },
+              { "verifications.confirmed": { eq: "skip" } },
+            ],
+          },
+        ],
+      }
+    : { verification_count: { eq: 0 } };
+
+  // Merge the campaign filters with the tag and task filters.
   const mergedFilterBody = {
     ...campaignFilters,
     filter: combineFilters([
       campaignFilters.filter,
-      createTagFilter(campaign.tags),
-      { verification_count: { eq: 0 } },
+      createTagFilter(campaign.tag_ids),
+      taskFilter,
     ]),
   };
 
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
-  target.getPage = api.getVerificationCallback(mergedFilterBody, campaign.tags);
+  target.getPage = api.getVerificationCallback(mergedFilterBody, campaign.tag_ids);
   target.urlTransformer = api.createMediaUrlTransformer();
 
   target.addEventListener("decision-made", (event) => {
@@ -104,6 +121,7 @@ async function setup() {
   }
 
   const targetElements = gridElements();
+  let currentUserID = null;
   if (targetElements.length > 0) {
     if (!(await api.isLoggedIn())) {
       window.location.href = `/login?redirect=${location.pathname}`;
@@ -111,6 +129,7 @@ async function setup() {
     }
 
     const userProfile = await api.getUserProfile();
+    currentUserID = userProfile?.data?.id ?? null;
     if (userProfile?.data?.is_confirmed === false) {
       showUnconfirmedAccountWarning();
       return;
@@ -129,7 +148,7 @@ async function setup() {
     }
 
     // Initialize the verification grid with the filter settings
-    bootstrapVerificationGrid(element, campaign);
+    bootstrapVerificationGrid(element, campaign, currentUserID);
   }
 }
 

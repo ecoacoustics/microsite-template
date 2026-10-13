@@ -1,5 +1,21 @@
-{{- $counterID := .counterID | default "progress-counter" -}}
+{{/*
+        Renders the complete progress counter.
+
+        Parameters:
+        - campaign: Optional campaign name. When omitted, the first campaign in
+            site.Params.campaigns is used.
+        - verifyURL: Optional link for the contribution button. Defaults to
+            /verify/.
+
+        The data-progress-counter and data-campaign attributes are required by
+        progressCounter.js. The gauge and leaderboard partials can be overridden
+        independently by a consuming site.
+*/}}
 {{- $campaign := .campaign | default "" -}}
+{{- if not $campaign -}}
+    {{- $campaign = (index site.Params.campaigns 0).name -}}
+{{- end -}}
+{{- $counterID := printf "progress-counter-%s" ($campaign | urlize) -}}
 
 <div class="progress-counter" id="{{ $counterID }}" data-progress-counter data-campaign="{{ $campaign }}">
     {{ partial "progress-counter/gauge.html" . }}

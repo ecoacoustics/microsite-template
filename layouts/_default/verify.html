@@ -58,7 +58,7 @@
         }
     </style>
 
-    {{- with resources.Get "js/bootstrapVerificationGrid.js" | js.Build (dict "targetPath" "js/bootstrapVerificationGrid.js" "format" "esm") }}
+    {{- with resources.Get "js/bootstrapVerificationGrid.js" | js.Build (dict "format" "esm") }}
     {{- if eq hugo.Environment "development" }}
         {{- with . }}
         <script src="{{ .RelPermalink }}" type="module"></script>
