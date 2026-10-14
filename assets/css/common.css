@@ -1,7 +1,7 @@
 body {
-    display: grid;
+  display: grid;
 
-    /*
+  /*
         By using the [name-start] and [name-end] grid area syntax, we are able
         to use a subgrid area by simply using the "name".
 
@@ -15,32 +15,32 @@ body {
         content meaning that if you add content to the gutters (e.g. a sidebar
         menu), it will tax the main content container for the space.
     */
-    grid-template-columns:
-        [fullbleed-start]
-        minmax(var(--micro-gutter-size), auto)
-        [main-start]
-        calc(min(80rem, 90%))
-        [main-end]
-        minmax(var(--micro-gutter-size), auto)
-        [fullbleed-end];
+  grid-template-columns:
+    [fullbleed-start]
+    minmax(var(--micro-gutter-size), auto)
+    [main-start]
+    calc(min(80rem, 90%))
+    [main-end]
+    minmax(var(--micro-gutter-size), auto)
+    [fullbleed-end];
 
-    /*
+  /*
         By using the max between 4rem and auto, we can ensure that the header
         and footer will be at least 4rem in height, but can expand if the
         content is larger.
     */
-    grid-template-rows:
-        [header-start]
-        minmax(4rem, auto)
-        [header-end main-start]
-        minmax(4rem, auto)
-        [main-end footer-start]
-        4rem
-        [footer-end];
+  grid-template-rows:
+    [header-start]
+    minmax(4rem, auto)
+    [header-end main-start]
+    minmax(66vh, auto)
+    [main-end footer-start]
+    4rem
+    [footer-end];
 
-    min-height: 100dvh;
+  min-height: 100dvh;
 
-    /*
+  /*
         We set the background color on the body element because some browsers
         such as mobile and Microsoft Edge support overscroll where the full page
         content is moved.
@@ -48,61 +48,61 @@ body {
         fill. If we did not set the background color here, the overscroll would
         default to a white/black (depending on color scheme) color.
     */
-    background-color: var(--micro-background-light);
+  background-color: var(--micro-background-light);
 
-    color: var(--micro-font-color);
-    font-family: var(--micro-body-font);
+  color: var(--micro-font-color);
+  font-family: var(--micro-body-font);
 
-    & > header {
-        grid-row: header;
-        grid-column: fullbleed;
-    }
+  & > header {
+    grid-row: header;
+    grid-column: fullbleed;
+  }
 
-    & > main {
-        /*
+  & > main {
+    /*
             Restrict page content to using the column-subgrid so that consumers
             of this theme cannot create out-of-order positioned elements by
             assigning a content to the a "header" subgrid row.
         */
-        display: grid;
-        grid-template-columns: subgrid;
+    display: grid;
+    grid-template-columns: subgrid;
 
-        grid-row: main;
-        grid-column: fullbleed;
+    grid-row: main;
+    grid-column: fullbleed;
 
-        .page > * {
-            /*
+    .page > * {
+      /*
                 By default, we want the content to be centered.
                 If you want your content to extend to the edge of the page,
                 you can simply use the "fullbleed" class.
             */
-            grid-column: main;
-        }
+      grid-column: main;
     }
+  }
 
-    & > footer {
-        grid-row: footer;
-        grid-column: fullbleed;
-    }
+  & > footer {
+    grid-row: footer;
+    grid-column: fullbleed;
+  }
 }
 
 section {
-    padding-top: var(--micro-padding-large);
-    padding-bottom: var(--micro-padding-large);
+  padding-top: var(--micro-padding-large);
+  padding-bottom: var(--micro-padding-large);
 
-    margin-bottom: var(--micro-padding-xlarge);
+  margin-bottom: var(--micro-padding-xlarge);
 }
 
 hr {
-    display: block;
-    width: 80%;
-    height: 0;
+  display: block;
+  width: 80%;
+  height: 0;
 
-    margin: var(--micro-padding-medium) auto;
+  margin: var(--micro-padding-medium) auto;
 
-    border: 1px solid var(--micro-theme-color);
-    border-radius: var(--micro-border-radius);
-    opacity: 0.5;
+  border: 1px solid var(--micro-theme-color);
+  border-radius: var(--micro-border-radius);
+  opacity: 0.5;
 }
 
 /*
@@ -114,16 +114,16 @@ hr {
     elements are append to the left/right positions.
 */
 section.page-section {
-    display: grid;
-    grid-template-columns: subgrid;
+  display: grid;
+  grid-template-columns: subgrid;
 
-    position: relative;
-    margin: 0;
-    padding: 0;
+  position: relative;
+  margin: 0;
+  padding: 0;
 
-    & > .page-section-content {
-        grid-column: main;
-    }
+  & > .page-section-content {
+    grid-column: main;
+  }
 }
 
 h1,
@@ -132,69 +132,69 @@ h3,
 h4,
 h5,
 h6 {
-    margin-bottom: var(--micro-padding-small);
+  margin-bottom: var(--micro-padding-small);
 
-    font-family: var(--micro-heading-font);
-    font-size: var(--micro-font-size-larger);
+  font-family: var(--micro-heading-font);
+  font-size: var(--micro-font-size-larger);
 }
 
 p {
-    margin-bottom: var(--micro-padding-small);
+  margin-bottom: var(--micro-padding-small);
 
-    /*
+  /*
         If a link is inside of a paragraph, we want to use an underline to
         hint that it is clickable.
     */
-    a {
-        text-decoration: underline;
-    }
+  a {
+    text-decoration: underline;
+  }
 }
 
 ol,
 ul {
-    /*
+  /*
         We indent by 2em so that:
             - There is 1 character of indentation for the list item icon
             - There is 1 character width of spacing to visually separate the list
     */
-    padding-left: 1em;
-    margin-left: 1em;
+  padding-left: 1em;
+  margin-left: 1em;
 
-    li {
-        list-style: disc;
-        list-style-position: outside;
-    }
+  li {
+    list-style: disc;
+    list-style-position: outside;
+  }
 }
 
 a {
-    color: var(--micro-font-color);
+  color: var(--micro-font-color);
 
-    &:active {
-        color: var(--micro-font-color);
-    }
+  &:active {
+    color: var(--micro-font-color);
+  }
 }
 
 figure {
-    position: relative;
+  position: relative;
 }
 
 .oe-image-caption {
-    position: absolute;
-    bottom: 0;
-    right: 0;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 
-    color: var(--micro-font-color-light);
-    background-color: var(--micro-background-dark);
-    font-size: var(--micro-font-size-xsmall);
-    opacity: 0.8;
+  color: var(--micro-font-color-light);
+  background-color: var(--micro-background-dark);
+  font-size: var(--micro-font-size-xsmall);
+  opacity: 0.8;
 
-    /*
+  /*
         By using "inherit" here, we will inherit the rounding of the image we
         are adding a caption to.
     */
-    border-bottom-right-radius: inherit;
+  border-bottom-right-radius: inherit;
 
-    /*
+  /*
         We only want to add padding to the figure caption if there is text
         content so that the caption can collapse to a zero width element if
         there is nothing to show.
@@ -202,9 +202,9 @@ figure {
         If we did not have this condition, there would always be a box the size
         of the padding.
     */
-    &:not(:empty) {
-        padding: var(--micro-padding-small);
-    }
+  &:not(:empty) {
+    padding: var(--micro-padding-small);
+  }
 }
 
 /*
@@ -212,15 +212,15 @@ figure {
     while not effecting the page flow.
 */
 .page {
-    display: contents;
+  display: contents;
 }
 
 .fullbleed {
-    grid-column: fullbleed !important;
+  grid-column: fullbleed !important;
 }
 
 .person-card img[slot="image"] {
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
 }
