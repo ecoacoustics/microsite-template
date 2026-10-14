@@ -97,6 +97,7 @@
 
         const googleMapsAPIKey = {{ $googleMapsAPIKey | jsonify | safeJS }};
         const googleMapsMapID = {{ $googleMapsMapID | jsonify | safeJS }};
+        const isDev = {{ if .Site.Hugo.IsProduction }}false{{ else }}true{{ end }};
         let map;
         let selectedIndex = null;
         let selectedMarkerElement = null;
@@ -110,7 +111,7 @@
         }
 
         function loadGoogleMaps() {
-            if (!googleMapsAPIKey) return Promise.reject(new Error("GOOGLE_MAPS_API_KEY is not configured."));
+            if (!googleMapsAPIKey && !isDev) return Promise.reject(new Error("GOOGLE_MAPS_API_KEY is not configured."));
             // Load the Google Maps JavaScript API if it hasn't been loaded yet.
             // only 1 instance of the Google Maps API should be loaded even if multiple maps are present on the page.
             if (globalThis.__micrositeGoogleMapsLoader) return globalThis.__micrositeGoogleMapsLoader;
