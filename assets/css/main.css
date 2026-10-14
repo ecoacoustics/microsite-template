@@ -9,10 +9,15 @@
 @import "./map.css";
 @import "./progress-counter.css";
 @import "./leaderboard.css";
+@import "./login.css";
 
-/* Added a second definition to separate templated values from not so syntax
+/* Added a second definition to separate templated values from so syntax
   highlighting will work */
 :root {
+    {{ with resources.Get (site.Params.login_background_image | default site.Params.hero_image) }}
+    --micro-login-image: url("{{ .RelPermalink }}");
+    {{ end }}
+
     /* Shoelace Overrides */
     {{ range $key, $value := .Site.Params.style.ThemeShades }}
     --sl-color-primary-{{ $key }}: {{ $value }};

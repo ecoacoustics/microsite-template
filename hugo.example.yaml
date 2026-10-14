@@ -29,6 +29,8 @@ params:
   workbench_host: https://staging.ecosounds.org
   workbench_name: Staging
   hero_image: images/Plains_wanderer_female.jpg
+  # Defaults to the hero image
+  login_background_image: ~
   # Required by the map and site-cards shortcodes. Add one entry per recording site.
   map:
     sites:

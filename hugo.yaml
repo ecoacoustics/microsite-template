@@ -48,6 +48,8 @@ params:
   workbench_host: https://staging.ecosounds.org
   workbench_name: Staging
   hero_image: images/Plains_wanderer_female.jpg
+  # Backwards compatibility for sites that were designed with an older login background image
+  login_background_image: "images/login/ecosounds-hero.jpg"
   # navbar:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none

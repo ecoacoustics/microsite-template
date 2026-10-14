@@ -1,0 +1,67 @@
+:root {
+    --micro-login-overlay: none;
+    --micro-login-position: center;
+    --micro-login-size: cover;
+    --micro-login-repeat: no-repeat;
+}
+
+body:has(#login-page) {
+    position: relative;
+    isolation: isolate;
+}
+
+body:has(#login-page)::before {
+    content: "";
+    position: absolute;
+    grid-column: fullbleed;
+    grid-row: header-start / main-end;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image: var(--micro-login-overlay), var(--micro-login-image);
+    background-position: var(--micro-login-position);
+    background-repeat: var(--micro-login-repeat);
+    background-size: var(--micro-login-size);
+}
+
+#login-form {
+    display: inline-block;
+    width: min(32em, 100%);
+
+    & > * {
+        display: block;
+        margin-top: 1rem;
+    }
+}
+
+#login-page #error-output {
+    color: var(--sl-color-danger-600);
+}
+
+#login-page .login-container {
+    display: flex;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: calc(32em + 2 * var(--sl-spacing-large));
+    min-width: 0;
+
+    & > sl-card {
+        --padding: var(--sl-spacing-large);
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+#login-page .validity-styles sl-input[data-user-invalid]::part(base),
+#login-page .validity-styles sl-select[data-user-invalid]::part(combobox),
+#login-page .validity-styles sl-checkbox[data-user-invalid]::part(control) {
+    border-color: var(--sl-color-danger-600);
+}
+
+#login-page .validity-styles sl-input:focus-within[data-user-invalid]::part(base),
+#login-page .validity-styles sl-select:focus-within[data-user-invalid]::part(combobox),
+#login-page .validity-styles sl-checkbox:focus-within[data-user-invalid]::part(control) {
+    border-color: var(--sl-color-danger-600);
+    box-shadow: 0 0 0 var(--sl-focus-ring-width) var(--sl-color-danger-300);
+}
