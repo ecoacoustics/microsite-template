@@ -3,7 +3,18 @@
 
     JavaScript populates the element marked with data-progress-total.
 */}}
-<p class="leaderboard-total">
+{{- $campaign := .campaign | default (index site.Params.campaigns 0).name -}}
+
+<div class="leaderboard-total" data-progress-counter data-campaign="{{ $campaign }}">
     <strong data-progress-total>--</strong>
-    Total Community Verifications
-</p>
+    <span>Total Community Verifications</span>
+    <p class="progress-counter-status" data-progress-unconfigured hidden>
+        Progress data is not configured for this site.
+    </p>
+    <p class="progress-counter-status" data-progress-error hidden>
+        Progress data is currently unavailable.
+    </p>
+    <p class="progress-counter-status" data-progress-status role="status" aria-live="polite">
+        Loading live progress...
+    </p>
+</div>

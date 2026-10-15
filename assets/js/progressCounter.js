@@ -134,50 +134,60 @@ async function setupLeaderboard(leaderboardApiData, currentUserID, leaderboardSi
  * This function deliberately has no DOM dependency. A different graphic can
  * consume the returned state without changing the API requests or calculations.
  *
- * @param {Campaign | undefined} campaign
+ * @param {Campaign | Campaign[]} campaigns
  * @param {WorkbenchApi} api
+ * @param {{needsGauge?: boolean, needsLeaderboard?: boolean}} [requirements]
  * @returns {Promise<ProgressCounterState>}
  */
-export async function fetchProgressCounterData(campaign, api) {
-    const campaignFilter = campaign?.filters?.filter;
+export async function fetchProgressCounterData(campaigns, api, requirements = {}) {
+    const selectedCampaigns = Array.isArray(campaigns) ? campaigns : [campaigns];
+    const needsGauge = requirements.needsGauge ?? true;
+    const needsLeaderboard = requirements.needsLeaderboard ?? true;
 
-    if (!campaign || !campaignFilter) {
-        return {
-            state: "unconfigured",
-        };
+    if (
+        selectedCampaigns.length === 0 ||
+        selectedCampaigns.some((campaign) => !campaign?.filters?.filter)
+    ) {
+        return { state: "unconfigured" };
     }
 
-    const audioEventFilter = combineFilters([
-        campaignFilter,
-        createTagFilter(campaign.tag_ids),
-    ]);
+    const campaignNames = selectedCampaigns.map(({ name }) => name).join(", ");
+    const audioEventFilter = combineFilters(selectedCampaigns.map((campaign) =>
+        combineFilters([
+            campaign.filters.filter,
+            createTagFilter(campaign.tag_ids),
+        ]),
+    ), "or");
 
-    const verificationFilter = combineFilters([
-        campaignFilter,
-        createTagFilter(campaign.tag_ids, "tag_id"),
-    ]);
+    const verificationFilter = combineFilters(selectedCampaigns.map((campaign) =>
+        combineFilters([
+            campaign.filters.filter,
+            createTagFilter(campaign.tag_ids, "tag_id"),
+        ]),
+    ), "or");
 
     try {
         const [audioEventStats, verificationStats, userProfile] = await Promise.all([
-            api.getAudioEventStats(audioEventFilter),
+            needsGauge ? api.getAudioEventStats(audioEventFilter) : null,
             api.getVerificationStats(verificationFilter),
-            api.getUserProfile(),
+            needsGauge || needsLeaderboard ? api.getUserProfile() : null,
         ]);
 
         const leaderboardApiData = verificationStats.verification_leaderboard ?? [];
         const currentUserID = userProfile?.data?.id ?? null;
 
-        // filter the top n items, sort them, and populate leaderboard entries with usernames
-        const leaderboard = await setupLeaderboard(
-            leaderboardApiData,
-            currentUserID,
-            campaign.leaderboard_size,
-            api,
-        );
+        const leaderboard = needsLeaderboard
+            ? await setupLeaderboard(
+                leaderboardApiData,
+                currentUserID,
+                selectedCampaigns.length === 1 ? selectedCampaigns[0].leaderboard_size : undefined,
+                api,
+            )
+            : [];
 
         const loggedIn = currentUserID !== null;
 
-        const totalEvents = Number(audioEventStats.count) || 0;
+        const totalEvents = Number(audioEventStats?.count) || 0;
         const completedEvents = Number(verificationStats.user_verified_events_count) || 0;
         const completionPercentage = loggedIn && totalEvents
             ? Math.min(100, completedEvents / totalEvents * 100)
@@ -192,7 +202,7 @@ export async function fetchProgressCounterData(campaign, api) {
             leaderboard,
         };
     } catch (error) {
-        console.error(`Failed to load progress for ${campaign.name}.`, error);
+        console.error(`Failed to load progress for ${campaignNames}.`, error);
         return {
             state: "error",
         };
@@ -213,21 +223,81 @@ export async function fetchProgressCounterData(campaign, api) {
  * @returns {Promise<void>}
  */
 export async function initializeProgressCounters(render) {
+
+    // looks through the page to find elements that have the data-progress-counter attribute
+    // these contain elements of the progress counter such as the gauge, leaderboard, and total events.
+    // which themeselves contain elements that display the progress data which get updated later
     const roots = [...document.querySelectorAll("[data-progress-counter]")];
     if (roots.length === 0) return;
 
+    // each root has a configured campaign selection. Multiple roots can share the same campaign.
+    const configuredCampaigns = Array.isArray(globalThis.siteParams?.campaigns)
+        ? globalThis.siteParams.campaigns
+        : [];
+
+    // each "group" is a set of roots that share the same selected campaigns.
+    // keys are the JSON stringified names of the selected campaigns.
+
+    const groups = new Map();
+
+    for (const root of roots) {
+        // configured campaign name for this root (or * for all campaigns)
+        const selection = root.dataset.campaign;
+        // selected campaigns is an actual list of the campaigns data for this root
+        const selectedCampaigns = selection === "*"
+            ? configuredCampaigns
+            : configuredCampaigns.filter((campaign) => campaign.name === selection).slice(0, 1);
+
+        // catch the case where no valid campaigns are specified for this root
+        if (
+            selectedCampaigns.length === 0 ||
+            selectedCampaigns.some((campaign) => !campaign.filters?.filter)
+        ) {
+            render(root, { state: "unconfigured" });
+            console.warn(`No valid campaigns specified for root:`, root);
+            continue;
+        }
+
+        // create a key for this group of campaigns, which is a JSON string of the sorted campaign names
+        // and initialise a new group empty if it doesn't already exist.
+        const groupKey = JSON.stringify(selectedCampaigns.map(({ name }) => name).sort());
+        let group = groups.get(groupKey);
+        if (!group) {
+            group = {
+                campaigns: selectedCampaigns,
+                roots: [],
+                needsGauge: false,
+                needsLeaderboard: false,
+            };
+            groups.set(groupKey, group);
+        }
+
+        // add this root to the group's list of roots and 
+        // update the group's requirements flags based on the root's content
+        // requirements is so that we don't do unnecessary work especially api queries
+        group.roots.push(root);
+        group.needsGauge ||= root.matches(".progress-counter-gauge") || root.querySelector(
+            "[data-progress-completed-events], [data-progress-total-events], .progress-counter-gauge-progress, .progress-counter-needle",
+        ) !== null;
+        group.needsLeaderboard ||= root.querySelector("[data-progress-leaderboard]") !== null;
+    }
+
+    if (groups.size === 0) return;
+
     try {
         const api = await workbenchApi();
-        const campaigns = globalThis.siteParams?.campaigns ?? [];
-        await Promise.all(roots.map(async (root) => {
-            const campaign = campaigns.find((item) => item.name === root.dataset.campaign);
-            const state = await fetchProgressCounterData(campaign, api);
-            render(root, state);
+        // for each group of campaigns, fetch the data, passing the group, including the requirements
+        // 
+        await Promise.all([...groups.values()].map(async (group) => {
+            const state = await fetchProgressCounterData(group.campaigns, api, group);
+            group.roots.forEach((root) => render(root, state));
         }));
     } catch (error) {
         console.error("Failed to initialize progress counters.", error);
-        roots.forEach((root) => render(root, {
+        for (const group of groups.values()) {
+            group.roots.forEach((root) => render(root, {
             state: "error",
-        }));
+            }));
+        }
     }
 }

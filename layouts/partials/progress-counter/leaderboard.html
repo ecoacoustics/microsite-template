@@ -1,5 +1,5 @@
 {{/*
-        Renders the leaderboard table and community-total partial.
+        Renders the leaderboard as an independently initialized component.
 
         Parameters:
         - anonymousUserLabel: Optional text used when a username lookup does not
@@ -8,13 +8,23 @@
         JavaScript populates [data-progress-leaderboard] and uses
         data-anonymous-user-label as the display fallback.
 */}}
-<div class="leaderboard">
+{{- $campaign := .campaign | default (index site.Params.campaigns 0).name -}}
+
+<div class="leaderboard" data-progress-counter data-campaign="{{ $campaign }}">
     <h2>Top Contributors</h2>
+    <p class="progress-counter-status" data-progress-unconfigured hidden>
+        Progress data is not configured for this site.
+    </p>
+    <p class="progress-counter-status" data-progress-error hidden>
+        Progress data is currently unavailable.
+    </p>
+    <p class="progress-counter-status" data-progress-status role="status" aria-live="polite">
+        Loading live progress...
+    </p>
     <table>
         <tbody
             data-progress-leaderboard
             data-anonymous-user-label="{{ .anonymousUserLabel | default "Anonymous user" }}"
         ></tbody>
     </table>
-    {{ partial "progress-counter/total.html" . }}
 </div>
