@@ -53,7 +53,11 @@ function renderLeaderboard(root, leaderboard) {
             row.dataset.rank = String(entry.rank);
             if (entry.isCurrentUser) row.classList.add("is-current");
 
-            [String(entry.rank), String(entry.name ?? anonymousUserLabel ?? "")].forEach((value) => {
+            [
+                String(entry.rank),
+                String(entry.name ?? anonymousUserLabel ?? ""),
+                (Number(entry.verificationCount) || 0).toLocaleString(),
+            ].forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 row.appendChild(cell);

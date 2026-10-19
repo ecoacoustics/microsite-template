@@ -3,21 +3,15 @@
 
         Parameters:
         - campaign: Optional campaign name or "*" for all configured campaigns.
-            When omitted, the first campaign in site.Params.campaigns is used.
-        - verifyURL: Optional link for the contribution button. Defaults to
-            /verify/.
+            When omitted, all configured campaigns are used.
 
         Each renderable component owns its data-progress-counter root and
         campaign selection.
 */}}
 {{- $campaign := .campaign | default "" -}}
-{{- if not $campaign -}}
-    {{- $campaign = (index site.Params.campaigns 0).name -}}
-{{- end -}}
-{{- $verifyURL := .verifyURL | default "/verify/" -}}
 
 <div class="progress-counter">
-    {{ partial "progress-counter/gauge.html" (dict "campaign" $campaign "verifyURL" $verifyURL) }}
+    {{ partial "progress-counter/gauge.html" (dict "campaign" $campaign) }}
     {{ partial "progress-counter/leaderboard.html" (dict "campaign" $campaign "anonymousUserLabel" .anonymousUserLabel) }}
     {{ partial "progress-counter/total.html" (dict "campaign" $campaign) }}
 </div>

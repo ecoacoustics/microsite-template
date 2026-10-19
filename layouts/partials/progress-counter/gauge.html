@@ -1,18 +1,13 @@
 {{/*
         Renders the progress gauge and its template-owned messages.
 
-        Parameters:
-        - verifyURL: Optional link for the contribution button. Defaults to
-            /verify/.
-
         JavaScript updates the numeric elements and toggles the message elements
-        using their data-* attributes. Keep those hooks when overriding this
-        partial unless the renderer is also replaced.
+        using their data-* attributes. The message markup is in a separate
+        partial so sites can override the copy without replacing this gauge.
 */}}
-{{- $verifyURL := .verifyURL | default "/verify/" -}}
-{{- $campaign := .campaign | default (index site.Params.campaigns 0).name -}}
+{{- $campaign := .campaign | default "" -}}
 
-<div class="progress-counter-gauge" data-progress-counter data-campaign="{{ $campaign }}">
+<div class="progress-counter-gauge" data-progress-counter data-progress-component="gauge"{{ with $campaign }} data-campaign="{{ . }}"{{ end }}>
     <svg class="progress-counter-gauge-svg" viewBox="0 0 200 110" aria-hidden="true">
         <path class="progress-counter-gauge-track" d="M 30 100 A 70 70 0 0 1 170 100" pathLength="100" />
         <path class="progress-counter-gauge-progress" d="M 30 100 A 70 70 0 0 1 170 100" pathLength="100" />
@@ -21,13 +16,7 @@
             <line x1="100" y1="100" x2="100" y2="40" />
         </g>
     </svg>
-    <p class="progress-counter-fraction" data-progress-fraction>
-        <span data-progress-completed-events>--</span> out of
-        <span data-progress-total-events>--</span> events verified.
-    </p>
-    <p class="progress-counter-fraction" data-progress-login-message hidden>
-        Log in to see your contribution progress.
-    </p>
+    {{ partial "progress-counter/gauge-message.html" . }}
     <p class="progress-counter-status" data-progress-unconfigured hidden>
         Progress data is not configured for this site.
     </p>
@@ -35,8 +24,4 @@
         Progress data is currently unavailable.
     </p>
     <p class="progress-counter-status" data-progress-status role="status" aria-live="polite">Loading live progress...</p>
-    <sl-button href="{{ $verifyURL }}" variant="primary" pill>
-        Keep Contributing
-        <sl-icon slot="suffix" name="arrow-right" aria-hidden="true"></sl-icon>
-    </sl-button>
 </div>

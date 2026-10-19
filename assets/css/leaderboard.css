@@ -10,6 +10,7 @@
         margin: 0 0 0.75rem;
         color: var(--progress-accent);
         font-size: 1.25rem;
+        text-align: center;
     }
 
     table {
@@ -19,9 +20,20 @@
         border-collapse: collapse;
     }
 
+    th,
     td {
         padding: 0.2rem 0.5rem;
         border-bottom: 1px solid var(--progress-light);
+    }
+
+    th {
+        color: var(--progress-muted);
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-align: left;
+    }
+
+    td {
         line-height: 1.1;
         text-align: left;
 
@@ -29,6 +41,12 @@
             width: 3rem;
             color: var(--progress-muted);
         }
+    }
+
+    th:last-child,
+    td:last-child {
+        text-align: right;
+        white-space: nowrap;
     }
 
     tr {

@@ -1,5 +1,7 @@
 import { resolveSelfAssociations } from "./filterHelpers.js";
 
+const API_REQUEST_TIMEOUT_MS = 150_000;
+
 // The decisions returned by the web components are not the same as the
 // decisions recorded by the baw-api.
 // This object maps web component decisions (key) to baw-api decisions (values).
@@ -181,7 +183,10 @@ export class WorkbenchApi {
 
                 const responseBody = await response.json();
                 return responseBody;
-            })();
+            })().catch((error) => {
+                this.#userProfileCache = null;
+                throw error;
+            });
         }
 
         return this.#userProfileCache;
@@ -242,6 +247,9 @@ export class WorkbenchApi {
         });
 
         if (!response.ok) {
+            console.warn(
+                `Failed to fetch leaderboard user accounts (${response.status}); names will use the anonymous label.`,
+            );
             return [];
         }
 
@@ -954,15 +962,17 @@ export class WorkbenchApi {
             // do not send or keep any cookies with these requests because any such
             // cookies are 3rd party cookies which are deprecated and blocked by some browsers (e.g. Safari).
             credentials: "omit",
+            signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_MS),
         }).catch((error) => {
             const errorMessage = `Failed to connect to the API.
 Possible reasons:
     - API CORS headers are not configured to allow this origin
     - The API could not be contacted because you are not connected to the internet
     - The API is temporarily unavailable due to an internal error
+        - The API request timed out after ${API_REQUEST_TIMEOUT_MS / 1000} seconds
 `;
 
-            throw new Error(errorMessage, error);
+                throw new Error(errorMessage, { cause: error });
         });
     }
 }

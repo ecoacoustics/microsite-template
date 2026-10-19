@@ -136,13 +136,15 @@ async function setupLeaderboard(leaderboardApiData, currentUserID, leaderboardSi
  *
  * @param {Campaign | Campaign[]} campaigns
  * @param {WorkbenchApi} api
- * @param {{needsGauge?: boolean, needsLeaderboard?: boolean}} [requirements]
+ * @param {{needsGauge?: boolean, needsLeaderboard?: boolean, needsTotal?: boolean}} [requirements]
  * @returns {Promise<ProgressCounterState>}
  */
 export async function fetchProgressCounterData(campaigns, api, requirements = {}) {
     const selectedCampaigns = Array.isArray(campaigns) ? campaigns : [campaigns];
     const needsGauge = requirements.needsGauge ?? true;
     const needsLeaderboard = requirements.needsLeaderboard ?? true;
+    const needsTotal = requirements.needsTotal ?? true;
+    const needsVerificationStats = needsGauge || needsLeaderboard || needsTotal;
 
     if (
         selectedCampaigns.length === 0 ||
@@ -169,11 +171,11 @@ export async function fetchProgressCounterData(campaigns, api, requirements = {}
     try {
         const [audioEventStats, verificationStats, userProfile] = await Promise.all([
             needsGauge ? api.getAudioEventStats(audioEventFilter) : null,
-            api.getVerificationStats(verificationFilter),
+            needsVerificationStats ? api.getVerificationStats(verificationFilter) : null,
             needsGauge || needsLeaderboard ? api.getUserProfile() : null,
         ]);
 
-        const leaderboardApiData = verificationStats.verification_leaderboard ?? [];
+        const leaderboardApiData = verificationStats?.verification_leaderboard ?? [];
         const currentUserID = userProfile?.data?.id ?? null;
 
         const leaderboard = needsLeaderboard
@@ -188,7 +190,7 @@ export async function fetchProgressCounterData(campaigns, api, requirements = {}
         const loggedIn = currentUserID !== null;
 
         const totalEvents = Number(audioEventStats?.count) || 0;
-        const completedEvents = Number(verificationStats.user_verified_events_count) || 0;
+        const completedEvents = Number(verificationStats?.user_verified_events_count) || 0;
         const completionPercentage = loggedIn && totalEvents
             ? Math.min(100, completedEvents / totalEvents * 100)
             : 0;
@@ -198,7 +200,7 @@ export async function fetchProgressCounterData(campaigns, api, requirements = {}
             completedEvents,
             totalEvents,
             completionPercentage,
-            totalCommunityVerifications: Number(verificationStats.count) || 0,
+            totalCommunityVerifications: Number(verificationStats?.count) || 0,
             leaderboard,
         };
     } catch (error) {
@@ -241,10 +243,16 @@ export async function initializeProgressCounters(render) {
     const groups = new Map();
 
     for (const root of roots) {
-        // configured campaign name for this root (or * for all campaigns)
+        const component = root.dataset.progressComponent;
+        if (component !== "gauge" && component !== "leaderboard" && component !== "total") {
+            render(root, { state: "unconfigured" });
+            console.warn("Unknown progress component on root:", root);
+            continue;
+        }
+
+        // An omitted campaign or * selects all configured campaigns.
         const selection = root.dataset.campaign;
-        // selected campaigns is an actual list of the campaigns data for this root
-        const selectedCampaigns = selection === "*"
+        const selectedCampaigns = !selection || selection === "*"
             ? configuredCampaigns
             : configuredCampaigns.filter((campaign) => campaign.name === selection).slice(0, 1);
 
@@ -268,6 +276,7 @@ export async function initializeProgressCounters(render) {
                 roots: [],
                 needsGauge: false,
                 needsLeaderboard: false,
+                needsTotal: false,
             };
             groups.set(groupKey, group);
         }
@@ -276,10 +285,17 @@ export async function initializeProgressCounters(render) {
         // update the group's requirements flags based on the root's content
         // requirements is so that we don't do unnecessary work especially api queries
         group.roots.push(root);
-        group.needsGauge ||= root.matches(".progress-counter-gauge") || root.querySelector(
-            "[data-progress-completed-events], [data-progress-total-events], .progress-counter-gauge-progress, .progress-counter-needle",
-        ) !== null;
-        group.needsLeaderboard ||= root.querySelector("[data-progress-leaderboard]") !== null;
+        switch (component) {
+            case "gauge":
+                group.needsGauge = true;
+                break;
+            case "leaderboard":
+                group.needsLeaderboard = true;
+                break;
+            case "total":
+                group.needsTotal = true;
+                break;
+        }
     }
 
     if (groups.size === 0) return;

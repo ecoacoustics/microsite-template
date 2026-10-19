@@ -3,9 +3,9 @@
 
     JavaScript populates the element marked with data-progress-total.
 */}}
-{{- $campaign := .campaign | default (index site.Params.campaigns 0).name -}}
+{{- $campaign := .campaign | default "" -}}
 
-<div class="leaderboard-total" data-progress-counter data-campaign="{{ $campaign }}">
+<div class="leaderboard-total" data-progress-counter data-progress-component="total"{{ with $campaign }} data-campaign="{{ . }}"{{ end }}>
     <strong data-progress-total>--</strong>
     <span>Total Community Verifications</span>
     <p class="progress-counter-status" data-progress-unconfigured hidden>
