@@ -1,6 +1,6 @@
 import { resolveSelfAssociations } from "./filterHelpers.js";
 
-const API_REQUEST_TIMEOUT_MS = 150_000;
+const API_REQUEST_TIMEOUT_SECONDS = 90;
 
 // The decisions returned by the web components are not the same as the
 // decisions recorded by the baw-api.
@@ -962,14 +962,14 @@ export class WorkbenchApi {
             // do not send or keep any cookies with these requests because any such
             // cookies are 3rd party cookies which are deprecated and blocked by some browsers (e.g. Safari).
             credentials: "omit",
-            signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_MS),
+            signal: AbortSignal.timeout(API_REQUEST_TIMEOUT_SECONDS * 1000),
         }).catch((error) => {
             const errorMessage = `Failed to connect to the API.
 Possible reasons:
     - API CORS headers are not configured to allow this origin
     - The API could not be contacted because you are not connected to the internet
     - The API is temporarily unavailable due to an internal error
-        - The API request timed out after ${API_REQUEST_TIMEOUT_MS / 1000} seconds
+        - The API request timed out after ${API_REQUEST_TIMEOUT_SECONDS} seconds
 `;
 
                 throw new Error(errorMessage, { cause: error });
