@@ -53,7 +53,11 @@ function renderLeaderboard(root, leaderboard) {
             row.dataset.rank = String(entry.rank);
             if (entry.isCurrentUser) row.classList.add("is-current");
 
-            [String(entry.rank), String(entry.name ?? anonymousUserLabel ?? "")].forEach((value) => {
+            [
+                String(entry.rank),
+                String(entry.name ?? anonymousUserLabel ?? ""),
+                (Number(entry.verificationCount) || 0).toLocaleString(),
+            ].forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 row.appendChild(cell);
@@ -64,19 +68,20 @@ function renderLeaderboard(root, leaderboard) {
 }
 
 /**
- * Renders shared progress state and delegates graphic-specific work.
+ * Renders shared progress state and delegates component-specific work.
  *
  * @param {Element} root
  * @param {Record<string, unknown>} state
- * @param {(root: Element, completionPercentage: number) => void} [renderGraphic]
+ * @param {Array<(root: Element, state: Record<string, unknown>) => void>} [renderCallbacks=[]]
  */
-export function renderProgressCounter(root, state, renderGraphic) {
+export function renderProgressCounter(root, state, renderCallbacks = []) {
     if (state.state !== "ready") {
         setHidden(root, "[data-progress-fraction]", true);
         setHidden(root, "[data-progress-login-message]", true);
         setHidden(root, "[data-progress-unconfigured]", state.state !== "unconfigured");
         setHidden(root, "[data-progress-error]", state.state !== "error");
         setStatus(root, "");
+        renderCallbacks.forEach((renderCallback) => renderCallback(root, state));
         return;
     }
 
@@ -96,5 +101,5 @@ export function renderProgressCounter(root, state, renderGraphic) {
     );
     setStatus(root, "");
     renderLeaderboard(root, state.leaderboard ?? []);
-    renderGraphic?.(root, completionPercentage);
+    renderCallbacks.forEach((renderCallback) => renderCallback(root, state));
 }

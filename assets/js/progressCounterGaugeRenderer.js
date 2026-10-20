@@ -2,9 +2,12 @@
  * Applies normalized completion to the default semicircular SVG gauge.
  *
  * @param {Element} root
- * @param {number} completionPercentage
+ * @param {Record<string, unknown>} state
  */
-export function renderProgressCounterGauge(root, completionPercentage) {
+export function renderProgressCounterGauge(root, state) {
+    if (state.state !== "ready" || root.dataset.progressComponent !== "gauge") return;
+
+    const completionPercentage = Number(state.completionPercentage) || 0;
     // Map 0-100% completion to the gauge's -90 to 90 degree semicircle.
     const angle = -90 + completionPercentage / 100 * 180;
     const progress = root.querySelector(".progress-counter-gauge-progress");

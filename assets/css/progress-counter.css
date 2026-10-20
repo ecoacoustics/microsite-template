@@ -1,13 +1,16 @@
 .progress-counter {
-    --progress-accent: var(--micro-theme-color);
-    --progress-light: color-mix(in srgb, var(--progress-accent) 16%, white);
-    --progress-muted: color-mix(in srgb, var(--progress-accent) 55%, white);
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
     gap: 2rem;
     max-width: 50rem;
     margin: 0 auto;
     color: var(--progress-accent);
+}
+
+:root {
+    --progress-accent: var(--micro-theme-color);
+    --progress-light: color-mix(in srgb, var(--progress-accent) 16%, white);
+    --progress-muted: color-mix(in srgb, var(--progress-accent) 55%, white);
 }
 
 .progress-counter-gauge {
@@ -64,4 +67,5 @@
     margin: 1rem 0 0;
     color: var(--progress-muted);
     font-size: 0.95rem;
+    text-align: center;
 }
