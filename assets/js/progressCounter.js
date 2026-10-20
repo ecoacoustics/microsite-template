@@ -1,10 +1,54 @@
+/*
+
+Progress tracking elements are defined in a 2-level hierarchy in the dom, based on data attributes
+The top level is a component, such as gauge, leaderboard, total, and must belong a specific list of supported types.
+
+Each of these elements can have a campaign defined, which if ommitted with get stats for all campaigns
+
+Each of these elements has a set of elements that will be populated with progress data fetched from the API. 
+
+*/
+
+
+
 import { combineFilters, createTagFilter } from "./filterHelpers.js";
+
+const DEFAULT_LEADERBOARD_SIZE = 5;
+
+/** @typedef {"gauge" | "leaderboard" | "total"} ProgressComponentType */
+
+/** @typedef {"audioEventStats" | "verificationStats" | "userProfile" | "userAccounts"} ProgressDataFetch */
+
+/**
+ * @typedef {Object} ProgressComponentDefinition
+ * @property {ProgressDataFetch[]} requiredDataFetches
+ */
+
+/**
+ * @typedef {Object} ProgressGroup
+ * @property {Campaign[]} campaigns
+ * @property {Element[]} roots
+ * @property {ProgressComponentType[]} progressComponentTypes
+ * @property {number} [leaderboardSize] Selected size from the first leaderboard root in this group
+ */
+
+/** @type {Record<ProgressComponentType, ProgressComponentDefinition>} */
+const PROGRESS_COMPONENT_DEFINITIONS = {
+    gauge: {
+        requiredDataFetches: ["audioEventStats", "verificationStats", "userProfile"],
+    },
+    leaderboard: {
+        requiredDataFetches: ["verificationStats", "userProfile", "userAccounts"],
+    },
+    total: {
+        requiredDataFetches: ["verificationStats"],
+    },
+};
 
 /**
  * @typedef {Object} Campaign
  * @property {string} name
  * @property {number[]} [tag_ids]
- * @property {number} [leaderboard_size]
  * @property {boolean} [only_unverified]
  * @property {{filter: Record<string, unknown>}} filters
  */
@@ -101,11 +145,16 @@ function selectLeaderboardEntries(leaderboard, currentUserID, top = 5) {
  *
  * @param {LeaderboardResponseItem[]} leaderboardApiData
  * @param {number | null} currentUserID
- * @param {number} [leaderboardSize=5]
+ * @param {number} [leaderboardSize=DEFAULT_LEADERBOARD_SIZE]
  * @param {WorkbenchApi} api
  * @returns {Promise<LeaderboardEntry[]>}
  */
-async function setupLeaderboard(leaderboardApiData, currentUserID, leaderboardSize, api) {
+async function setupLeaderboard(
+    leaderboardApiData,
+    currentUserID,
+    leaderboardSize = DEFAULT_LEADERBOARD_SIZE,
+    api,
+) {
 
         // filter only the top n items
         const leaderboard = selectLeaderboardEntries(
@@ -136,15 +185,34 @@ async function setupLeaderboard(leaderboardApiData, currentUserID, leaderboardSi
  *
  * @param {Campaign | Campaign[]} campaigns
  * @param {WorkbenchApi} api
- * @param {{needsGauge?: boolean, needsLeaderboard?: boolean, needsTotal?: boolean}} [requirements]
+ * @param {ProgressComponentType[]} [progressComponentTypes=["gauge", "leaderboard", "total"]]
+ * @param {{leaderboardSize?: number}} [options]
  * @returns {Promise<ProgressCounterState>}
  */
-export async function fetchProgressCounterData(campaigns, api, requirements = {}) {
+export async function fetchProgressCounterData(
+    campaigns,
+    api,
+    progressComponentTypes,
+    options = {},
+) {
     const selectedCampaigns = Array.isArray(campaigns) ? campaigns : [campaigns];
-    const needsGauge = requirements.needsGauge ?? true;
-    const needsLeaderboard = requirements.needsLeaderboard ?? true;
-    const needsTotal = requirements.needsTotal ?? true;
-    const needsVerificationStats = needsGauge || needsLeaderboard || needsTotal;
+    const { leaderboardSize = DEFAULT_LEADERBOARD_SIZE } = options;
+    const requiredDataFetches = new Set();
+
+    if (progressComponentTypes.length === 0) {
+        return { state: "unconfigured" };
+    }
+
+    for (const componentType of progressComponentTypes) {
+        const componentDefinition = PROGRESS_COMPONENT_DEFINITIONS[componentType];
+        if (!componentDefinition) {
+            return { state: "unconfigured" };
+        }
+
+        for (const dataFetch of componentDefinition.requiredDataFetches) {
+            requiredDataFetches.add(dataFetch);
+        }
+    }
 
     if (
         selectedCampaigns.length === 0 ||
@@ -170,19 +238,19 @@ export async function fetchProgressCounterData(campaigns, api, requirements = {}
 
     try {
         const [audioEventStats, verificationStats, userProfile] = await Promise.all([
-            needsGauge ? api.getAudioEventStats(audioEventFilter) : null,
-            needsVerificationStats ? api.getVerificationStats(verificationFilter) : null,
-            needsGauge || needsLeaderboard ? api.getUserProfile() : null,
+            requiredDataFetches.has("audioEventStats") ? api.getAudioEventStats(audioEventFilter) : null,
+            requiredDataFetches.has("verificationStats") ? api.getVerificationStats(verificationFilter) : null,
+            requiredDataFetches.has("userProfile") ? api.getUserProfile() : null,
         ]);
 
         const leaderboardApiData = verificationStats?.verification_leaderboard ?? [];
         const currentUserID = userProfile?.data?.id ?? null;
 
-        const leaderboard = needsLeaderboard
+        const leaderboard = requiredDataFetches.has("userAccounts")
             ? await setupLeaderboard(
                 leaderboardApiData,
                 currentUserID,
-                selectedCampaigns.length === 1 ? selectedCampaigns[0].leaderboard_size : undefined,
+                leaderboardSize,
                 api,
             )
             : [];
@@ -240,6 +308,7 @@ export async function initializeProgressCounters(render) {
     // each "group" is a set of roots that share the same selected campaigns.
     // keys are the JSON stringified names of the selected campaigns.
 
+    /** @type {Map<string, ProgressGroup>} */
     const groups = new Map();
 
     for (const root of roots) {
@@ -254,7 +323,7 @@ export async function initializeProgressCounters(render) {
         const selection = root.dataset.campaign;
         const selectedCampaigns = !selection || selection === "*"
             ? configuredCampaigns
-            : configuredCampaigns.filter((campaign) => campaign.name === selection).slice(0, 1);
+            : configuredCampaigns.filter((campaign) => campaign.name === selection);
 
         // catch the case where no valid campaigns are specified for this root
         if (
@@ -274,27 +343,21 @@ export async function initializeProgressCounters(render) {
             group = {
                 campaigns: selectedCampaigns,
                 roots: [],
-                needsGauge: false,
-                needsLeaderboard: false,
-                needsTotal: false,
+                progressComponentTypes: [],
+                leaderboardSize: undefined,
             };
             groups.set(groupKey, group);
         }
 
-        // add this root to the group's list of roots and 
-        // update the group's requirements flags based on the root's content
-        // requirements is so that we don't do unnecessary work especially api queries
         group.roots.push(root);
-        switch (component) {
-            case "gauge":
-                group.needsGauge = true;
-                break;
-            case "leaderboard":
-                group.needsLeaderboard = true;
-                break;
-            case "total":
-                group.needsTotal = true;
-                break;
+        if (!group.progressComponentTypes.includes(component)) {
+            group.progressComponentTypes.push(component);
+        }
+        if (component === "leaderboard" && group.leaderboardSize === undefined) {
+            const requestedSize = Number(root.dataset.progressLeaderboardSize);
+            group.leaderboardSize = Number.isInteger(requestedSize) && requestedSize > 0
+                ? requestedSize
+                : DEFAULT_LEADERBOARD_SIZE;
         }
     }
 
@@ -302,10 +365,13 @@ export async function initializeProgressCounters(render) {
 
     try {
         const api = await workbenchApi();
-        // for each group of campaigns, fetch the data, passing the group, including the requirements
-        // 
         await Promise.all([...groups.values()].map(async (group) => {
-            const state = await fetchProgressCounterData(group.campaigns, api, group);
+            const state = await fetchProgressCounterData(
+                group.campaigns,
+                api,
+                group.progressComponentTypes,
+                { leaderboardSize: group.leaderboardSize },
+            );
             group.roots.forEach((root) => render(root, state));
         }));
     } catch (error) {

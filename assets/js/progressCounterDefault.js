@@ -3,5 +3,5 @@ import { renderProgressCounter } from "./progressCounterDomRenderer.js";
 import { renderProgressCounterGauge } from "./progressCounterGaugeRenderer.js";
 
 initializeProgressCounters((root, state) => {
-	renderProgressCounter(root, state, renderProgressCounterGauge);
+	renderProgressCounter(root, state, [renderProgressCounterGauge]);
 });

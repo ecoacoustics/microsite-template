@@ -4,13 +4,16 @@
         Parameters:
         - anonymousUserLabel: Optional text used when a username lookup does not
             return a name. Defaults to "Anonymous user".
+        - leaderboardSize: Optional maximum number of rows to display. Defaults
+            to 5.
 
         JavaScript populates [data-progress-leaderboard] and uses
         data-anonymous-user-label as the display fallback.
 */}}
 {{- $campaign := .campaign | default "" -}}
+{{- $leaderboardSize := .leaderboardSize -}}
 
-<div class="leaderboard" data-progress-counter data-progress-component="leaderboard"{{ with $campaign }} data-campaign="{{ . }}"{{ end }}>
+<div class="leaderboard" data-progress-counter data-progress-component="leaderboard"{{ with $campaign }} data-campaign="{{ . }}"{{ end }}{{ with $leaderboardSize }} data-progress-leaderboard-size="{{ . }}"{{ end }}>
     <h2>Top Contributors</h2>
     <p class="progress-counter-status" data-progress-unconfigured hidden>
         Progress data is not configured for this site.
