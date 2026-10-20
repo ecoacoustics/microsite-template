@@ -496,9 +496,10 @@ export class WorkbenchApi {
      *
      * @param {Record<string, unknown>} filterBody
      * @param {unknown[]} [tagIDs]
+    * @param {Record<string, string>} [tagIDMap]
      * @returns {() => Promise<AudioEvent[]>}
      */
-    getVerificationCallback(filterBody, tagIDs = []) {
+    getVerificationCallback(filterBody, tagIDs = [], tagIDMap = {}) {
         const url = this.#createUrl("/audio_events/filter");
         const configuredTagIDs = new Set(
             Array.isArray(tagIDs) ? tagIDs.map((tagID) => Number(tagID)) : [],
@@ -571,7 +572,10 @@ export class WorkbenchApi {
                 ]);
 
                 if (tag) {
-                    model.tag = tag;
+                    const displayText = tagIDMap[String(tag.id)];
+                    model.tag = typeof displayText === "string"
+                        ? { ...tag, text: displayText }
+                        : tag;
                 }
                 model.audio_recording = recording;
             });
