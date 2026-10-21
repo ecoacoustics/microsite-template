@@ -36,6 +36,18 @@ function setText(root, selector, message) {
     if (element) element.textContent = message;
 }
 
+function formatAnonymousUserLabel(anonymousUserLabel, userID) {
+    const resolvedLabel = anonymousUserLabel ||
+        globalThis.siteParams?.progress_counter?.anonymous_user_label ||
+        "User {user_id}";
+
+    if (userID === null || userID === undefined) {
+        return resolvedLabel;
+    }
+
+    return resolvedLabel.replaceAll("{user_id}", String(userID));
+}
+
 /**
  * Renders normalized leaderboard data into the default table component.
  *
@@ -46,7 +58,6 @@ function renderLeaderboard(root, leaderboard) {
     const target = root.querySelector("[data-progress-leaderboard]");
     if (!target) return;
 
-    const anonymousUserLabel = target.dataset.anonymousUserLabel;
     target.replaceChildren(
         ...leaderboard.map((entry) => {
             const row = document.createElement("tr");
@@ -55,7 +66,7 @@ function renderLeaderboard(root, leaderboard) {
 
             [
                 String(entry.rank),
-                String(entry.name ?? anonymousUserLabel ?? ""),
+                 String(entry.name ?? formatAnonymousUserLabel(target.dataset.anonymousUserLabel, entry.user_id)),
                 (Number(entry.verificationCount) || 0).toLocaleString(),
             ].forEach((value) => {
                 const cell = document.createElement("td");

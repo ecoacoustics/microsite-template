@@ -496,7 +496,7 @@ export class WorkbenchApi {
      *
      * @param {Record<string, unknown>} filterBody
      * @param {unknown[]} [tagIDs]
-    * @param {Record<string, string>} [tagIDMap]
+     * @param {Record<string, string>} [tagIDMap] - A mapping of tag IDs to tag names
      * @returns {() => Promise<AudioEvent[]>}
      */
     getVerificationCallback(filterBody, tagIDs = [], tagIDMap = {}) {
@@ -571,6 +571,7 @@ export class WorkbenchApi {
                     this.getAudioRecording(model.audio_recording_id),
                 ]);
 
+                // TODO: remove this once tag groups are implemented
                 if (tag) {
                     const displayText = tagIDMap[String(tag.id)];
                     model.tag = typeof displayText === "string"

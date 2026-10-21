@@ -2,8 +2,10 @@
         Renders the leaderboard as an independently initialized component.
 
         Parameters:
-        - anonymousUserLabel: Optional text used when a username lookup does not
-            return a name. Defaults to "Anonymous user".
+        - anonymousUserLabel: Optional fallback text used when a username lookup
+            does not return a name. The `{user_id}` token is replaced with the
+            leaderboard row's user ID. JavaScript falls back to the site
+            configuration or "User {user_id}" when it is not provided.
         - leaderboardSize: Optional maximum number of rows to display. Defaults
             to 5.
 
@@ -27,7 +29,7 @@
     <table>
         <tbody
             data-progress-leaderboard
-            data-anonymous-user-label="{{ .anonymousUserLabel | default "Anonymous user" }}"
+            {{ with .anonymousUserLabel }}data-anonymous-user-label="{{ . }}"{{ end }}
         ></tbody>
     </table>
 </div>

@@ -47,7 +47,13 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
 
   // TODO: this event name and filter body should be pulled from the microsite
   // config file
-  target.getPage = api.getVerificationCallback(mergedFilterBody, campaign.tag_ids);
+  target.getPage = api.getVerificationCallback(
+    mergedFilterBody,
+    campaign.tag_ids,
+    // TODO: This tag map is to replace scientific names with common names. This is 
+    //      temporary until tag groups are implmented on the server
+    globalThis.siteParams?.tag_id_map,
+  );
   target.urlTransformer = api.createMediaUrlTransformer();
 
   target.addEventListener("decision-made", (event) => {
