@@ -496,7 +496,7 @@ export class WorkbenchApi {
      *
      * @param {Record<string, unknown>} filterBody
      * @param {unknown[]} [tagIDs]
-    * @param {Record<string, string>} [tagIDMap]
+     * @param {Record<string, string>} [tagIDMap] - A mapping of tag IDs to tag names
      * @returns {() => Promise<AudioEvent[]>}
      */
     getVerificationCallback(filterBody, tagIDs = [], tagIDMap = {}) {

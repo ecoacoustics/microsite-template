@@ -5,14 +5,14 @@
         - campaign: Optional campaign name or "*" for all configured campaigns.
             When omitted, all configured campaigns are used.
         - leaderboardSize: Optional maximum number of leaderboard rows to display.
+            - anonymousUserLabel: Optional fallback label for leaderboard users without
+                a public username. Supports the `{user_id}` token.
 
         Each renderable component owns its data-progress-counter root and
         campaign selection.
 */}}
-{{- $campaign := .campaign | default "" -}}
-
 <div class="progress-counter">
-    {{ partial "progress-counter/gauge.html" (dict "campaign" $campaign) }}
-    {{ partial "progress-counter/leaderboard.html" (dict "campaign" $campaign "anonymousUserLabel" .anonymousUserLabel "leaderboardSize" .leaderboardSize) }}
-    {{ partial "progress-counter/total.html" (dict "campaign" $campaign) }}
+    {{ partial "progress-counter/gauge.html" (dict "campaign" .campaign) }}
+    {{ partial "progress-counter/leaderboard.html" (dict "campaign" .campaign "anonymousUserLabel" .anonymousUserLabel "leaderboardSize" .leaderboardSize) }}
+    {{ partial "progress-counter/total.html" (dict "campaign" .campaign) }}
 </div>
