@@ -6,7 +6,8 @@
         margin: 0 0 0.75rem;
         color: var(--progress-accent);
         font-size: 1.25rem;
-        text-align: center;
+        text-align: left;
+        margin-left: 1.2rem;
     }
 
     table {
