@@ -22,16 +22,7 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
 
   const taskFilter = campaign.only_unverified === false
     ? {
-        or: [
-          { "verifications.creator_id": { not_eq: currentUserID } },
-          { "verifications.id": { eq: null } },
-          {
-            and: [
-              { "verifications.creator_id": { eq: currentUserID } },
-              { "verifications.confirmed": { eq: "skip" } },
-            ],
-          },
-        ],
+        "not": {"verifications.creator_id": { "eq": currentUserID }}
       }
     : { verification_count: { eq: 0 } };
 

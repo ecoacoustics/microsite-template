@@ -5,7 +5,7 @@
  * @param {string} tagField The field in the filter to which the tags should be applied.
  * @returns {Record<string, unknown> | null}
  */
-export function createTagFilter(tagIDs, tagField = "tags.id") {
+export function createTagFilter(tagIDs, tagField = "audio_events_tags.tag_id") {
   if (!Array.isArray(tagIDs) || tagIDs.length === 0) {
     return null;
   }
