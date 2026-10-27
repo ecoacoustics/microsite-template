@@ -20,11 +20,32 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
     return;
   }
 
+  // const taskFilter = campaign.only_unverified === false
+  //   ? {
+  //       or: [
+  //         { "verifications.creator_id": { not_eq: currentUserID } },
+  //         { "verifications.id": { eq: null } },
+  //         {
+  //           and: [
+  //             { "verifications.creator_id": { eq: currentUserID } },
+  //             { "verifications.confirmed": { eq: "skip" } },
+  //           ],
+  //         },
+  //       ],
+  //     }
+  //   : { verification_count: { eq: 0 } };
+
+  // TODO: to not exclude skipped verifications, we need to either 
+  // not filter events on verifications at all and use a second filter on verifications to exclude those that were verified not including skip
+  // OR wait for an update for the API to scope filters by related models
+  // The above filter does not work, filters on has-many relationships are done with independed subqueries
   const taskFilter = campaign.only_unverified === false
     ? {
         "not": {"verifications.creator_id": { "eq": currentUserID }}
       }
     : { verification_count: { eq: 0 } };
+
+
 
   // Merge the campaign filters with the tag and task filters.
   const mergedFilterBody = {
