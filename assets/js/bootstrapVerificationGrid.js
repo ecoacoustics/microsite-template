@@ -20,6 +20,17 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
     return;
   }
 
+  const configuredTagIDs = Array.isArray(campaign.tag_ids)
+    ? campaign.tag_ids.map(Number).filter(Number.isInteger)
+    : [];
+  const focusTagIDs = (new URLSearchParams(globalThis.location.search).get("focus") ?? "")
+    .split(",")
+    .map(Number)
+    .filter(Number.isInteger);
+  const filterTagIDs = focusTagIDs.length > 0
+    ? configuredTagIDs.filter((tagID) => focusTagIDs.includes(tagID))
+    : configuredTagIDs;
+
   // const taskFilter = campaign.only_unverified === false
   //   ? {
   //       or: [
@@ -52,7 +63,7 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
     ...campaignFilters,
     filter: combineFilters([
       campaignFilters.filter,
-      createTagFilter(campaign.tag_ids),
+      createTagFilter(filterTagIDs),
       taskFilter,
     ]),
   };
@@ -61,7 +72,7 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
   // config file
   target.getPage = api.getVerificationCallback(
     mergedFilterBody,
-    campaign.tag_ids,
+    filterTagIDs,
     // TODO: This tag map is to replace scientific names with common names. This is 
     //      temporary until tag groups are implmented on the server
     globalThis.siteParams?.tag_id_map,
