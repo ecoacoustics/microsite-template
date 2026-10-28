@@ -23,10 +23,10 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
   const configuredTagIDs = Array.isArray(campaign.tag_ids)
     ? campaign.tag_ids.map(Number).filter(Number.isInteger)
     : [];
-  const focusTagIDs = (new URLSearchParams(globalThis.location.search).get("focus") ?? "")
-    .split(",")
-    .map(Number)
-    .filter(Number.isInteger);
+  const focusValue = new URLSearchParams(globalThis.location.search).get("focus");
+  const focusTagIDs = focusValue
+    ? focusValue.split(",").map(Number).filter(Number.isInteger)
+    : [];
   const filterTagIDs = focusTagIDs.length > 0
     ? configuredTagIDs.filter((tagID) => focusTagIDs.includes(tagID))
     : configuredTagIDs;
