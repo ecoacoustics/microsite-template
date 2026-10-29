@@ -4,6 +4,14 @@ const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
 const api = await workbenchApi();
 
+// Allow a verify page to dynamically sub-select part of its campaign  
+// to verify. We use this to focus on a subset (typically one) of the campaign's 
+// tag_ids at at time.  
+const focusQsp = new URLSearchParams(globalThis.location.search).get("focus");
+const focusTagIDs = focusQsp
+    ? focusQsp.split(",").map(Number).filter(Number.isInteger)
+    : [];
+
 /**
  * @description
  * Prepares a verification grid with the necessary config to contact the
@@ -23,10 +31,8 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
   const configuredTagIDs = Array.isArray(campaign.tag_ids)
     ? campaign.tag_ids.map(Number).filter(Number.isInteger)
     : [];
-  const focusValue = new URLSearchParams(globalThis.location.search).get("focus");
-  const focusTagIDs = focusValue
-    ? focusValue.split(",").map(Number).filter(Number.isInteger)
-    : [];
+  
+ 
   const filterTagIDs = focusTagIDs.length > 0
     ? configuredTagIDs.filter((tagID) => focusTagIDs.includes(tagID))
     : configuredTagIDs;
