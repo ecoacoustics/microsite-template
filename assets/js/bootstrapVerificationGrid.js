@@ -4,6 +4,14 @@ const gridElements = () => document.querySelectorAll("oe-verification-grid");
 
 const api = await workbenchApi();
 
+// Allow a verify page to dynamically sub-select part of its campaign  
+// to verify. We use this to focus on a subset (typically one) of the campaign's 
+// tag_ids at at time.  
+const focusQsp = new URLSearchParams(globalThis.location.search).get("focus");
+const focusTagIDs = focusQsp
+    ? focusQsp.split(",").map(Number).filter(Number.isInteger)
+    : [];
+
 /**
  * @description
  * Prepares a verification grid with the necessary config to contact the
@@ -19,6 +27,15 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
     console.error(`Campaign ${campaign?.name ?? "unknown"} does not have a filters set`);
     return;
   }
+
+  const configuredTagIDs = Array.isArray(campaign.tag_ids)
+    ? campaign.tag_ids.map(Number).filter(Number.isInteger)
+    : [];
+  
+ 
+  const filterTagIDs = focusTagIDs.length > 0
+    ? configuredTagIDs.filter((tagID) => focusTagIDs.includes(tagID))
+    : configuredTagIDs;
 
   // const taskFilter = campaign.only_unverified === false
   //   ? {
@@ -52,7 +69,7 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
     ...campaignFilters,
     filter: combineFilters([
       campaignFilters.filter,
-      createTagFilter(campaign.tag_ids),
+      createTagFilter(filterTagIDs),
       taskFilter,
     ]),
   };
@@ -61,7 +78,7 @@ async function bootstrapVerificationGrid(target, campaign, currentUserID) {
   // config file
   target.getPage = api.getVerificationCallback(
     mergedFilterBody,
-    campaign.tag_ids,
+    filterTagIDs,
     // TODO: This tag map is to replace scientific names with common names. This is 
     //      temporary until tag groups are implmented on the server
     globalThis.siteParams?.tag_id_map,
