@@ -41,8 +41,24 @@
 }
 
 .footer-acknowledgement {
-    font-size: 0.8rem;
-    margin: 1.5rem 3rem;
     text-align: center;
-    line-height: 1.5;
+    margin-top: var(--space-medium);
+    background: var(--color-surface-alt);
+    background: var(--color-text);
+    color: var(--color-surface);
+    margin: auto 0;
+    grid-column: fullbleed;
+    display: grid;
+    grid-template-columns: subgrid;
+    margin: 0;
+    padding: 0;
+
+    .acknowledgement-content {
+        grid-column: main;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 2rem 3rem;
+        font-size: var(--micro-font-size-xsmall);
+        text-align: center;
+    }
 }
