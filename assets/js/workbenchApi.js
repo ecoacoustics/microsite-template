@@ -573,9 +573,10 @@ export class WorkbenchApi {
 
                 // TODO: remove this once tag groups are implemented
                 if (tag) {
+                    model.actual_tag = tag;
                     const displayText = tagIDMap[String(tag.id)];
                     model.tag = typeof displayText === "string"
-                        ? { ...tag, text: displayText }
+                        ? displayText
                         : tag;
                 }
                 model.audio_recording = recording;
