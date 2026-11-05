@@ -456,7 +456,7 @@ export class WorkbenchApi {
      */
     async deleteVerification(model) {
         const audioEventId = model.subject.id;
-        const tagId = model.tag.id;
+        const tagId = model.subject.workbench_tag.id;
         const currentUserId = (await this.getUserProfile())?.data?.id;
 
         const filterEndpoint = this.#createUrl(`/verifications/filter`);
@@ -573,7 +573,11 @@ export class WorkbenchApi {
 
                 // TODO: remove this once tag groups are implemented
                 if (tag) {
-                    model.actual_tag = tag;
+
+                    // retain the original tag object for constructing the verification payload
+                    model.workbench_tag = tag;
+
+                    // replace the tag property for use by the oe-components
                     const displayText = tagIDMap[String(tag.id)];
                     model.tag = typeof displayText === "string"
                         ? displayText
@@ -867,12 +871,10 @@ export class WorkbenchApi {
      */
     #verificationToBawModel(model) {
         const apiDecision = bawApiDecisionMapping[model.verification.confirmed];
-        const tagId = model.tag.id;
-
         const subject = model.subject;
         const apiModel = {
             audio_event_id: subject.id,
-            tag_id: tagId,
+            tag_id: subject.workbench_tag.id,
             confirmed: apiDecision,
         };
 
