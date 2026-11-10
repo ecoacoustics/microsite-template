@@ -1,0 +1,29 @@
+{{- $section := .section -}}
+{{- $sectionPath := .sectionPath -}}
+{{- $id := .id -}}
+{{- $title := .title | default "Recording locations" -}}
+{{- if not $section -}}
+    {{- if $sectionPath -}}
+        {{- errorf "map-cards section %q was not found" $sectionPath -}}
+    {{- else -}}
+        {{- errorf "map cards renderer requires a section page" -}}
+    {{- end -}}
+{{- else if ne $section.Kind "section" -}}
+    {{- errorf "map cards renderer: %q is not a section; provide a section with an _index.md" $section.Path -}}
+{{- else if not $id -}}
+    {{- errorf "map cards renderer requires a unique id" -}}
+{{- else if not $section.RegularPages -}}
+    {{- errorf "map cards section %q contains no marker pages" $section.Path -}}
+{{- else -}}
+    <section id="{{ $id }}" class="micro-map-cards" aria-labelledby="{{ $id }}-title">
+        <h2 class="micro-map-cards-title" id="{{ $id }}-title">{{ $title }}</h2>
+        <div class="micro-map-cards-grid">
+            {{- range $markerPage := $section.RegularPages.ByWeight -}}
+                {{- partial "map/card.html" (dict
+                    "markerPage" $markerPage
+                    "section" $section
+                ) -}}
+            {{- end -}}
+        </div>
+    </section>
+{{- end -}}

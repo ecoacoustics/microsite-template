@@ -1,12 +1,24 @@
 {{/*
     Default inner content for a map callout.
 
-    The map shortcode owns the outer map-callout article and close button.
+    The map renderer owns the outer map-callout article and close button.
     Parent sites can override this partial to render site-specific content.
+    The partial receives the map renderer context plus the current markerPage.
 */}}
-{{- $site := .site -}}
+{{- $markerPage := .markerPage -}}
+{{- $callout := $markerPage.Params.callout | default dict -}}
+{{- range $field := slice "heading" "image" "description" "link" -}}
+    {{- if not (index $callout $field) -}}
+        {{- errorf "map marker %q is missing required callout.%s" $markerPage.File.Path $field -}}
+    {{- end -}}
+{{- end -}}
+{{- $image := resources.Get $callout.image -}}
+{{- if not $image -}}
+    {{- errorf "map marker %q references missing image resource %q in callout.image" $markerPage.File.Path $callout.image -}}
+{{- end -}}
 <div class="map-callout-content">
-    <h3 class="map-callout-title">{{ $site.campaign }}</h3>
-    <p class="map-callout-text">{{ $site.description }}</p>
-    <a class="map-callout-link" href="{{ $site.page }}">Learn more</a>
+    <h3 class="map-callout-title">{{ $callout.heading }}</h3>
+    {{ with $image }}<img class="map-callout-image" src="{{ .RelPermalink }}" alt="{{ $callout.image_alt | default "" }}">{{ end }}
+    <p class="map-callout-text">{{ $callout.description }}</p>
+    <a class="map-callout-link" href="{{ $callout.link }}">Learn more</a>
 </div>

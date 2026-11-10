@@ -31,14 +31,6 @@ params:
   hero_image: images/Plains_wanderer_female.jpg
   # Defaults to the hero image
   login_background_image: ~
-  # Required by the map and site-cards shortcodes. Add one entry per recording site.
-  map:
-    sites:
-      - campaign: "Example Recording Site"
-        latitude: -27.5
-        longitude: 153.0
-        page: "/"
-        description: "An example acoustic recording location."
   # navbar:
   #   logo:
   #     image: "images/OpenEcoacoustics_horizontal_rgb.svg" # default: none

@@ -1,0 +1,11 @@
+{{- $sectionPath := .Get "section" -}}
+{{- $section := false -}}
+{{- with $sectionPath -}}
+    {{- $section = site.GetPage . -}}
+{{- end -}}
+{{- partial "map/render-cards.html" (dict
+    "section" $section
+    "sectionPath" $sectionPath
+    "id" (.Get "id" | default (printf "map-cards-%03d" .Ordinal))
+    "title" (.Get "title")
+) -}}

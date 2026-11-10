@@ -81,9 +81,51 @@
     font-size: 1.35rem;
 }
 
+.map-callout-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 0.75rem;
+}
+
 .map-callout-text {
     color: var(--map-muted, #65757a);
     line-height: 1.35;
+}
+
+.micro-map-cards {
+    padding: clamp(2rem, 5vw, 4rem) 1.5rem;
+}
+
+.micro-map-cards-title {
+    margin: 0 0 1.5rem;
+}
+
+.micro-map-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem;
+}
+
+.micro-map-card {
+    overflow: hidden;
+    border: 1px solid #c8d4d2;
+    border-radius: 0.5rem;
+    background: white;
+    box-shadow: 0 0.25rem 1rem rgba(36, 50, 56, 0.12);
+}
+
+.micro-map-card-content {
+    padding: 1.25rem;
+}
+
+.micro-map-card-title {
+    margin: 0 0 0.75rem;
+}
+
+.micro-map-card-text {
+    color: var(--map-muted, #65757a);
+    line-height: 1.5;
 }
 
 .map-marker-button {

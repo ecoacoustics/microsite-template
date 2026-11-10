@@ -87,3 +87,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 {{< sponsors />}}
 
 {{< sponsors dark=true />}}
+
+## Map and cards
+
+{{< map section="maps/demo" id="theme-map-demo" >}}
+
+{{< map-cards section="maps/demo" id="theme-map-demo-cards" title="Example recording locations" >}}

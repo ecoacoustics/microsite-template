@@ -1,11 +1,13 @@
-{{/*
-    Default inner content for a recording-location card.
-
-    The site-cards shortcode owns the outer site-card article. Parent sites
-    can override this partial to render richer site information.
-*/}}
-{{- $site := .site -}}
-<div class="site-info-content">
-    <h3 class="site-info-title">{{ $site.campaign }}</h3>
-    <p class="site-info-text">{{ $site.description }}</p>
-</div>
+{{- $markerPage := .markerPage -}}
+{{- $callout := $markerPage.Params.callout | default dict -}}
+{{- range $field := slice "heading" "description" -}}
+    {{- if not (index $callout $field) -}}
+        {{- errorf "map marker %q is missing required callout.%s for its card" $markerPage.File.Path $field -}}
+    {{- end -}}
+{{- end -}}
+<article class="micro-map-card">
+    <div class="micro-map-card-content">
+        <h3 class="micro-map-card-title">{{ $callout.heading }}</h3>
+        <p class="micro-map-card-text">{{ $callout.description }}</p>
+    </div>
+</article>

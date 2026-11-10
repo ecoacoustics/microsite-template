@@ -1,0 +1,156 @@
+{{/*
+Render a map from a Hugo section's location-marker pages.
+
+The caller must pass a dictionary containing:
+- sectionPath: the path to the Hugo section whose regular pages are the locations
+- id: a unique HTML id for this map
+mapParams contains map settings, callbacks, and preview/onboarding options;
+it overrides the section front matter.
+The nested map_options value contains Google Maps options.
+The optional page value is forwarded to custom callout partials.
+
+The renderer resolves and validates the section path and every marker's latitude/longitude.
+It builds mapItems for rendering the marker callouts, then creates a smaller
+locations list and forwards map_options to the browser. The defaults for those
+settings live in assets/js/map.js.
+
+In normal mode, this partial renders the map and callout HTML, serializes the
+configuration into data-map-config, and loads the external map.js module. That
+module reads the configuration and initializes the map. In preview-only mode,
+the partial renders the first marker's callout without map markup or JavaScript.
+
+Each callout receives the renderer's input context plus its markerPage, allowing
+a site-specific map/callout.html override to use both the displaying page and
+the current location page.
+*/}}
+{{ $sectionPath := .sectionPath }}
+{{ $mapSection := false }}
+{{ $mapID := .id }}
+{{ $mapParamOverrides := .mapParams | default dict }}
+{{ $mapNarrowBreakpoint := default "768px" site.Params.style.smallBreakPoint }}
+{{ $mapItems := slice }}
+{{ $mapReady := false }}
+{{ if not $mapID }}
+    {{ errorf "map renderer requires a unique id" }}
+{{ else if not $sectionPath }}
+    {{ errorf "map renderer requires a section path" }}
+{{ else }}
+    {{ $mapSection = site.GetPage $sectionPath }}
+    {{ if not $mapSection }}
+        {{ errorf "map renderer: section path %q was not found" $sectionPath }}
+    {{ else if ne $mapSection.Kind "section" }}
+        {{ errorf "map renderer: %q is not a section; provide a section with an _index.md" $sectionPath }}
+    {{ else }}
+        {{ $mapReady = true }}
+        {{ range $markerPage := $mapSection.RegularPages.ByWeight }}
+            {{ if or (not (isset $markerPage.Params "latitude")) (not (isset $markerPage.Params "longitude")) }}
+                {{ errorf "map marker %q must define both latitude and longitude" $markerPage.File.Path }}
+            {{ else }}
+                {{ $latitude := float $markerPage.Params.latitude }}
+                {{ $longitude := float $markerPage.Params.longitude }}
+                {{ $mapItems = $mapItems | append (dict
+                    "label" $markerPage.LinkTitle
+                    "latitude" $latitude
+                    "longitude" $longitude
+                    "markerPage" $markerPage
+                ) }}
+            {{ end }}
+        {{ end }}
+        {{ if not $mapItems }}
+            {{ errorf "map section %q contains no valid marker pages" $mapSection.Path }}
+            {{ $mapReady = false }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ if not $mapReady }}
+<section class="map map-configuration-error" aria-label="Field sites">
+    <div class="map-stage">
+        <div class="map-shell">
+            <div class="map-message" role="alert">
+                <p><strong>Map configuration required.</strong> Provide a valid <code>section</code> containing marker pages.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ else }}
+{{ $mapParams := mergeOverwrite $mapSection.Params $mapParamOverrides }}
+{{ $onCalloutShown := index $mapParams "on_callout_shown" | default "" }}
+{{ $onCalloutHidden := index $mapParams "on_callout_hidden" | default "" }}
+{{ $previewCalloutOnly := index $mapParams "preview_callout_only" | default false }}
+{{ $mapOnboardingTitle := index $mapParams "onboarding_title" | default "Explore the diverse recording locations" }}
+{{ $mapOnboardingText := index $mapParams "onboarding_text" | default "Choose a location on the map to find out more about the field site." }}
+{{ $mapOptions := index $mapParams "map_options" | default dict }}
+{{ if not (reflect.IsMap $mapOptions) }}
+    {{ errorf "map params map_options must be a map" }}
+    {{ $mapOptions = dict }}
+{{ end }}
+{{ $mapLocations := slice }}
+{{ range $mapItem := $mapItems }}
+    {{ $mapLocations = $mapLocations | append (dict
+        "label" $mapItem.label
+        "latitude" $mapItem.latitude
+        "longitude" $mapItem.longitude
+    ) }}
+{{ end }}
+{{ $mapConfig := dict
+    "locations" $mapLocations
+    "mapOptions" $mapOptions
+    "googleMapsAPIKey" (getenv "GOOGLE_MAPS_API_KEY")
+    "googleMapsMapID" (getenv "GOOGLE_MAPS_MAP_ID")
+    "isDev" (not hugo.IsProduction)
+    "onCalloutShown" $onCalloutShown
+    "onCalloutHidden" $onCalloutHidden
+}}
+
+<section id="{{ $mapID }}" class="map{{ if $previewCalloutOnly }} map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}"{{ if not $previewCalloutOnly }} data-map-config="{{ $mapConfig | jsonify }}"{{ end }} aria-label="Field sites">
+    <div class="map-stage">
+        <div class="map-shell">
+            {{ if $previewCalloutOnly }}
+                {{ $mapItem := index $mapItems 0 }}
+                <article class="map-callout dev-callout-preview" aria-label="Development callout preview" tabindex="-1">
+                    {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
+                </article>
+            {{ else }}
+            <div class="map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
+            <svg class="map-leader-lines" aria-hidden="true"><line class="map-leader-line" /></svg>
+            <aside class="map-callout map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
+                <div class="map-callout-content">
+                    <h3 class="map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
+                    <p class="map-callout-text">{{ $mapOnboardingText }}</p>
+                </div>
+            </aside>
+            {{ range $siteIndex, $mapItem := $mapItems }}
+                <article
+                    class="map-callout"
+                    id="{{ printf "%s-callout-%03d" $mapID $siteIndex }}"
+                    role="dialog"
+                    aria-label="{{ $mapItem.label }} site details"
+                    tabindex="-1"
+                    hidden
+                >
+                    <button class="map-callout-close" type="button" aria-label="Close site details">&times;</button>
+                    {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
+                </article>
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+{{/*
+In callout-preview mode, omit the map bundle so Google Maps does not initialize
+while developing callout markup and styles. Interactive maps use a plain module
+URL in development and a minified, fingerprinted module with SRI in production.
+*/}}
+{{ if not $previewCalloutOnly }}
+{{ with resources.Get "js/map.js" | js.Build (dict "format" "esm") }}
+    {{ if eq hugo.Environment "development" }}
+        <script src="{{ .RelPermalink }}" type="module"></script>
+    {{ else }}
+        {{ with . | minify | fingerprint }}
+            <script src="{{ .RelPermalink }}" type="module" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
