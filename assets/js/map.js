@@ -6,15 +6,15 @@ function initializeMapElement(root) {
     // Parsed settings and metadata serialized by the Hugo map renderer.
     const config = JSON.parse(root.dataset.mapConfig);
     // Shared positioning container for the map, callouts, and leader line.
-    const mapShell = root.querySelector(".map-shell");
+    const mapShell = root.querySelector(".micro-map-shell");
     // Element into which Google Maps renders.
-    const mapElement = root.querySelector(".map-element");
+    const mapElement = root.querySelector(".micro-map-element");
     // Introductory callout shown before a location is selected.
-    const onboardingCallout = root.querySelector(".map-onboarding-callout");
+    const onboardingCallout = root.querySelector(".micro-map-onboarding-callout");
     // Location callouts 
-    const callouts = [...root.querySelectorAll("article.map-callout")];
+    const callouts = [...root.querySelectorAll("article.micro-map-callout")];
     // SVG line connecting the selected marker to its callout.
-    const leaderLine = root.querySelector(".map-leader-line");
+    const leaderLine = root.querySelector(".micro-map-leader-line");
     // Location metadata used for marker creation and callback arguments.
     const locations = config.locations;
     // Credentials and environment flag used by the Maps API loader.
@@ -55,7 +55,7 @@ function initializeMapElement(root) {
 
     /** Displays a map initialization or loading error inside this map. */
     function showMapMessage(message) {
-        mapElement.innerHTML = `<div class="map-message">${message}</div>`;
+        mapElement.innerHTML = `<div class="micro-map-message">${message}</div>`;
     }
 
     /** Loads the Google Maps API once and shares the pending promise across maps. */
@@ -272,11 +272,11 @@ function initializeMapElement(root) {
         });
         const markers = locations.map((location, index) => {
             const markerButton = document.createElement("button");
-            markerButton.className = "map-marker-button";
+            markerButton.className = "micro-map-marker-button";
             markerButton.type = "button";
             markerButton.ariaLabel = location.label;
             markerButton.setAttribute("aria-pressed", "false");
-            markerButton.innerHTML = '<span class="map-marker-dot"></span>';
+            markerButton.innerHTML = '<span class="micro-map-marker-dot"></span>';
             const marker = new AdvancedMarkerElement({ content: markerButton, gmpClickable: true, map, position: { lat: location.latitude, lng: location.longitude }, title: location.label });
             markerButton.addEventListener("click", () => selectLocation(index, markers));
             return marker;
@@ -285,7 +285,7 @@ function initializeMapElement(root) {
         map.addListener("bounds_changed", startLeaderLineTracking);
         map.addListener("idle", stopLeaderLineTracking);
         window.addEventListener("resize", updateLeaderLine);
-        callouts.forEach((callout, index) => callout.querySelector(".map-callout-close").addEventListener("click", () => {
+        callouts.forEach((callout, index) => callout.querySelector(".micro-map-callout-close").addEventListener("click", () => {
             const markerToRestore = selectedMarkerElement;
             selectedIndex = null;
             selectedMarkerElement = null;
@@ -299,7 +299,7 @@ function initializeMapElement(root) {
         root.addEventListener("keydown", (event) => {
             if (event.key !== "Escape" || !activeCallout) return;
             event.preventDefault();
-            activeCallout.querySelector(".map-callout-close")?.click();
+            activeCallout.querySelector(".micro-map-callout-close")?.click();
         });
     }
 
@@ -309,4 +309,4 @@ function initializeMapElement(root) {
     });
 }
 
-document.querySelectorAll(".map[data-map-config]").forEach(initializeMapElement);
+document.querySelectorAll(".micro-map[data-map-config]").forEach(initializeMapElement);

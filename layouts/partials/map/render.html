@@ -14,10 +14,10 @@ It builds mapItems for rendering the marker callouts, then creates a smaller
 locations list and forwards map_options to the browser. The defaults for those
 settings live in assets/js/map.js.
 
-In normal mode, this partial renders the map and callout HTML, serializes the
-configuration into data-map-config, and loads the external map.js module. That
-module reads the configuration and initializes the map. In preview-only mode,
-the partial renders the first marker's callout without map markup or JavaScript.
+In normal mode, this partial renders the map and callout HTML and serializes the
+configuration into data-map-config. The shared head pipeline loads map.js,
+which reads the configuration and initializes each map. In preview-only mode,
+the partial renders the first marker's callout without interactive map markup.
 
 Each callout receives the renderer's input context plus its markerPage, allowing
 a site-specific map/callout.html override to use both the displaying page and
@@ -63,10 +63,10 @@ the current location page.
     {{ end }}
 {{ end }}
 {{ if not $mapReady }}
-<section class="map map-configuration-error" aria-label="Field sites">
-    <div class="map-stage">
-        <div class="map-shell">
-            <div class="map-message" role="alert">
+<section class="micro-map micro-map-configuration-error" aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
+            <div class="micro-map-message" role="alert">
                 <p><strong>Map configuration required.</strong> Provide a valid <code>section</code> containing marker pages.</p>
             </div>
         </div>
@@ -102,33 +102,33 @@ the current location page.
     "onCalloutHidden" $onCalloutHidden
 }}
 
-<section id="{{ $mapID }}" class="map{{ if $previewCalloutOnly }} map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}"{{ if not $previewCalloutOnly }} data-map-config="{{ $mapConfig | jsonify }}"{{ end }} aria-label="Field sites">
-    <div class="map-stage">
-        <div class="map-shell">
+<section id="{{ $mapID }}" class="micro-map{{ if $previewCalloutOnly }} micro-map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}"{{ if not $previewCalloutOnly }} data-map-config="{{ $mapConfig | jsonify }}"{{ end }} aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
             {{ if $previewCalloutOnly }}
                 {{ $mapItem := index $mapItems 0 }}
-                <article class="map-callout dev-callout-preview" aria-label="Development callout preview" tabindex="-1">
+                <article class="micro-map-callout micro-map-callout-preview" aria-label="Development callout preview" tabindex="-1">
                     {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
                 </article>
             {{ else }}
-            <div class="map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
-            <svg class="map-leader-lines" aria-hidden="true"><line class="map-leader-line" /></svg>
-            <aside class="map-callout map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
-                <div class="map-callout-content">
-                    <h3 class="map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
-                    <p class="map-callout-text">{{ $mapOnboardingText }}</p>
+            <div class="micro-map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
+            <svg class="micro-map-leader-lines" aria-hidden="true"><line class="micro-map-leader-line" /></svg>
+            <aside class="micro-map-callout micro-map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
+                <div class="micro-map-callout-content">
+                    <h3 class="micro-map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
+                    <p class="micro-map-callout-text">{{ $mapOnboardingText }}</p>
                 </div>
             </aside>
             {{ range $siteIndex, $mapItem := $mapItems }}
                 <article
-                    class="map-callout"
+                    class="micro-map-callout"
                     id="{{ printf "%s-callout-%03d" $mapID $siteIndex }}"
                     role="dialog"
                     aria-label="{{ $mapItem.label }} site details"
                     tabindex="-1"
                     hidden
                 >
-                    <button class="map-callout-close" type="button" aria-label="Close site details">&times;</button>
+                    <button class="micro-map-callout-close" type="button" aria-label="Close site details">&times;</button>
                     {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
                 </article>
             {{ end }}
@@ -137,20 +137,4 @@ the current location page.
     </div>
 </section>
 
-{{/*
-In callout-preview mode, omit the map bundle so Google Maps does not initialize
-while developing callout markup and styles. Interactive maps use a plain module
-URL in development and a minified, fingerprinted module with SRI in production.
-*/}}
-{{ if not $previewCalloutOnly }}
-{{ with resources.Get "js/map.js" | js.Build (dict "format" "esm") }}
-    {{ if eq hugo.Environment "development" }}
-        <script src="{{ .RelPermalink }}" type="module"></script>
-    {{ else }}
-        {{ with . | minify | fingerprint }}
-            <script src="{{ .RelPermalink }}" type="module" integrity="{{ .Data.Integrity }}" crossorigin="anonymous"></script>
-        {{ end }}
-    {{ end }}
-{{ end }}
-{{ end }}
 {{ end }}
