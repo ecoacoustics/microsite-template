@@ -1,11 +1,19 @@
 {{- $sectionPath := .Get "section" -}}
 {{- $section := false -}}
+{{- $beforeCards := .Inner | default "" | strings.TrimSpace -}}
+{{- with $beforeCards -}}
+    {{- $beforeCards = $.Page.RenderString . -}}
+{{- end -}}
 {{- with $sectionPath -}}
     {{- $section = site.GetPage . -}}
 {{- end -}}
 {{- partial "map/render-cards.html" (dict
     "section" $section
     "sectionPath" $sectionPath
+    "page" .Page
     "id" (.Get "id" | default (printf "map-cards-%03d" .Ordinal))
     "title" (.Get "title")
+    "intro" (.Get "intro")
+    "beforeCards" $beforeCards
+    "layout" (.Get "layout")
 ) -}}

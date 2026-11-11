@@ -2,6 +2,9 @@
 {{- $sectionPath := .sectionPath -}}
 {{- $id := .id -}}
 {{- $title := .title | default "Recording locations" -}}
+{{- $intro := .intro -}}
+{{- $beforeCards := .beforeCards -}}
+{{- $layout := .layout | default "map/card-outer.html" -}}
 {{- if not $section -}}
     {{- if $sectionPath -}}
         {{- errorf "map-cards section %q was not found" $sectionPath -}}
@@ -17,11 +20,15 @@
 {{- else -}}
     <section id="{{ $id }}" class="micro-map-cards" aria-labelledby="{{ $id }}-title">
         <h2 class="micro-map-cards-title" id="{{ $id }}-title">{{ $title }}</h2>
+        {{- with $intro }}<p class="card-intro">{{ . }}</p>{{ end }}
+        {{- with $beforeCards }}{{ . }}{{ end }}
         <div class="micro-map-cards-grid">
             {{- range $markerPage := $section.RegularPages.ByWeight -}}
-                {{- partial "map/card.html" (dict
+                {{- partial $layout (dict
                     "markerPage" $markerPage
                     "section" $section
+                    "page" $.page
+                    "view" "card"
                 ) -}}
             {{- end -}}
         </div>

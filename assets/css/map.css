@@ -101,6 +101,12 @@
     margin: 0 0 1.5rem;
 }
 
+.card-intro {
+    margin: 0 0 1.5rem;
+    color: var(--micro-theme-color, #243238);
+    text-align: center;
+}
+
 .micro-map-cards-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
@@ -117,6 +123,14 @@
 
 .micro-map-card-content {
     padding: 1.25rem;
+}
+
+.micro-map-card .micro-map-callout-title {
+    margin-bottom: 0.75rem;
+}
+
+.micro-map-card .micro-map-callout-text {
+    line-height: 1.5;
 }
 
 .micro-map-card-title {

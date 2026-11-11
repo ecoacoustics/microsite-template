@@ -1,0 +1,17 @@
+{{- $markerPage := .markerPage -}}
+{{- $calloutContent := $markerPage.Params.callout | default dict -}}
+{{- range $field := slice "heading" "image" "description" "link" -}}
+    {{- if not (index $calloutContent $field) -}}
+        {{- errorf "map marker %q is missing required callout.%s" $markerPage.File.Path $field -}}
+    {{- end -}}
+{{- end -}}
+{{- $image := resources.Get $calloutContent.image -}}
+{{- if not $image -}}
+    {{- errorf "map marker %q references missing image resource %q in callout.image" $markerPage.File.Path $calloutContent.image -}}
+{{- end -}}
+<div class="micro-map-callout-content">
+    <h3 class="micro-map-callout-title">{{ $calloutContent.heading }}</h3>
+    {{ with $image }}<img class="micro-map-callout-image" src="{{ .RelPermalink }}" alt="{{ $calloutContent.image_alt | default "" }}">{{ end }}
+    <p class="micro-map-callout-text">{{ $calloutContent.description }}</p>
+    <a class="micro-map-callout-link" href="{{ $calloutContent.link }}">Learn more</a>
+</div>

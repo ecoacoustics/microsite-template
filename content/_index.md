@@ -93,3 +93,5 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 {{< map section="maps/demo" id="theme-map-demo" >}}
 
 {{< map-cards section="maps/demo" id="theme-map-demo-cards" title="Example recording locations" >}}
+<p class="card-intro">These cards use the same marker pages and ordering as the map above.</p>
+{{< /map-cards >}}

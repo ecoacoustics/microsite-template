@@ -11,16 +11,16 @@ build:
   list: local
   # Do not generate a standalone HTML page for this marker.
   render: link
-# Fields used by the theme's default callout. The default card also uses heading and description.
+# Fields used by the shared default callout and card content.
 callout:
-  # Required heading; also used as the default card title.
+  # Required shared title.
   heading: Example Northern Recording Site
   # Required image resource path, relative to the assets directory.
   image: images/Plains-wanderer.jpg
   # Optional accessible text for the image.
   image_alt: A plains-wanderer in grass
-  # Required callout text; also used as the default card description.
+  # Required shared location description.
   description: An example map marker with a callout defined directly in its page front matter.
-  # Required link target for the callout.
+  # Required shared learn-more link target.
   link: /
 ---

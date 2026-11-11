@@ -19,9 +19,9 @@ configuration into data-map-config. The shared head pipeline loads map.js,
 which reads the configuration and initializes each map. In preview-only mode,
 the partial renders the first marker's callout without interactive map markup.
 
-Each callout receives the renderer's input context plus its markerPage, allowing
-a site-specific map/callout.html override to use both the displaying page and
-the current location page.
+Each callout receives the renderer's input context plus its markerPage.
+The map/callout-outer.html partial owns the callout wrapper and delegates the shared
+callout content to map/callout-content.html.
 */}}
 {{ $sectionPath := .sectionPath }}
 {{ $mapSection := false }}
@@ -107,9 +107,12 @@ the current location page.
         <div class="micro-map-shell">
             {{ if $previewCalloutOnly }}
                 {{ $mapItem := index $mapItems 0 }}
-                <article class="micro-map-callout micro-map-callout-preview" aria-label="Development callout preview" tabindex="-1">
-                    {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
-                </article>
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $mapItem.markerPage
+                    "section" $mapSection
+                    "label" "Development callout preview"
+                    "preview" true
+                )) }}
             {{ else }}
             <div class="micro-map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
             <svg class="micro-map-leader-lines" aria-hidden="true"><line class="micro-map-leader-line" /></svg>
@@ -120,17 +123,13 @@ the current location page.
                 </div>
             </aside>
             {{ range $siteIndex, $mapItem := $mapItems }}
-                <article
-                    class="micro-map-callout"
-                    id="{{ printf "%s-callout-%03d" $mapID $siteIndex }}"
-                    role="dialog"
-                    aria-label="{{ $mapItem.label }} site details"
-                    tabindex="-1"
-                    hidden
-                >
-                    <button class="micro-map-callout-close" type="button" aria-label="Close site details">&times;</button>
-                    {{ partial "map/callout.html" (merge $ (dict "markerPage" $mapItem.markerPage)) }}
-                </article>
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $mapItem.markerPage
+                    "section" $mapSection
+                    "calloutID" (printf "%s-callout-%03d" $mapID $siteIndex)
+                    "label" (printf "%s site details" $mapItem.label)
+                    "preview" false
+                )) }}
             {{ end }}
             {{ end }}
         </div>
