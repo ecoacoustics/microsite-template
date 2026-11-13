@@ -1,4 +1,8 @@
-<section class='oe-cards {{ .Get "class" }}'>
+{{- $grid := .Get "grid" | default "stretch" -}}
+{{- if not (in (slice "stretch" "fixed-width") $grid) -}}
+    {{- errorf "section/cards grid %q must be stretch or fixed-width" $grid -}}
+{{- end -}}
+<section class='micro-cards-{{ $grid }} {{ .Get "class" }}'>
   {{ range split .Inner "<--->" }}
       {{ . | $.Page.RenderString }}
   {{ end }}

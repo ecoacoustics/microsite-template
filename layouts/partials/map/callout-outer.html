@@ -1,10 +1,10 @@
 {{- $calloutContext := merge . (dict "view" "callout") -}}
 {{- if .preview -}}
-<article class="micro-map-callout micro-map-callout-preview" aria-label="{{ .label }}" tabindex="-1">
+<sl-card class="micro-map-callout micro-map-callout-preview" aria-label="{{ .label }}" tabindex="-1">
     {{- partial "map/callout-content.html" $calloutContext -}}
-</article>
+</sl-card>
 {{- else -}}
-<article
+<sl-card
     class="micro-map-callout"
     id="{{ .calloutID }}"
     role="dialog"
@@ -14,5 +14,5 @@
 >
     <button class="micro-map-callout-close" type="button" aria-label="Close site details">&times;</button>
     {{- partial "map/callout-content.html" $calloutContext -}}
-</article>
+</sl-card>
 {{- end -}}

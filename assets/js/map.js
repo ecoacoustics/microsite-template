@@ -12,7 +12,7 @@ function initializeMapElement(root) {
     // Introductory callout shown before a location is selected.
     const onboardingCallout = root.querySelector(".micro-map-onboarding-callout");
     // Location callouts 
-    const callouts = [...root.querySelectorAll("article.micro-map-callout")];
+    const callouts = [...root.querySelectorAll("sl-card.micro-map-callout")];
     // SVG line connecting the selected marker to its callout.
     const leaderLine = root.querySelector(".micro-map-leader-line");
     // Location metadata used for marker creation and callback arguments.

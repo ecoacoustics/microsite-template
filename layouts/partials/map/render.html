@@ -73,7 +73,7 @@ callout content to map/callout-content.html.
     </div>
 </section>
 {{ else }}
-{{ $mapParams := mergeOverwrite $mapSection.Params $mapParamOverrides }}
+{{ $mapParams := merge $mapSection.Params $mapParamOverrides }}
 {{ $onCalloutShown := index $mapParams "on_callout_shown" | default "" }}
 {{ $onCalloutHidden := index $mapParams "on_callout_hidden" | default "" }}
 {{ $previewCalloutOnly := index $mapParams "preview_callout_only" | default false }}

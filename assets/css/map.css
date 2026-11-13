@@ -57,11 +57,26 @@
     position: absolute;
     width: calc(100% - 3rem);
     max-width: 22rem;
+    z-index: 4;
+}
+
+.micro-map-callout::part(base) {
+    padding: 0;
+    border: 1px solid var(--micro-map-border);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
+}
+
+.micro-map-callout::part(body) {
+    padding: 1rem;
+}
+
+.micro-map-callout:not(sl-card) {
     padding: 1rem;
     border: 1px solid var(--micro-map-border);
     background: rgba(255, 255, 255, 0.97);
     box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
-    z-index: 4;
 }
 
 .micro-map-callout-close {
@@ -93,53 +108,10 @@
     line-height: 1.35;
 }
 
-.micro-map-cards {
-    padding: clamp(2rem, 5vw, 4rem) 1.5rem;
-}
-
-.micro-map-cards-title {
-    margin: 0 0 1.5rem;
-}
-
 .card-intro {
     margin: 0 0 1.5rem;
     color: var(--micro-theme-color, #243238);
     text-align: center;
-}
-
-.micro-map-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-    gap: 1.5rem;
-}
-
-.micro-map-card {
-    overflow: hidden;
-    border: 1px solid #c8d4d2;
-    border-radius: 0.5rem;
-    background: white;
-    box-shadow: 0 0.25rem 1rem rgba(36, 50, 56, 0.12);
-}
-
-.micro-map-card-content {
-    padding: 1.25rem;
-}
-
-.micro-map-card .micro-map-callout-title {
-    margin-bottom: 0.75rem;
-}
-
-.micro-map-card .micro-map-callout-text {
-    line-height: 1.5;
-}
-
-.micro-map-card-title {
-    margin: 0 0 0.75rem;
-}
-
-.micro-map-card-text {
-    color: var(--micro-map-muted, #65757a);
-    line-height: 1.5;
 }
 
 .micro-map-marker-button {

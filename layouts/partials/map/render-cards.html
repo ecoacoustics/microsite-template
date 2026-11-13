@@ -4,7 +4,11 @@
 {{- $title := .title | default "Recording locations" -}}
 {{- $intro := .intro -}}
 {{- $beforeCards := .beforeCards -}}
+{{- $grid := .grid | default "stretch" -}}
 {{- $layout := .layout | default "map/card-outer.html" -}}
+{{- if not (in (slice "stretch" "fixed-width") $grid) -}}
+    {{- errorf "map-cards grid %q must be stretch or fixed-width" $grid -}}
+{{- end -}}
 {{- if not $section -}}
     {{- if $sectionPath -}}
         {{- errorf "map-cards section %q was not found" $sectionPath -}}
@@ -22,7 +26,7 @@
         <h2 class="micro-map-cards-title" id="{{ $id }}-title">{{ $title }}</h2>
         {{- with $intro }}<p class="card-intro">{{ . }}</p>{{ end }}
         {{- with $beforeCards }}{{ . }}{{ end }}
-        <div class="micro-map-cards-grid">
+        <div class="micro-cards-{{ $grid }}">
             {{- range $markerPage := $section.RegularPages.ByWeight -}}
                 {{- partial $layout (dict
                     "markerPage" $markerPage
