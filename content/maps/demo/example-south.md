@@ -4,9 +4,6 @@ title: Example Southern Recording Site
 weight: 2
 latitude: -35.2809
 longitude: 149.1300
-build:
-  list: local
-  render: link
 callout:
   heading: Example Southern Recording Site
   image: images/Plains_wanderer_female.jpg

@@ -6,11 +6,6 @@ weight: 1
 # Required marker position, in decimal degrees.
 latitude: -16.103236
 longitude: 145.452491
-build:
-  # Keep the marker in local section listings, but out of site-wide listings.
-  list: local
-  # Do not generate a standalone HTML page for this marker.
-  render: link
 # Fields used by the shared default callout and card content.
 callout:
   # Required shared title.

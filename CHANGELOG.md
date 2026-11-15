@@ -1,5 +1,34 @@
 # Changelog
 
+## 14/11/2026 
+
+### .oe-cards is now named micro-cards-stretch 
+
+#### Upgrade steps for existing microsites targeting .oe-cards in custom css
+
+1. Update custom CSS selectors from `.oe-cards` to `.micro-cards-stretch`;
+   use `.micro-cards-fixed-width` where fixed-width cards are desired.
+
+### Store map data in content pages and clearer naming on css class
+
+Each map now has a content section: its `_index.md` stores map-level settings,
+and each marker has its own content page with marker data in front matter. Map
+shortcodes read their configuration and markers from these pages.
+
+#### Upgrade steps for existing microsites using maps
+
+1. Replace `params.map.sites` with `content/maps/<map-name>/_index.md` and one
+   marker page per location under `content/maps/<map-name>/`. Put map options in
+   `_index.md`; each marker page needs `title`, `weight`, `latitude`,
+   `longitude`, and `callout.heading`, `callout.image`, `callout.description`,
+   and `callout.link`.
+2. Update map shortcode calls to pass `section="maps/<map-name>"`. Move former
+   onboarding and preview options to the section front matter or `map_params`.
+3. Migrate overrides of `map/callout.html` and `map/card.html` to
+   `map/callout-content.html`, or use the `map-cards` `layout` option for
+   distinct card markup.
+
+
 ## 13/10/2026 - Workbench login and registration callbacks
 
 ### Upgrade steps for existing microsites
