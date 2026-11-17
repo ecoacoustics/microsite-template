@@ -6,16 +6,16 @@ weight: 1
 # Required marker position, in decimal degrees.
 latitude: -16.103236
 longitude: 145.452491
-# Fields used by the shared default callout and card content.
+# Fields for the callout and card content.
 callout:
-  # Required shared title.
+  # Optional heading; defaults to the marker page title.
   heading: Example Northern Recording Site
-  # Required image resource path, relative to the assets directory.
+  # Optional image resource path, relative to the assets directory.
   image: images/Plains-wanderer.jpg
   # Optional accessible text for the image.
   image_alt: A plains-wanderer in grass
-  # Required shared location description.
+  # Optional description.
   description: An example map marker with a callout defined directly in its page front matter.
-  # Required shared learn-more link target.
+  # Optional link target and link text (defaults to "Learn more").
   link: /
 ---

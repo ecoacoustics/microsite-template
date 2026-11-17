@@ -1,20 +1,14 @@
-{{- $sectionPath := .Get "section" -}}
-{{- $section := false -}}
-{{- $beforeCards := .Inner | default "" | strings.TrimSpace -}}
-{{- with $beforeCards -}}
-    {{- $beforeCards = $.Page.RenderString . -}}
-{{- end -}}
-{{- with $sectionPath -}}
-    {{- $section = site.GetPage . -}}
+{{- $sections := .Get "sections" -}}
+{{/* Inner markdown (heading, intro text) is rendered as the header above the cards. */}}
+{{- $header := .Inner | default "" | strings.TrimSpace -}}
+{{- with $header -}}
+    {{- $header = $.Page.RenderString (dict "display" "block") . -}}
 {{- end -}}
 {{- partial "map/render-cards.html" (dict
-    "section" $section
-    "sectionPath" $sectionPath
+    "sections" $sections
     "page" .Page
     "id" (.Get "id" | default (printf "map-cards-%03d" .Ordinal))
-    "title" (.Get "title")
-    "intro" (.Get "intro")
-    "beforeCards" $beforeCards
+    "header" $header
     "grid" (.Get "grid")
     "layout" (.Get "layout")
 ) -}}

@@ -90,8 +90,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Map and cards
 
-{{< map section="maps/demo" id="theme-map-demo" >}}
+{{< map sections="maps/demo" id="theme-map-demo" >}}
 
-{{< map-cards section="maps/demo" id="theme-map-demo-cards" title="Example recording locations" >}}
-<p class="card-intro">These cards use the same marker pages and ordering as the map above.</p>
+{{< map-cards sections="maps/demo" id="theme-map-demo-cards" >}}
+## Example recording locations
+
+These cards use the same marker pages and ordering as the map above.
 {{< /map-cards >}}

@@ -21,20 +21,3 @@ Deployment instructions can be found in [DEPLOYMENT.md](./DEPLOYMENT.md)
 When updating an existing microsite's theme, check the
 [changelog and upgrade steps](./CHANGELOG.md) for changes needed in the child site
 or its Workbench deployment.
-
-## Authentication Tests
-
-Run the login and registration callback regression tests with Node.js 22:
-
-```sh
-node --experimental-vm-modules --test tests/auth.test.mjs
-```
-
-With Hugo available on PATH, also run the configuration build checks:
-
-```sh
-node --test tests/config.test.mjs
-```
-
-Set `HUGO_BINARY` to a Hugo executable path if it is not on PATH. These checks
-verify required `params.workbench_name` values and the production guard against `Staging`.

@@ -8,22 +8,29 @@
         font-size: var(--micro-font-size-medium);
     }
 }
-
+  
 .micro-cards-fixed-width {
+
+    /* cards will be exactly var(--card-width) wide except where there is not enough space, 
+    in which case they will shrink to fit the container */
+    --card-width: 18rem;
     grid-template-columns: repeat(
         auto-fill,
-        minmax(
-            min(100%, var(--card-width, 18rem)),
-            var(--card-width, 18rem)
+         minmax(
+            min(100%, var(--card-width)),
+            var(--card-width)
         )
     );
     justify-content: center;
-    gap: var(--space-large, var(--micro-padding-large));
+    gap: var(--micro-padding-large);
     justify-self: center;
-    width: min(100%, var(--content-width, 66rem));
+    width: 100%;
 }
 
-:where(#home-page) sl-card,
+.micro-map-cards-header {
+    text-align: center;
+}
+
 .micro-cards-stretch sl-card,
 .micro-cards-fixed-width sl-card {
     display: flex;

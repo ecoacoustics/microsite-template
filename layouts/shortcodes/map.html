@@ -1,17 +1,8 @@
-{{- $sectionPath := .Get "section" -}}
+{{- $sections := .Get "sections" -}}
 {{- $mapID := .Get "id" | default (printf "map-%03d" .Ordinal) -}}
-{{- $mapParams := dict -}}
-{{- with .Get "map_params" -}}
-    {{- $parsedMapParams := transform.Unmarshal . -}}
-    {{- if not (reflect.IsMap $parsedMapParams) -}}
-        {{- errorf "map shortcode map_params must be a JSON object" -}}
-    {{- else -}}
-        {{- $mapParams = $parsedMapParams -}}
-    {{- end -}}
-{{- end -}}
 {{- partial "map/render.html" (dict
-    "sectionPath" $sectionPath
+    "sections" $sections
     "page" .Page
     "id" $mapID
-    "mapParams" $mapParams
+    "mapParamsPath" (.Get "map_params")
 ) -}}

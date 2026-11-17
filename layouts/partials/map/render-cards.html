@@ -1,36 +1,28 @@
-{{- $section := .section -}}
-{{- $sectionPath := .sectionPath -}}
+{{- $sectionsInput := .sections -}}
 {{- $id := .id -}}
-{{- $title := .title | default "Recording locations" -}}
-{{- $intro := .intro -}}
-{{- $beforeCards := .beforeCards -}}
+{{- $header := .header -}}
 {{- $grid := .grid | default "stretch" -}}
 {{- $layout := .layout | default "map/card-outer.html" -}}
+{{- $markerPages := slice -}}
 {{- if not (in (slice "stretch" "fixed-width") $grid) -}}
     {{- errorf "map-cards grid %q must be stretch or fixed-width" $grid -}}
-{{- end -}}
-{{- if not $section -}}
-    {{- if $sectionPath -}}
-        {{- errorf "map-cards section %q was not found" $sectionPath -}}
-    {{- else -}}
-        {{- errorf "map cards renderer requires a section page" -}}
-    {{- end -}}
-{{- else if ne $section.Kind "section" -}}
-    {{- errorf "map cards renderer: %q is not a section; provide a section with an _index.md" $section.Path -}}
 {{- else if not $id -}}
     {{- errorf "map cards renderer requires a unique id" -}}
-{{- else if not $section.RegularPages -}}
-    {{- errorf "map cards section %q contains no marker pages" $section.Path -}}
+{{- else if not $sectionsInput -}}
+    {{- errorf "map cards renderer requires a non-empty sections list" -}}
 {{- else -}}
-    <section id="{{ $id }}" class="micro-map-cards" aria-labelledby="{{ $id }}-title">
-        <h2 class="micro-map-cards-title" id="{{ $id }}-title">{{ $title }}</h2>
-        {{- with $intro }}<p class="card-intro">{{ . }}</p>{{ end }}
-        {{- with $beforeCards }}{{ . }}{{ end }}
+    {{- $resolvedMarkers := partial "map/resolve-markers.html" (dict
+        "sections" $sectionsInput
+    ) -}}
+    {{- $markerPages = $resolvedMarkers.markerPages -}}
+{{- end -}}
+{{- if $markerPages -}}
+    <section id="{{ $id }}" class="micro-map-cards">
+        {{- with $header }}<div class="micro-map-cards-header">{{ . }}</div>{{ end }}
         <div class="micro-cards-{{ $grid }}">
-            {{- range $markerPage := $section.RegularPages.ByWeight -}}
+            {{- range $markerPage := $markerPages -}}
                 {{- partial $layout (dict
                     "markerPage" $markerPage
-                    "section" $section
                     "page" $.page
                     "view" "card"
                 ) -}}

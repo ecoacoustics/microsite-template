@@ -21,8 +21,6 @@ function initializeMapElement(root) {
     const googleMapsAPIKey = config.googleMapsAPIKey;
     // Google Maps map ID, with a demo fallback.
     const googleMapsMapID = config.googleMapsMapID || "DEMO_MAP_ID";
-    // Whether this page is running in Hugo's development environment.
-    const isDev = config.isDev;
     // Defaults merged with section map_options and shortcode map_params.
     const mapOptions = {
         min_zoom: 4,
@@ -60,7 +58,7 @@ function initializeMapElement(root) {
 
     /** Loads the Google Maps API once and shares the pending promise across maps. */
     function loadGoogleMaps() {
-        if (!googleMapsAPIKey && !isDev) return Promise.reject(new Error("GOOGLE_MAPS_API_KEY is not configured."));
+        if (!googleMapsAPIKey) return Promise.reject(new Error("GOOGLE_MAPS_API_KEY is not configured."));
         if (globalThis.__micrositeGoogleMapsLoader) return globalThis.__micrositeGoogleMapsLoader;
         let loader;
         loader = new Promise((resolve, reject) => {
@@ -224,18 +222,26 @@ function initializeMapElement(root) {
         if (callout) callout.hidden = true;
     }
 
-    /** Selects a location and synchronizes its callout, marker, callbacks, and focus. */
+    function notifyCallout(eventName, callout, index) {
+        const location = locations[index];
+        root.dispatchEvent(new CustomEvent(eventName, {
+            bubbles: true,
+            detail: { callout, location, index }
+        }));
+    }
+
+    /** Selects a location and synchronizes its callout, marker, events, and focus. */
     function selectLocation(index, markers) {
         const previousIndex = selectedIndex;
         selectedIndex = index;
         selectedMarkerElement = markers[index].content;
-        onboardingCallout.hidden = true;
+        if (onboardingCallout) onboardingCallout.hidden = true;
         if (activeCallout) {
-            globalThis[config.onCalloutHidden]?.(activeCallout, locations[previousIndex], previousIndex);
+            notifyCallout("micro-map:callout-hidden", activeCallout, previousIndex);
             hideCallout(activeCallout);
         }
         activeCallout = showCallout(index);
-        globalThis[config.onCalloutShown]?.(activeCallout, locations[index], index);
+        notifyCallout("micro-map:callout-shown", activeCallout, index);
         setMarkerState(markers, index);
         updateLeaderLine();
         requestAnimationFrame(() => activeCallout.focus({ preventScroll: true }));
@@ -274,7 +280,7 @@ function initializeMapElement(root) {
             const markerButton = document.createElement("button");
             markerButton.className = "micro-map-marker-button";
             markerButton.type = "button";
-            markerButton.ariaLabel = location.label;
+            markerButton.setAttribute("aria-label", location.label);
             markerButton.setAttribute("aria-pressed", "false");
             markerButton.innerHTML = '<span class="micro-map-marker-dot"></span>';
             const marker = new AdvancedMarkerElement({ content: markerButton, gmpClickable: true, map, position: { lat: location.latitude, lng: location.longitude }, title: location.label });
@@ -289,7 +295,7 @@ function initializeMapElement(root) {
             const markerToRestore = selectedMarkerElement;
             selectedIndex = null;
             selectedMarkerElement = null;
-            globalThis[config.onCalloutHidden]?.(callout, locations[index], index);
+            notifyCallout("micro-map:callout-hidden", callout, index);
             hideCallout(callout);
             activeCallout = null;
             setMarkerState(markers, null);
