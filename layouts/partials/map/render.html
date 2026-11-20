@@ -1,0 +1,116 @@
+{{/*
+Render a map from one or more Hugo sections' direct marker pages and child sections.
+
+The caller must pass a dictionary containing:
+- id: a unique HTML id for this map
+The optional sections value is a comma-separated path string or a slice of
+section paths or Page values. If omitted, the renderer uses the first child
+section of the top-level maps section, ordered by weight.
+mapParamsPath is an optional content-page path whose front matter overrides
+map settings. Without it, settings come from the first selected section.
+The nested map_options value contains Google Maps options.
+The optional page value is forwarded to custom callout partials.
+
+The renderer resolves and validates all section paths and each marker's coordinates.
+It builds mapItems for rendering the marker callouts, then creates a smaller
+locations list and forwards map_options to the browser. The defaults for those
+settings live in assets/js/map.js.
+
+In normal mode, this partial renders the map and callout HTML and serializes the
+configuration into data-map-config. The shared head pipeline loads map.js,
+which reads the configuration and initializes each map. In preview-only mode,
+the partial renders the first marker's callout without interactive map markup.
+
+Each callout receives the renderer's input context plus its markerPage.
+The map/callout-outer.html partial owns the callout wrapper and delegates the shared
+callout content to map/callout-content.html.
+*/}}
+{{ $sectionsInput := .sections }}
+{{ $resolvedMarkers := dict }}
+{{ $mapID := .id }}
+{{ $mapNarrowBreakpoint := default "768px" site.Params.style.smallBreakPoint }}
+{{ $markerPages := slice }}
+{{ if not $mapID }}
+    {{ errorf "map renderer requires a unique id" }}
+{{ else }}
+    {{ $resolvedMarkers = partial "map/resolve-markers.html" (dict "sections" $sectionsInput) }}
+    {{ $markerPages = $resolvedMarkers.markerPages }}
+{{ end }}
+{{ if not $markerPages }}
+<section class="micro-map micro-map-configuration-error" aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
+            <div class="micro-map-message" role="alert">
+                <p><strong>Map configuration required.</strong> Add markers to the selected map section, or provide a valid comma-separated <code>sections</code> list.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ else }}
+{{ $mapParams := partial "map/resolve-params.html" (dict
+    "baseParams" $resolvedMarkers.configPage.Params
+    "configPath" .mapParamsPath
+) }}
+{{ $previewCalloutOnly := index $mapParams "preview_callout_only" | default false }}
+{{ $googleMapsAPIKey := getenv "GOOGLE_MAPS_API_KEY" | strings.TrimSpace }}
+{{ if and hugo.IsProduction (not $previewCalloutOnly) (eq $googleMapsAPIKey "") }}
+    {{ errorf "interactive map %q requires GOOGLE_MAPS_API_KEY in production" $mapID }}
+{{ end }}
+{{ $showOnboarding := index $mapParams "show_onboarding" | default false }}
+{{ $mapOnboardingTitle := index $mapParams "onboarding_title" | default "Explore the diverse recording locations" }}
+{{ $mapOnboardingText := index $mapParams "onboarding_text" | default "Choose a location on the map to find out more about the field site." }}
+{{ $mapOptions := index $mapParams "map_options" | default dict }}
+{{ if not (reflect.IsMap $mapOptions) }}
+    {{ errorf "map params map_options must be a map" }}
+    {{ $mapOptions = dict }}
+{{ end }}
+{{ $mapLocations := slice }}
+{{ range $markerPage := $markerPages }}
+    {{ $mapLocations = $mapLocations | append (dict
+        "label" $markerPage.LinkTitle
+        "latitude" (float $markerPage.Params.latitude)
+        "longitude" (float $markerPage.Params.longitude)
+    ) }}
+{{ end }}
+{{ $mapConfig := dict
+    "locations" $mapLocations
+    "mapOptions" $mapOptions
+    "googleMapsAPIKey" $googleMapsAPIKey
+    "googleMapsMapID" (getenv "GOOGLE_MAPS_MAP_ID")
+}}
+
+<section id="{{ $mapID }}" class="micro-map{{ if $previewCalloutOnly }} micro-map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}"{{ if not $previewCalloutOnly }} data-map-config="{{ $mapConfig | jsonify }}"{{ end }} aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
+            {{ if $previewCalloutOnly }}
+                {{ $markerPage := index $markerPages 0 }}
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $markerPage
+                    "label" "Development callout preview"
+                    "preview" true
+                )) }}
+            {{ else }}
+            <div class="micro-map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
+            <svg class="micro-map-leader-lines" aria-hidden="true"><line class="micro-map-leader-line" /></svg>
+            {{ if $showOnboarding }}
+            <aside class="micro-map-callout micro-map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
+                <div class="micro-map-callout-content">
+                    <h3 class="micro-map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
+                    <p class="micro-map-callout-text">{{ $mapOnboardingText }}</p>
+                </div>
+            </aside>
+            {{ end }}
+            {{ range $siteIndex, $markerPage := $markerPages }}
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $markerPage
+                    "calloutID" (printf "%s-callout-%03d" $mapID $siteIndex)
+                    "label" (printf "%s site details" $markerPage.LinkTitle)
+                    "preview" false
+                )) }}
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+{{ end }}

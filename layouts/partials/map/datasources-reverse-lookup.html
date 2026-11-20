@@ -1,0 +1,22 @@
+{{/*
+Return the markers from the requested map sections whose datasources include
+the given Page. If sections are omitted, resolve-markers selects the default map.
+*/}}
+{{- $sourcePage := .page -}}
+{{- if not $sourcePage -}}
+    {{- errorf "map datasource reverse lookup requires a source page" -}}
+{{- end -}}
+{{- $resolvedMarkers := partial "map/resolve-markers.html" (dict "sections" .sections) -}}
+{{- $matchingMarkers := slice -}}
+{{- range $markerPage := $resolvedMarkers.markerPages -}}
+    {{- $matchesSource := false -}}
+    {{- range $datasourceName, $datasource := partial "map/datasources.html" $markerPage -}}
+        {{- if eq $datasource.Path $sourcePage.Path -}}
+            {{- $matchesSource = true -}}
+        {{- end -}}
+    {{- end -}}
+    {{- if $matchesSource -}}
+        {{- $matchingMarkers = $matchingMarkers | append $markerPage -}}
+    {{- end -}}
+{{- end -}}
+{{- return $matchingMarkers -}}

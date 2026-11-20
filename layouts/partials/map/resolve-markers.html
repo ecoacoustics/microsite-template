@@ -1,0 +1,112 @@
+{{/*
+Resolve one or more sections into a combined, weight-sorted list of marker pages.
+Each section contributes its regular pages and immediate child sections. If no
+sections are provided, use the first child section of the top-level maps section,
+ordered by weight.
+
+Map marker content is defined in content section pages, either as regular pages or child sections.
+e.g. 
+content/maps/map1/_index.md <- map config
+content/maps/map1/location1.md <- marker data
+content/maps/map1/location2/_index.md <- marker data
+content/maps/map2/location3.md <- marker data
+content/maps/map2/location4/_index.md <- marker data
+
+We support both because regular pages are more convenient and concise (e.g. location 1 and 3), 
+but if marker pages are also being used as content pages, they might need their own section
+e.g. 
+content/locations/location1/_index.md <- marker data and website content
+content/locations/location1/subpage.md <- website content ignored by map
+
+If multiple map sections are specified, markers from all sections will be combined and sorted by weight.
+If there is a combination of regular pages and child sections, markers from both will be included.
+Each marker must define latitude and longitude.
+The first section listed supplies the default map configuration.
+
+Shortcodes pass `sections` as a comma-separated path string; direct partial callers pass a slice of paths or Section Pages.
+*/}}
+{{- $sectionSources := slice -}}
+
+{{- if eq (printf "%T" .sections) "string" -}}
+    {{- $sectionsInput := strings.TrimSpace .sections -}}
+    {{- if $sectionsInput -}}
+        {{- range $sectionValue := split $sectionsInput "," -}}
+            {{- $sectionPath := strings.TrimSpace $sectionValue -}}
+            {{- if not $sectionPath -}}
+                {{- errorf "map sections must not contain empty paths" -}}
+            {{- else -}}
+                {{- $sectionSources = $sectionSources | append $sectionPath -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- else if reflect.IsSlice .sections -}}
+    {{- $sectionSources = .sections -}}
+{{- end -}}
+{{- if not $sectionSources -}}
+    {{- $mapsSection := site.GetPage "/maps" -}}
+    {{- if not $mapsSection -}}
+        {{- errorf "map marker resolver requires sections or a top-level maps section" -}}
+    {{- else -}}
+        {{- $mapSections := $mapsSection.Sections.ByWeight -}}
+        {{- if not $mapSections -}}
+            {{- errorf "top-level maps section has no child map sections to use as the default" -}}
+        {{- else -}}
+            {{- $sectionSources = $sectionSources | append (index $mapSections 0) -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $sections := slice -}}
+{{- $seenSections := dict -}}
+{{- range $source := $sectionSources -}}
+    {{- $section := false -}}
+    {{- if eq (printf "%T" $source) "string" -}}
+        {{- $sectionPath := strings.TrimSpace $source -}}
+        {{- if not $sectionPath -}}
+            {{- errorf "map section paths must not be empty" -}}
+        {{- else -}}
+            {{- $section = site.GetPage $sectionPath -}}
+            {{- if not $section -}}
+                {{- errorf "map section %q was not found" $sectionPath -}}
+            {{- end -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $section = $source -}}
+    {{- end -}}
+    {{- if $section -}}
+        {{- if ne $section.Kind "section" -}}
+            {{- errorf "map section %q is not a section; provide a section with an _index.md" $section.Path -}}
+        {{- else if not (isset $seenSections $section.Path) -}}
+            {{- $seenSections = merge $seenSections (dict $section.Path true) -}}
+            {{- $sections = $sections | append $section -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $markerPages := slice -}}
+{{- $seenMarkerPages := dict -}}
+{{- range $section := $sections -}}
+    {{- range $markerPage := $section.Pages -}}
+        {{- if not (isset $seenMarkerPages $markerPage.Path) -}}
+            {{- $seenMarkerPages = merge $seenMarkerPages (dict $markerPage.Path true) -}}
+            {{- $markerPages = $markerPages | append $markerPage -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- $markerPages = sort $markerPages "Weight" "asc" -}}
+
+{{- range $markerPage := $markerPages -}}
+    {{- if or (not (isset $markerPage.Params "latitude")) (not (isset $markerPage.Params "longitude")) -}}
+        {{- errorf "map marker %q must define both latitude and longitude" $markerPage.Path -}}
+    {{- end -}}
+{{- end -}}
+
+{{- if and $sections (not $markerPages) -}}
+    {{- errorf "map sections contain no valid markers" -}}
+{{- end -}}
+
+{{- $configPage := false -}}
+{{- with $sections -}}
+    {{- $configPage = index . 0 -}}
+{{- end -}}
+{{- return (dict "markerPages" $markerPages "configPage" $configPage) -}}

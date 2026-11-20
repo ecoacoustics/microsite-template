@@ -1,33 +1,33 @@
-.map {
-    --map-min-height: 36rem;
-    --map-min-height-mobile: 30rem;
-    --map-border: #c8d4d2;
-    --map-accent: #c7623d;
-    --map-line: #d9784f;
+.micro-map {
+    --micro-map-min-height: 36rem;
+    --micro-map-min-height-mobile: 30rem;
+    --micro-map-border: #c8d4d2;
+    --micro-map-accent: #c7623d;
+    --micro-map-line: #d9784f;
     position: relative;
     color: var(--micro-theme-color, #243238);
     grid-column: fullbleed;
     margin: 0;
 }
 
-.map-stage,
-.map-shell {
+.micro-map-stage,
+.micro-map-shell {
     position: relative;
-    min-height: var(--map-min-height);
+    min-height: var(--micro-map-min-height);
 }
 
-.map-shell {
+.micro-map-shell {
     overflow: hidden;
-    border: 1px solid var(--map-border);
+    border: 1px solid var(--micro-map-border);
     background: #a9c6d2;
 }
 
-.map-element {
+.micro-map-element {
     position: absolute;
     inset: 0;
 }
 
-.map-message {
+.micro-map-message {
     display: grid;
     place-items: center;
     height: 100%;
@@ -36,7 +36,7 @@
     text-align: center;
 }
 
-.map-leader-lines {
+.micro-map-leader-lines {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -46,25 +46,40 @@
     z-index: 3;
 }
 
-.map-leader-line {
-    stroke: var(--map-line);
+.micro-map-leader-line {
+    stroke: var(--micro-map-line);
     stroke-width: 3;
     stroke-dasharray: 0.45rem 0.35rem;
     vector-effect: non-scaling-stroke;
 }
 
-.map-callout {
+.micro-map-callout {
     position: absolute;
     width: calc(100% - 3rem);
     max-width: 22rem;
-    padding: 1rem;
-    border: 1px solid var(--map-border);
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
     z-index: 4;
 }
 
-.map-callout-close {
+.micro-map-callout::part(base) {
+    padding: 0;
+    border: 1px solid var(--micro-map-border);
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
+}
+
+.micro-map-callout::part(body) {
+    padding: 1rem;
+}
+
+.micro-map-callout:not(sl-card) {
+    padding: 1rem;
+    border: 1px solid var(--micro-map-border);
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 0.5rem 1.5rem rgba(36, 50, 56, 0.28);
+}
+
+.micro-map-callout-close {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
@@ -76,17 +91,24 @@
     font-size: 1.5rem;
 }
 
-.map-callout-title {
+.micro-map-callout-title {
     margin: 0;
     font-size: 1.35rem;
 }
 
-.map-callout-text {
-    color: var(--map-muted, #65757a);
+.micro-map-callout-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 0.75rem;
+}
+
+.micro-map-callout-text {
+    color: var(--micro-map-muted, #65757a);
     line-height: 1.35;
 }
 
-.map-marker-button {
+.micro-map-marker-button {
     display: grid;
     place-items: center;
     width: 2.8rem;
@@ -98,15 +120,15 @@
     cursor: pointer;
 }
 
-.map-marker-dot {
+.micro-map-marker-dot {
     display: block;
     width: 0.95rem;
     height: 0.95rem;
     border-radius: 50%;
-    background: var(--map-accent);
+    background: var(--micro-map-accent);
 }
 
-.map-onboarding-callout {
+.micro-map-onboarding-callout {
     top: 1.5rem;
     right: 1.5rem;
     bottom: auto;
@@ -116,23 +138,23 @@
 /* 768px must stay in sync with site.Params.style.smallBreakPoint, which the map
    shortcode passes to JS via data-map-breakpoint for callout positioning. */
 @media (max-width: 768px) {
-    .map-stage,
-    .map-shell {
-        min-height: var(--map-min-height-mobile);
+    .micro-map-stage,
+    .micro-map-shell {
+        min-height: var(--micro-map-min-height-mobile);
     }
 
-    .map-onboarding-callout {
+    .micro-map-onboarding-callout {
         top: auto;
         right: 1rem;
         bottom: 1rem;
         left: 1rem;
         width: auto;
     }
-    .map-shell {
+    .micro-map-shell {
         overflow: visible;
     }
 
-    .map-callout:not(.map-onboarding-callout) {
+    .micro-map-callout:not(.micro-map-onboarding-callout) {
         right: auto;
         bottom: auto;
         left: auto;

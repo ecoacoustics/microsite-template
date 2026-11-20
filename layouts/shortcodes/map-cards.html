@@ -1,0 +1,14 @@
+{{- $sections := .Get "sections" -}}
+{{/* Inner markdown (heading, intro text) is rendered as the header above the cards. */}}
+{{- $header := .Inner | default "" | strings.TrimSpace -}}
+{{- with $header -}}
+    {{- $header = $.Page.RenderString (dict "display" "block") . -}}
+{{- end -}}
+{{- partial "map/render-cards.html" (dict
+    "sections" $sections
+    "page" .Page
+    "id" (.Get "id" | default (printf "map-cards-%03d" .Ordinal))
+    "header" $header
+    "grid" (.Get "grid")
+    "layout" (.Get "layout")
+) -}}

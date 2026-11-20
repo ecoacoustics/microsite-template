@@ -1,0 +1,26 @@
+{{/*
+Resolve map settings from the first listed section, optionally merging
+front matter from an explicitly named configuration page over those defaults.
+*/}}
+{{- $baseParams := .baseParams | default dict -}}
+{{- $configPath := .configPath -}}
+{{- $overrides := dict -}}
+{{- if $configPath -}}
+    {{- if ne (printf "%T" $configPath) "string" -}}
+        {{- errorf "map_params must be a content page path; inline map settings are not supported" -}}
+    {{- else -}}
+        {{- $configPath = strings.TrimSpace $configPath -}}
+        {{- if not $configPath -}}
+            {{- errorf "map_params content page path must not be empty" -}}
+        {{- else -}}
+            {{- $configPage := site.GetPage $configPath -}}
+            {{- if not $configPage -}}
+                {{- errorf "map_params config page %q was not found" $configPath -}}
+            {{- else -}}
+                {{- $overrides = $configPage.Params -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return (merge $baseParams $overrides) -}}

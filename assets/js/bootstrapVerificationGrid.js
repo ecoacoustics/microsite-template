@@ -183,7 +183,9 @@ async function setup() {
   let currentUserID = null;
   if (targetElements.length > 0) {
     if (!(await api.isLoggedIn())) {
-      window.location.href = `/login?redirect=${location.pathname}`;
+      const loginUrl = new URL("/login", location.origin);
+      loginUrl.searchParams.set("redirect", `${location.pathname}${location.search}${location.hash}`);
+      window.location.href = loginUrl.href;
       return;
     }
 
