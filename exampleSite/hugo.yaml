@@ -1,0 +1,16 @@
+baseURL: https://calldetective-microsite-example.org/
+title: Microsite Template Map Example
+theme: microsite-template
+params:
+  api_host: https://api.staging.ecosounds.org
+  workbench_host: https://staging.ecosounds.org
+  workbench_name: Staging
+  tasks:
+    verification: false
+security:
+  funcs:
+    getenv:
+      - "^HUGO_"
+      - "^CI$"
+      - "^GOOGLE_MAPS_API_KEY$"
+      - "^GOOGLE_MAPS_MAP_ID$"

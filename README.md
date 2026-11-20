@@ -14,6 +14,19 @@ The `--tlsAuto` flag serves the site over HTTPS (with automatically generated lo
 
 Once running, access the local website at <https://development.ecosounds.org:1313>.
 
+## Preview the Map Example
+
+The map demo lives in `exampleSite` so it is available when previewing the theme
+without becoming content in microsites that use it. Run this from the theme
+repository; the script changes to its own directory before starting Hugo:
+
+```sh
+sh ./serve-example.sh
+```
+
+Set `GOOGLE_MAPS_API_KEY` in the environment to load the interactive Google Map.
+Without a key, the map displays its local setup message.
+
 ## Deployment
 
 Deployment instructions can be found in [DEPLOYMENT.md](./DEPLOYMENT.md)

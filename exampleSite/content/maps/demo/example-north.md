@@ -1,5 +1,5 @@
 ---
-# Page title/link title used as this marker's label.
+# Example marker label used by the demo map.
 title: Example Northern Recording Site
 # Controls the marker and card order within the section.
 weight: 1

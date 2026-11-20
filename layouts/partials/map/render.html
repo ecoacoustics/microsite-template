@@ -2,11 +2,12 @@
 Render a map from one or more Hugo sections' direct marker pages and child sections.
 
 The caller must pass a dictionary containing:
-- sections: a comma-separated path string or a non-empty slice of section
-  paths or section Page values
 - id: a unique HTML id for this map
+The optional sections value is a comma-separated path string or a slice of
+section paths or Page values. If omitted, the renderer uses the first child
+section of the top-level maps section, ordered by weight.
 mapParamsPath is an optional content-page path whose front matter overrides
-map settings. Without it, settings come from the first listed section.
+map settings. Without it, settings come from the first selected section.
 The nested map_options value contains Google Maps options.
 The optional page value is forwarded to custom callout partials.
 
@@ -31,8 +32,6 @@ callout content to map/callout-content.html.
 {{ $markerPages := slice }}
 {{ if not $mapID }}
     {{ errorf "map renderer requires a unique id" }}
-{{ else if not $sectionsInput }}
-    {{ errorf "map renderer requires a non-empty sections list" }}
 {{ else }}
     {{ $resolvedMarkers = partial "map/resolve-markers.html" (dict "sections" $sectionsInput) }}
     {{ $markerPages = $resolvedMarkers.markerPages }}
@@ -42,7 +41,7 @@ callout content to map/callout-content.html.
     <div class="micro-map-stage">
         <div class="micro-map-shell">
             <div class="micro-map-message" role="alert">
-                <p><strong>Map configuration required.</strong> Provide a valid comma-separated <code>sections</code> list containing markers.</p>
+                <p><strong>Map configuration required.</strong> Add markers to the selected map section, or provide a valid comma-separated <code>sections</code> list.</p>
             </div>
         </div>
     </div>

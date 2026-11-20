@@ -1,6 +1,7 @@
 ---
-# Human-readable name for this map section.
+# Human-readable name for the example map section.
 title: Map shortcode demo
+weight: -1
 
 # Google Maps settings. Omitted values use the defaults in assets/js/map.js.
 map_options:
@@ -27,7 +28,7 @@ show_onboarding: true
 onboarding_title: Explore the example recording locations
 onboarding_text: Choose a location on the map to find out more about the field site.
 
-# Set true during dev to style the first callout without loading the interactive map or Google Maps API.
+# Set true during dev to view the first callout without loading the interactive map or Google Maps API.
 preview_callout_only: false
 
 # Callout events bubble from the map root and include { callout, location, index } in detail.

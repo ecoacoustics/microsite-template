@@ -1,6 +1,8 @@
 {{/*
 Resolve one or more sections into a combined, weight-sorted list of marker pages.
-Each section contributes its regular pages and immediate child sections.
+Each section contributes its regular pages and immediate child sections. If no
+sections are provided, use the first child section of the top-level maps section,
+ordered by weight.
 
 Map marker content is defined in content section pages, either as regular pages or child sections.
 e.g. 
@@ -26,19 +28,32 @@ Shortcodes pass `sections` as a comma-separated path string; direct partial call
 {{- $sectionSources := slice -}}
 
 {{- if eq (printf "%T" .sections) "string" -}}
-    {{- range $sectionValue := split .sections "," -}}
-        {{- $sectionPath := strings.TrimSpace $sectionValue -}}
-        {{- if not $sectionPath -}}
-            {{- errorf "map sections must not contain empty paths" -}}
-        {{- else -}}
-            {{- $sectionSources = $sectionSources | append $sectionPath -}}
+    {{- $sectionsInput := strings.TrimSpace .sections -}}
+    {{- if $sectionsInput -}}
+        {{- range $sectionValue := split $sectionsInput "," -}}
+            {{- $sectionPath := strings.TrimSpace $sectionValue -}}
+            {{- if not $sectionPath -}}
+                {{- errorf "map sections must not contain empty paths" -}}
+            {{- else -}}
+                {{- $sectionSources = $sectionSources | append $sectionPath -}}
+            {{- end -}}
         {{- end -}}
     {{- end -}}
 {{- else if reflect.IsSlice .sections -}}
     {{- $sectionSources = .sections -}}
 {{- end -}}
 {{- if not $sectionSources -}}
-    {{- errorf "map marker resolver requires a non-empty sections list" -}}
+    {{- $mapsSection := site.GetPage "/maps" -}}
+    {{- if not $mapsSection -}}
+        {{- errorf "map marker resolver requires sections or a top-level maps section" -}}
+    {{- else -}}
+        {{- $mapSections := $mapsSection.Sections.ByWeight -}}
+        {{- if not $mapSections -}}
+            {{- errorf "top-level maps section has no child map sections to use as the default" -}}
+        {{- else -}}
+            {{- $sectionSources = $sectionSources | append (index $mapSections 0) -}}
+        {{- end -}}
+    {{- end -}}
 {{- end -}}
 
 {{- $sections := slice -}}

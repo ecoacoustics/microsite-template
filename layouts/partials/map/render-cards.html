@@ -8,8 +8,6 @@
     {{- errorf "map-cards grid %q must be stretch or fixed-width" $grid -}}
 {{- else if not $id -}}
     {{- errorf "map cards renderer requires a unique id" -}}
-{{- else if not $sectionsInput -}}
-    {{- errorf "map cards renderer requires a non-empty sections list" -}}
 {{- else -}}
     {{- $resolvedMarkers := partial "map/resolve-markers.html" (dict
         "sections" $sectionsInput

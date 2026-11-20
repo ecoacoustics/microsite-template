@@ -1,5 +1,5 @@
 ---
-# A second marker uses the same front-matter fields documented in example-north.md.
+# A second example marker uses the same front-matter fields as example-north.md.
 title: Example Southern Recording Site
 weight: 2
 latitude: -35.2809

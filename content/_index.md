@@ -88,12 +88,3 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 {{< sponsors dark=true />}}
 
-## Map and cards
-
-{{< map sections="maps/demo" id="theme-map-demo" >}}
-
-{{< map-cards sections="maps/demo" id="theme-map-demo-cards" >}}
-## Example recording locations
-
-These cards use the same marker pages and ordering as the map above.
-{{< /map-cards >}}
