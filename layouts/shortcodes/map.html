@@ -1,4 +1,15 @@
-{{- $sections := .Get "sections" -}}
+{{- $sections := slice -}}
+{{- $sectionsInput := .Get "sections" | default "" | strings.TrimSpace -}}
+{{- if $sectionsInput -}}
+    {{- range split $sectionsInput "," -}}
+        {{- $sectionPath := strings.TrimSpace . -}}
+        {{- if not $sectionPath -}}
+            {{- errorf "map sections must not contain empty paths" -}}
+        {{- else -}}
+            {{- $sections = $sections | append $sectionPath -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
 {{- $mapID := .Get "id" | default (printf "map-%03d" .Ordinal) -}}
 {{- partial "map/render.html" (dict
     "sections" $sections

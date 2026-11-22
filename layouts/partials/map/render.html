@@ -1,40 +1,45 @@
 {{/*
-Render a map from one or more Hugo sections' direct marker pages and child sections.
+Render an interactive map and its marker callouts, or preview the first
+marker's callout without loading a map.
 
-The caller must pass a dictionary containing:
-- id: a unique HTML id for this map
-The optional sections value is a comma-separated path string or a slice of
-section paths or Page values. If omitted, the renderer uses the first child
-section of the top-level maps section, ordered by weight.
-mapParamsPath is an optional content-page path whose front matter overrides
-map settings. Without it, settings come from the first selected section.
-The nested map_options value contains Google Maps options.
-The optional page value is forwarded to custom callout partials.
+Partial arguments:
+- id (required): HTML ID for the map, unique on the page.
+- sections (optional): Slice of marker-source folder paths, such as
+  (slice "maps/locations"). If empty or omitted, use the first child section
+  under /maps in weight order. The first selected folder's _index.md supplies
+  the base settings.
+- mapParamsPath (optional): Path to a content file whose front matter
+  overrides the base settings. The map shortcode passes its map_params here.
+- page (optional): Hugo Page object for the content page hosting the map.
+  Forwarded to custom callout partials as .page, alongside .markerPage.
 
-The renderer resolves and validates all section paths and each marker's coordinates.
-It builds mapItems for rendering the marker callouts, then creates a smaller
-locations list and forwards map_options to the browser. The defaults for those
-settings live in assets/js/map.js.
+Map front matter:
+- callout_content: Inner callout partial path (default: map/callout-content.html).
+- preview_callout_only: Show the first marker's callout instead of the map
+  (default: false).
+- show_onboarding: Show the introductory callout (default: false).
+- onboarding_title and onboarding_text: Override the introductory callout copy.
+- map_options: Browser map settings such as center, zoom, and bounds.
+  See assets/js/map.js for the supported keys and defaults.
 
-In normal mode, this partial renders the map and callout HTML and serializes the
-configuration into data-map-config. The shared head pipeline loads map.js,
-which reads the configuration and initializes each map. In preview-only mode,
-the partial renders the first marker's callout without interactive map markup.
-
-Each callout receives the renderer's input context plus its markerPage.
-The map/callout-outer.html partial owns the callout wrapper and delegates the shared
-callout content to map/callout-content.html.
+For interactive maps, map.js reads data-map-config to initialize the map.
+The site setting params.style.smallBreakPoint controls the narrow layout
+(default: 768px). GOOGLE_MAPS_API_KEY is required for production interactive
+maps; GOOGLE_MAPS_MAP_ID is optional (default: DEMO_MAP_ID).
 */}}
 {{ $sectionsInput := .sections }}
-{{ $resolvedMarkers := dict }}
+{{ $mapData := dict }}
 {{ $mapID := .id }}
 {{ $mapNarrowBreakpoint := default "768px" site.Params.style.smallBreakPoint }}
 {{ $markerPages := slice }}
 {{ if not $mapID }}
     {{ errorf "map renderer requires a unique id" }}
 {{ else }}
-    {{ $resolvedMarkers = partial "map/resolve-markers.html" (dict "sections" $sectionsInput) }}
-    {{ $markerPages = $resolvedMarkers.markerPages }}
+    {{ $mapData = partial "map/resolve-map-data.html" (dict
+        "sections" $sectionsInput
+        "mapParamsPath" .mapParamsPath
+    ) }}
+    {{ $markerPages = $mapData.markerPages }}
 {{ end }}
 {{ if not $markerPages }}
 <section class="micro-map micro-map-configuration-error" aria-label="Field sites">
@@ -47,15 +52,13 @@ callout content to map/callout-content.html.
     </div>
 </section>
 {{ else }}
-{{ $mapParams := partial "map/resolve-params.html" (dict
-    "baseParams" $resolvedMarkers.configPage.Params
-    "configPath" .mapParamsPath
-) }}
+{{ $mapParams := $mapData.mapParams }}
 {{ $previewCalloutOnly := index $mapParams "preview_callout_only" | default false }}
 {{ $googleMapsAPIKey := getenv "GOOGLE_MAPS_API_KEY" | strings.TrimSpace }}
 {{ if and hugo.IsProduction (not $previewCalloutOnly) (eq $googleMapsAPIKey "") }}
     {{ errorf "interactive map %q requires GOOGLE_MAPS_API_KEY in production" $mapID }}
 {{ end }}
+{{ $calloutContentPartial := $mapData.calloutContentPartial }}
 {{ $showOnboarding := index $mapParams "show_onboarding" | default false }}
 {{ $mapOnboardingTitle := index $mapParams "onboarding_title" | default "Explore the diverse recording locations" }}
 {{ $mapOnboardingText := index $mapParams "onboarding_text" | default "Choose a location on the map to find out more about the field site." }}
@@ -86,6 +89,7 @@ callout content to map/callout-content.html.
                 {{ $markerPage := index $markerPages 0 }}
                 {{ partial "map/callout-outer.html" (merge $ (dict
                     "markerPage" $markerPage
+                    "calloutContentPartial" $calloutContentPartial
                     "label" "Development callout preview"
                     "preview" true
                 )) }}
@@ -103,6 +107,7 @@ callout content to map/callout-content.html.
             {{ range $siteIndex, $markerPage := $markerPages }}
                 {{ partial "map/callout-outer.html" (merge $ (dict
                     "markerPage" $markerPage
+                    "calloutContentPartial" $calloutContentPartial
                     "calloutID" (printf "%s-callout-%03d" $mapID $siteIndex)
                     "label" (printf "%s site details" $markerPage.LinkTitle)
                     "preview" false

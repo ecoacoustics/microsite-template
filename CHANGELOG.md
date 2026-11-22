@@ -2,46 +2,34 @@
 
 ## 17/11/2026
 
-### Map and card migration
+### Maps and location cards
 
-1. Replace `params.map.sites` and the `site-cards` shortcode. Store each map
-   marker as a content page under a source section, then use
-   `{{< map sections="locations" >}}` and
-   `{{< map-cards sections="locations" >}}`. A marker needs latitude and
-   longitude; its page title supplies the label (`campaign` in the old data),
-   and explicit weights preserve the old marker order. For the default
-   callout, move the old `description`, `content.image`, and `page` values to
-   optional `callout.description`, `callout.image`, and `callout.link` fields.
-   Other site-specific content can live in the marker page's front matter or
-   body and be rendered by a custom layout.
-2. Move map settings from `params.map` into a `map_options` map on the first
-   listed source section, or into the content page named by the `map_params`
-   shortcode argument. Flatten `initial_center.latitude` and
-   `initial_center.longitude` to `initial_latitude` and `initial_longitude`;
-   flatten the `bounds` values (`north`, `south`, `east`, and `west`) into
-   `map_options`. Keep map setting names such as `min_zoom`, `max_zoom`,
-   `initial_zoom`, `fit_initial_bounds`, and `strict_bounds`.
-3. Move the former `preview-callout-only`, `onboarding-title`, and
-   `onboarding-text` shortcode arguments to `preview_callout_only`,
-   `onboarding_title`, and `onboarding_text` front matter. Onboarding is now
-   disabled by default; set `show_onboarding: true` on the source section or in
-   `map_params` to retain the former initial callout.
-4. Replace the former `on-callout-shown` and `on-callout-hidden` shortcode
-   callback arguments with listeners for `micro-map:callout-shown` and
-   `micro-map:callout-hidden`. These bubbling events are dispatched from each
-   map root and include `{ callout, location, index }` in `event.detail`.
-5. Update custom CSS that targets renamed map or card markup: map classes now
-   use the `.micro-map-*` prefix and map custom properties use `--micro-map-*`;
-   the old `.site-cards`/`.cards-grid` markup is replaced by `.micro-map-cards`
-   and `.micro-cards-*`. Rename `.oe-cards` to `.micro-cards-stretch`.
-6. Migrate theme overrides of `map/callout.html` to
-   `map/callout-content.html`. For custom map-card markup, pass its layout
-   partial with the `layout` argument to `map-cards`. Update these partials to
-   use the marker-page context instead of the former `.site` data object.
-7. Provide `GOOGLE_MAPS_API_KEY` in the environment used for production Hugo
-   builds. Interactive maps now fail the build if the key is missing or blank;
-   callout-preview-only maps do not require it.
+1. Replace `params.map.sites` with one Markdown file per marker, for example
+   `content/maps/locations/bowra.md`. Use `title` for the old `campaign` label,
+   keep `latitude` and `longitude`, and set `weight` to control the order.
+   For default callouts, move `description`, `content.image`, and `page` to
+   `callout.description`, `callout.image`, and `callout.link`.
+2. Use `{{< map sections="maps/locations" >}}` and replace `site-cards` with
+   `{{< map-cards sections="maps/locations" >}}`. Put `map_options` in the
+   source folder's own `_index.md`. Rename `initial_center.latitude` and
+   `initial_center.longitude` to `initial_latitude` and `initial_longitude`,
+   and move the four `bounds` keys directly under `map_options`.
+3. Set `GOOGLE_MAPS_API_KEY` for production builds with interactive maps.
+   A missing key now fails the build. See [deployment](./DEPLOYMENT.md#google-maps).
 
+If you customized the old map or cards:
+
+- Move preview and onboarding options to front matter. Set `show_onboarding: true`
+  to keep the opening callout. Replace shortcode callbacks with listeners for
+  `micro-map:callout-shown` and `micro-map:callout-hidden`.
+- Move `map/callout.html` overrides to `map/callout-content.html`; use the
+  `layout` argument for custom card markup. Both receive `.markerPage` instead
+  of `.site`.
+- Update custom CSS to target `.micro-map-*`, `--micro-map-*`, and
+  `.micro-cards-*`. The default `.oe-cards` grid is now `.micro-cards-stretch`.
+
+See the [map example](./exampleSite/content/maps/demo/_index.md) for configuration
+and event examples.
 
 ## 13/10/2026 - Workbench login and registration callbacks
 

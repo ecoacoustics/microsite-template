@@ -17,11 +17,11 @@ Once running, access the local website at <https://development.ecosounds.org:131
 ## Preview the Map Example
 
 The map demo lives in `exampleSite` so it is available when previewing the theme
-without becoming content in microsites that use it. Run this from the theme
-repository; the script changes to its own directory before starting Hugo:
+without becoming content in microsites that use it. From the theme repository:
 
 ```sh
-sh ./serve-example.sh
+cd exampleSite
+sh ./serve.sh
 ```
 
 Set `GOOGLE_MAPS_API_KEY` in the environment to load the interactive Google Map.

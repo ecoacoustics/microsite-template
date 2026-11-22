@@ -1,6 +1,6 @@
 {{/*
-Return the markers from the requested map sections whose datasources include
-the given Page. If sections are omitted, resolve-markers selects the default map.
+Find marker pages whose datasource points to the given content page.
+If no map sections are specified, use the default map.
 */}}
 {{- $sourcePage := .page -}}
 {{- if not $sourcePage -}}
@@ -10,7 +10,7 @@ the given Page. If sections are omitted, resolve-markers selects the default map
 {{- $matchingMarkers := slice -}}
 {{- range $markerPage := $resolvedMarkers.markerPages -}}
     {{- $matchesSource := false -}}
-    {{- range $datasourceName, $datasource := partial "map/datasources.html" $markerPage -}}
+    {{- range $datasourceName, $datasource := partialCached "map/datasources.html" $markerPage $markerPage.Path -}}
         {{- if eq $datasource.Path $sourcePage.Path -}}
             {{- $matchesSource = true -}}
         {{- end -}}

@@ -3,18 +3,22 @@
 {{- $header := .header -}}
 {{- $grid := .grid | default "stretch" -}}
 {{- $layout := .layout | default "map/card-outer.html" -}}
+{{- $mapParamsPath := .mapParamsPath -}}
+{{- $mapData := dict -}}
 {{- $markerPages := slice -}}
 {{- if not (in (slice "stretch" "fixed-width") $grid) -}}
     {{- errorf "map-cards grid %q must be stretch or fixed-width" $grid -}}
 {{- else if not $id -}}
     {{- errorf "map cards renderer requires a unique id" -}}
 {{- else -}}
-    {{- $resolvedMarkers := partial "map/resolve-markers.html" (dict
+    {{- $mapData = partial "map/resolve-map-data.html" (dict
         "sections" $sectionsInput
+        "mapParamsPath" $mapParamsPath
     ) -}}
-    {{- $markerPages = $resolvedMarkers.markerPages -}}
+    {{- $markerPages = $mapData.markerPages -}}
 {{- end -}}
 {{- if $markerPages -}}
+    {{- $calloutContentPartial := $mapData.calloutContentPartial -}}
     <section id="{{ $id }}" class="micro-map-cards">
         {{- with $header }}<div class="micro-map-cards-header">{{ . }}</div>{{ end }}
         <div class="micro-cards-{{ $grid }}">
@@ -23,6 +27,7 @@
                     "markerPage" $markerPage
                     "page" $.page
                     "view" "card"
+                    "calloutContentPartial" $calloutContentPartial
                 ) -}}
             {{- end -}}
         </div>
