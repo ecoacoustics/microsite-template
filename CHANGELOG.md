@@ -11,9 +11,12 @@
    `callout.description`, `callout.image`, and `callout.link`.
 2. Use `{{< map sections="maps/locations" >}}` and replace `site-cards` with
    `{{< map-cards sections="maps/locations" >}}`. Put `map_options` in the
-   source folder's own `_index.md`. Rename `initial_center.latitude` and
-   `initial_center.longitude` to `initial_latitude` and `initial_longitude`,
-   and move the four `bounds` keys directly under `map_options`.
+   source folder's own `_index.md`. Replace `initial_center` and
+   `initial_zoom` with Google's `center` and `zoom`. Put map movement limits
+   under `restriction`; use `mode: explicit` with `lat_lng_bounds`, or
+   `mode: markers` with latitude and longitude padding in degrees. The
+   optional `fit_markers` setting controls automatic fitting and its pixel
+   padding.
 3. Set `GOOGLE_MAPS_API_KEY` for production builds with interactive maps.
    A missing key now fails the build. See [deployment](./DEPLOYMENT.md#google-maps).
 

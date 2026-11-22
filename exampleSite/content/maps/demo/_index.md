@@ -5,22 +5,27 @@ weight: 42 # low priority just in case this gets copied it won't become default 
 
 # Google Maps settings. Omitted values use the defaults in assets/js/map.js.
 map_options:
-  # Initial map center, in decimal degrees.
-  initial_latitude: -27.5
-  initial_longitude: 137.5
-  # Initial zoom and permitted zoom range.
-  initial_zoom: 4
+  # Google Maps initial center and zoom, used when marker fitting is disabled.
+  center:
+    lat: -27.5
+    lng: 137.5
+  zoom: 4
   min_zoom: 3
   max_zoom: 12
-  # Whether Google Maps strictly enforces the geographic bounds below.
-  strict_bounds: false
-  # Geographic bounds used for map restriction and optional initial fitting.
-  north: -10
-  south: -45
-  east: 155
-  west: 110
-  # Fit the map to the bounds after it loads instead of using the initial center/zoom.
-  fit_initial_bounds: true
+  # Fit all markers after the map loads instead of retaining center and zoom.
+  fit_markers:
+    enabled: true
+    padding_pixels: 50
+  # Restrict panning using explicit coordinates or bounds derived from markers.
+  # Use mode: none to disable restriction.
+  restriction:
+    mode: explicit
+    lat_lng_bounds:
+      north: -10
+      south: -45
+      east: 155
+      west: 110
+    strict_bounds: false
 
 # Optional partial path for marker callout content. The default is
 # map/callout-content.html and is also used by map-cards unless its layout

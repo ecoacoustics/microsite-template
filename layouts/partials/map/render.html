@@ -19,8 +19,9 @@ Map front matter:
   (default: false).
 - show_onboarding: Show the introductory callout (default: false).
 - onboarding_title and onboarding_text: Override the introductory callout copy.
-- map_options: Browser map settings such as center, zoom, and bounds.
-  See assets/js/map.js for the supported keys and defaults.
+- map_options: Browser map settings. Google center and zoom are available
+  directly; fit_markers controls fitBounds() behavior; restriction controls
+  where users can pan. See assets/js/map.js for defaults.
 
 For interactive maps, map.js reads data-map-config to initialize the map.
 The site setting params.style.smallBreakPoint controls the narrow layout
