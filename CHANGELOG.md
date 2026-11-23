@@ -1,5 +1,39 @@
 # Changelog
 
+## 17/11/2026
+
+### Maps and location cards
+
+1. Replace `params.map.sites` with one Markdown file per marker, for example
+   `content/maps/locations/bowra.md`. Use `title` for the old `campaign` label,
+   keep `latitude` and `longitude`, and set `weight` to control the order.
+   For default callouts, move `description`, `content.image`, and `page` to
+   `callout.description`, `callout.image`, and `callout.link`.
+2. Use `{{< map sections="maps/locations" >}}` and replace `site-cards` with
+   `{{< map-cards sections="maps/locations" >}}`. Put `map_options` in the
+   source folder's own `_index.md`. Replace `initial_center` and
+   `initial_zoom` with Google's `center` and `zoom`. Put map movement limits
+   under `restriction`; use `mode: explicit` with `lat_lng_bounds`, or
+   `mode: markers` with latitude and longitude padding in degrees. The
+   optional `fit_markers` setting controls automatic fitting and its pixel
+   padding.
+3. Set `GOOGLE_MAPS_API_KEY` for production builds with interactive maps.
+   A missing key now fails the build. See [deployment](./DEPLOYMENT.md#google-maps).
+
+If you customized the old map or cards:
+
+- Move preview and onboarding options to front matter. Set `show_onboarding: true`
+  to keep the opening callout. Replace shortcode callbacks with listeners for
+  `micro-map:callout-shown` and `micro-map:callout-hidden`.
+- Move `map/callout.html` overrides to `map/callout-content.html`; use the
+  `layout` argument for custom card markup. Both receive `.markerPage` instead
+  of `.site`.
+- Update custom CSS to target `.micro-map-*`, `--micro-map-*`, and
+  `.micro-cards-*`. The default `.oe-cards` grid is now `.micro-cards-stretch`.
+
+See the [map example](./exampleSite/content/maps/demo/_index.md) for configuration
+and event examples.
+
 ## 13/10/2026 - Workbench login and registration callbacks
 
 ### Upgrade steps for existing microsites

@@ -1,0 +1,18 @@
+{{/*
+Resolve a map's marker pages, configuration, and callout-content partial.
+
+The first selected section supplies the base configuration. An optional
+map_params content page overrides it.
+*/}}
+{{- $resolvedMarkers := partial "map/resolve-markers.html" (dict
+    "sections" .sections
+) -}}
+{{- $mapParams := partial "map/resolve-params.html" (dict
+    "baseParams" $resolvedMarkers.configPage.Params
+    "configPath" .mapParamsPath
+) -}}
+{{- return (dict
+    "markerPages" $resolvedMarkers.markerPages
+    "mapParams" $mapParams
+    "calloutContentPartial" (index $mapParams "callout_content" | default "map/callout-content.html")
+) -}}

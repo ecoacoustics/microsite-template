@@ -1,0 +1,63 @@
+{{/*
+Collect marker pages from the selected map section folders.
+A map section folder's `_index.md` provides map settings. Its `.Pages` collection
+contains direct regular pages and immediate child-section `_index.md` pages.
+*/}}
+
+{{- $sectionPaths := .sections -}}
+
+{{- /* If no section folder is specified, use the first child of `/maps` by weight. */ -}}
+{{- if not $sectionPaths -}}
+    {{- $mapSections := (site.GetPage "/maps").Sections.ByWeight -}}
+    {{- if not $mapSections -}}
+        {{- errorf "no map found" -}}
+    {{- else -}}
+        {{- $defaultSection := index $mapSections 0 -}}
+        {{- $sectionPaths = $sectionPaths | append $defaultSection.Path -}}
+    {{- end -}}
+{{- end -}}
+
+{{- /*
+For each source-folder path get an Hugo section object
+*/ -}}
+{{- $sections := slice -}}
+{{- range $sectionPath := $sectionPaths -}}
+    {{- $sectionPath := strings.TrimSpace $sectionPath -}}
+    {{- $section := site.GetPage $sectionPath -}}
+    {{- if or (not $section) (ne $section.Kind "section") -}}
+        {{- errorf "map section path %q was not found or does not identify a Hugo section folder" $sectionPath -}}
+    {{- else -}}
+        {{- $sections = $sections | append $section -}}
+    {{- end -}}
+{{- end -}}
+
+{{- /*
+Gather the marker pages from each section.
+*/ -}}
+{{- $markerPages := slice -}}
+{{- range $section := $sections -}}
+    {{- range $markerPage := $section.Pages -}}
+        {{- $markerPages = $markerPages | append $markerPage -}}
+    {{- end -}}
+{{- end -}}
+
+{{- /* Sort markers by weight and validate their coordinates. */ -}}
+{{- $markerPages = sort $markerPages "Weight" "asc" -}}
+
+{{- range $markerPage := $markerPages -}}
+    {{- if or (not (isset $markerPage.Params "latitude")) (not (isset $markerPage.Params "longitude")) -}}
+        {{- errorf "map marker %q must define both latitude and longitude" $markerPage.Path -}}
+    {{- end -}}
+{{- end -}}
+
+{{- /* A selected section with no marker pages is a configuration error. */ -}}
+{{- if and $sections (not $markerPages) -}}
+    {{- errorf "map sections contain no valid markers" -}}
+{{- end -}}
+
+{{- /* Use the first selected section Page for map settings. */ -}}
+{{- $configPage := false -}}
+{{- with $sections -}}
+    {{- $configPage = index . 0 -}}
+{{- end -}}
+{{- return (dict "markerPages" $markerPages "configPage" $configPage) -}}

@@ -1,0 +1,35 @@
+{{/*
+Resolve the named content-page references in a map marker's `datasources` front
+matter. Returns a dictionary of datasource names to referenced Page objects.
+*/}}
+{{- $markerPage := . -}}
+{{- $sourcePaths := $markerPage.Params.datasources | default dict -}}
+{{- if not (reflect.IsMap $sourcePaths) -}}
+    {{- errorf "map marker %q datasources must be a mapping of names to content page paths" $markerPage.Path -}}
+{{- end -}}
+{{- $datasources := dict -}}
+{{- range $sourceName, $sourcePath := $sourcePaths -}}
+    {{- if ne (printf "%T" $sourceName) "string" -}}
+        {{- errorf "map marker %q datasource name %v must be a string" $markerPage.Path $sourceName -}}
+    {{- else -}}
+        {{- $sourceName = strings.TrimSpace $sourceName -}}
+        {{- if not $sourceName -}}
+            {{- errorf "map marker %q datasources must not contain empty names" $markerPage.Path -}}
+        {{- else if ne (printf "%T" $sourcePath) "string" -}}
+            {{- errorf "map marker %q datasource %q must be a content page path string" $markerPage.Path $sourceName -}}
+        {{- else -}}
+            {{- $sourcePath = strings.TrimSpace $sourcePath -}}
+            {{- if not $sourcePath -}}
+                {{- errorf "map marker %q datasource %q path must not be empty" $markerPage.Path $sourceName -}}
+            {{- else -}}
+                {{- $sourcePage := site.GetPage $sourcePath -}}
+                {{- if not $sourcePage -}}
+                    {{- errorf "map marker %q datasource %q page %q was not found" $markerPage.Path $sourceName $sourcePath -}}
+                {{- else -}}
+                    {{- $datasources = merge $datasources (dict $sourceName $sourcePage) -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- return $datasources -}}

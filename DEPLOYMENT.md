@@ -36,6 +36,17 @@ Most of the steps described can be found in the hugo
 3. Create and publish a `call-detective.org` sub-domain
 4. Setup dns, dns challenge, and ssl in netlify
 
+### Google Maps
+
+For microsites with an interactive map, set `GOOGLE_MAPS_API_KEY` in the
+Netlify environment variables available to the Hugo build. Production builds
+fail if the key is missing or blank. The key is included in the generated page
+for the browser to use, so restrict it to the Maps JavaScript API and the
+microsite's allowed HTTP referrers; do not treat it as a secret.
+
+`GOOGLE_MAPS_MAP_ID` is optional. If it is not set, the theme uses Google's
+`DEMO_MAP_ID`.
+
 ## Workbench Registration
 
 Login and registration use the Workbench configured by `params.workbench_host`,

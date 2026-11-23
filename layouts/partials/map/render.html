@@ -1,0 +1,122 @@
+{{/*
+Render an interactive map and its marker callouts, or preview the first
+marker's callout without loading a map.
+
+Partial arguments:
+- id (required): HTML ID for the map, unique on the page.
+- sections (optional): Slice of marker-source folder paths, such as
+  (slice "maps/locations"). If empty or omitted, use the first child section
+  under /maps in weight order. The first selected folder's _index.md supplies
+  the base settings.
+- mapParamsPath (optional): Path to a content file whose front matter
+  overrides the base settings. The map shortcode passes its map_params here.
+- page (optional): Hugo Page object for the content page hosting the map.
+  Forwarded to custom callout partials as .page, alongside .markerPage.
+
+Map front matter:
+- callout_content: Inner callout partial path (default: map/callout-content.html).
+- preview_callout_only: Show the first marker's callout instead of the map
+  (default: false).
+- show_onboarding: Show the introductory callout (default: false).
+- onboarding_title and onboarding_text: Override the introductory callout copy.
+- map_options: Browser map settings. Google center and zoom are available
+  directly; fit_markers controls fitBounds() behavior; restriction controls
+  where users can pan. See assets/js/map.js for defaults.
+
+For interactive maps, map.js reads data-map-config to initialize the map.
+The site setting params.style.smallBreakPoint controls the narrow layout
+(default: 768px). GOOGLE_MAPS_API_KEY is required for production interactive
+maps; GOOGLE_MAPS_MAP_ID is optional (default: DEMO_MAP_ID).
+*/}}
+{{ $sectionsInput := .sections }}
+{{ $mapData := dict }}
+{{ $mapID := .id }}
+{{ $mapNarrowBreakpoint := default "768px" site.Params.style.smallBreakPoint }}
+{{ $markerPages := slice }}
+{{ if not $mapID }}
+    {{ errorf "map renderer requires a unique id" }}
+{{ else }}
+    {{ $mapData = partial "map/resolve-map-data.html" (dict
+        "sections" $sectionsInput
+        "mapParamsPath" .mapParamsPath
+    ) }}
+    {{ $markerPages = $mapData.markerPages }}
+{{ end }}
+{{ if not $markerPages }}
+<section class="micro-map micro-map-configuration-error" aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
+            <div class="micro-map-message" role="alert">
+                <p><strong>Map configuration required.</strong> Add markers to the selected map section, or provide a valid comma-separated <code>sections</code> list.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ else }}
+{{ $mapParams := $mapData.mapParams }}
+{{ $previewCalloutOnly := index $mapParams "preview_callout_only" | default false }}
+{{ $googleMapsAPIKey := getenv "GOOGLE_MAPS_API_KEY" | strings.TrimSpace }}
+{{ if and hugo.IsProduction (not $previewCalloutOnly) (eq $googleMapsAPIKey "") }}
+    {{ errorf "interactive map %q requires GOOGLE_MAPS_API_KEY in production" $mapID }}
+{{ end }}
+{{ $calloutContentPartial := $mapData.calloutContentPartial }}
+{{ $showOnboarding := index $mapParams "show_onboarding" | default false }}
+{{ $mapOnboardingTitle := index $mapParams "onboarding_title" | default "Explore the diverse recording locations" }}
+{{ $mapOnboardingText := index $mapParams "onboarding_text" | default "Choose a location on the map to find out more about the field site." }}
+{{ $mapOptions := index $mapParams "map_options" | default dict }}
+{{ if not (reflect.IsMap $mapOptions) }}
+    {{ errorf "map params map_options must be a map" }}
+    {{ $mapOptions = dict }}
+{{ end }}
+{{ $mapLocations := slice }}
+{{ range $markerPage := $markerPages }}
+    {{ $mapLocations = $mapLocations | append (dict
+        "label" $markerPage.LinkTitle
+        "latitude" (float $markerPage.Params.latitude)
+        "longitude" (float $markerPage.Params.longitude)
+    ) }}
+{{ end }}
+{{ $mapConfig := dict
+    "locations" $mapLocations
+    "mapOptions" $mapOptions
+    "googleMapsAPIKey" $googleMapsAPIKey
+    "googleMapsMapID" (getenv "GOOGLE_MAPS_MAP_ID")
+}}
+
+<section id="{{ $mapID }}" class="micro-map{{ if $previewCalloutOnly }} micro-map-preview-callout-only{{ end }}" data-map-breakpoint="{{ $mapNarrowBreakpoint }}"{{ if not $previewCalloutOnly }} data-map-config="{{ $mapConfig | jsonify }}"{{ end }} aria-label="Field sites">
+    <div class="micro-map-stage">
+        <div class="micro-map-shell">
+            {{ if $previewCalloutOnly }}
+                {{ $markerPage := index $markerPages 0 }}
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $markerPage
+                    "calloutContentPartial" $calloutContentPartial
+                    "label" "Development callout preview"
+                    "preview" true
+                )) }}
+            {{ else }}
+            <div class="micro-map-element" id="{{ $mapID }}-map" role="application" aria-label="Satellite map of field sites"></div>
+            <svg class="micro-map-leader-lines" aria-hidden="true"><line class="micro-map-leader-line" /></svg>
+            {{ if $showOnboarding }}
+            <aside class="micro-map-callout micro-map-onboarding-callout" id="{{ $mapID }}-onboarding" aria-labelledby="{{ $mapID }}-onboarding-title">
+                <div class="micro-map-callout-content">
+                    <h3 class="micro-map-callout-title" id="{{ $mapID }}-onboarding-title">{{ $mapOnboardingTitle }}</h3>
+                    <p class="micro-map-callout-text">{{ $mapOnboardingText }}</p>
+                </div>
+            </aside>
+            {{ end }}
+            {{ range $siteIndex, $markerPage := $markerPages }}
+                {{ partial "map/callout-outer.html" (merge $ (dict
+                    "markerPage" $markerPage
+                    "calloutContentPartial" $calloutContentPartial
+                    "calloutID" (printf "%s-callout-%03d" $mapID $siteIndex)
+                    "label" (printf "%s site details" $markerPage.LinkTitle)
+                    "preview" false
+                )) }}
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</section>
+
+{{ end }}

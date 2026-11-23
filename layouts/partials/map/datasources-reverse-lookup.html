@@ -1,0 +1,22 @@
+{{/*
+Find marker pages whose datasource points to the given content page.
+If no map sections are specified, use the default map.
+*/}}
+{{- $sourcePage := .page -}}
+{{- if not $sourcePage -}}
+    {{- errorf "map datasource reverse lookup requires a source page" -}}
+{{- end -}}
+{{- $resolvedMarkers := partial "map/resolve-markers.html" (dict "sections" .sections) -}}
+{{- $matchingMarkers := slice -}}
+{{- range $markerPage := $resolvedMarkers.markerPages -}}
+    {{- $matchesSource := false -}}
+    {{- range $datasourceName, $datasource := partialCached "map/datasources.html" $markerPage $markerPage.Path -}}
+        {{- if eq $datasource.Path $sourcePage.Path -}}
+            {{- $matchesSource = true -}}
+        {{- end -}}
+    {{- end -}}
+    {{- if $matchesSource -}}
+        {{- $matchingMarkers = $matchingMarkers | append $markerPage -}}
+    {{- end -}}
+{{- end -}}
+{{- return $matchingMarkers -}}

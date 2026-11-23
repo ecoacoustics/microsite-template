@@ -1,32 +1,28 @@
 {{/* Making hugo.yaml site params accessible through js */}}
 {{- with resources.Get "js/params.js" | resources.ExecuteAsTemplate "js/params.js" . | fingerprint }}
-
 <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity}}"></script>
 {{- end }}
 
+{{- $scriptPaths := slice
+    "js/map.js"
+    "js/workbenchApi.js"
+    "js/progressCounterDefault.js"
+-}}
+{{- $scripts := slice -}}
+{{- range $scriptPaths -}}
+    {{- with resources.Get . | js.Build (dict "format" "esm") -}}
+        {{- $scripts = $scripts | append . -}}
+    {{- end -}}
+{{- end -}}
 
-{{- with resources.Get "js/workbenchApi.js" | js.Build (dict "format" "esm") }}
-  {{- if eq hugo.Environment "development" }}
-    {{- with . }}
-      {{/*
-        We load the workbenchApi as a module because is uses the esmodule
-        import/export syntax
-      */}}
-      <script src="{{ .RelPermalink }}" type="module"></script>
+{{- if eq hugo.Environment "development" -}}
+    {{- range $scripts }}
+<script src="{{ .RelPermalink }}" type="module"></script>
     {{- end }}
-  {{- else }}
-    {{- with . | minify | fingerprint }}
-      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- end }}
-  {{- end }}
-{{- end }}
-
-{{- with resources.Get "js/progressCounterDefault.js" | js.Build (dict "format" "esm") }}
-  {{- if eq hugo.Environment "development" }}
-    <script src="{{ .RelPermalink }}" type="module"></script>
-  {{- else }}
-    {{- with . | minify | fingerprint }}
-      <script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{- else -}}
+    {{- range $scripts -}}
+        {{- with . | minify | fingerprint }}
+<script src="{{ .RelPermalink }}" type="module" integrity="{{- .Data.Integrity }}" crossorigin="anonymous"></script>
+        {{- end }}
+    {{- end -}}
+{{- end -}}

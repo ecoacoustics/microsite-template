@@ -2,4 +2,6 @@
 /resources
 /ef
 /public
-
+/exampleSite/.hugo_build.lock
+/exampleSite/public
+/exampleSite/resources

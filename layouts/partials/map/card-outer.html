@@ -1,0 +1,4 @@
+<sl-card>
+    {{- $calloutContentPartial := .calloutContentPartial | default "map/callout-content.html" -}}
+    {{- partial $calloutContentPartial (merge . (dict "view" "card")) -}}
+</sl-card>

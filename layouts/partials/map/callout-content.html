@@ -1,0 +1,18 @@
+{{- $markerPage := .markerPage -}}
+{{- $calloutContent := $markerPage.Params.callout | default dict -}}
+{{- $heading := $calloutContent.heading | default $markerPage.LinkTitle -}}
+{{- $image := false -}}
+{{- with $calloutContent.image -}}
+    {{- $image = resources.Get . -}}
+    {{- if not $image -}}
+        {{- errorf "map marker %q references missing image resource %q in callout.image" $markerPage.Path . -}}
+    {{- end -}}
+{{- end -}}
+<div class="micro-map-callout-content">
+    {{- with $heading }}<h3 class="micro-map-callout-title">{{ . }}</h3>{{ end -}}
+    {{ with $image }}<img class="micro-map-callout-image" src="{{ .RelPermalink }}" alt="{{ $calloutContent.image_alt | default "" }}">{{ end }}
+    {{- with $calloutContent.description }}<p class="micro-map-callout-text">{{ . }}</p>{{ end }}
+    {{- with $calloutContent.link }}
+        <a class="micro-map-callout-link" href="{{ . }}">{{ $calloutContent.link_text | default "Learn more" }}</a>
+    {{- end }}
+</div>
