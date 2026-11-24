@@ -222,12 +222,12 @@ export async function fetchProgressCounterData(
     }
 
     const campaignNames = selectedCampaigns.map(({ name }) => name).join(", ");
-    const audioEventFilter = combineFilters(selectedCampaigns.map((campaign) =>
+    const audioEventFilters = selectedCampaigns.map((campaign) =>
         combineFilters([
             campaign.filters.filter,
             createTagFilter(campaign.tag_ids),
-        ]),
-    ), "or");
+        ])
+    );
 
     const verificationFilter = combineFilters(selectedCampaigns.map((campaign) =>
         combineFilters([
@@ -238,7 +238,9 @@ export async function fetchProgressCounterData(
 
     try {
         const [audioEventStats, verificationStats, userProfile] = await Promise.all([
-            requiredDataFetches.has("audioEventStats") ? api.getAudioEventStats(audioEventFilter) : null,
+            requiredDataFetches.has("audioEventStats")
+                ? Promise.all(audioEventFilters.map((filter) => api.getAudioEventStats(filter)))
+                : [],
             requiredDataFetches.has("verificationStats") ? api.getVerificationStats(verificationFilter) : null,
             requiredDataFetches.has("userProfile") ? api.getUserProfile() : null,
         ]);
@@ -257,7 +259,10 @@ export async function fetchProgressCounterData(
 
         const loggedIn = currentUserID !== null;
 
-        const totalEvents = Number(audioEventStats?.count) || 0;
+        const totalEvents = audioEventStats.reduce(
+            (total, stats) => total + (Number(stats?.count) || 0),
+            0,
+        );
         const completedEvents = Number(verificationStats?.user_verified_events_count) || 0;
         const completionPercentage = loggedIn && totalEvents
             ? Math.min(100, completedEvents / totalEvents * 100)
